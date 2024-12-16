@@ -1,11 +1,13 @@
 const express = require("express");
 const cors = require("cors");
-const pool = require("./config/db");
+const {db, createUsersTable} = require("./config/db");
 const getRoutes = require("./routes/getRoutes");
 const postRoutes = require("./routes/postRoutes");
 
 const app = express();
 const PORT = process.env.PORT; // Set your desired port
+
+createUsersTable();
 
 // Middleware
 app.use(cors());
