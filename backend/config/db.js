@@ -1,7 +1,9 @@
 const mysql = require("mysql");
-require("dotenv").config({ path: __dirname + '/../.env' });
+require("dotenv").config({ path: __dirname + "/../.env" });
 
-const db = mysql.createConnection({
+// Create a connection pool
+const pool = mysql.createPool({
+  connectionLimit: 10, // Number of connections in the pool
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
@@ -9,13 +11,14 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME,
 });
 
-db.connect((err) => {
+// Test the pool connection
+pool.getConnection((err, connection) => {
   if (err) {
     console.error("Error connecting to the database:", err.message);
     return;
   }
-  console.log("Connected to the MySQL database.");
-  return;
+  console.log("Connected to the MySQL database via pool.");
+  connection.release(); // Release the connection back to the pool
 });
 
 /**
@@ -42,7 +45,7 @@ function createUsersTable() {
       );
   `;
 
-  db.query(createTableQuery, (err, result) => {
+  pool.query(createTableQuery, (err, result) => {
     if (err) {
       console.error("Error creating table:", err.message);
       return;
@@ -51,4 +54,4 @@ function createUsersTable() {
   });
 }
 
-module.exports = { db, createUsersTable };
+module.exports = { pool, createUsersTable };
