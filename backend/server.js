@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { pool, createUsersTable } = require("./config/db");
+const { pool, createUsersTable, createMentorLogsTable, createMentorToStudentTable } = require("./config/db");
 const getRoutes = require("./routes/getRoutes");
 const postRoutes = require("./routes/postRoutes");
 const admin = require("firebase-admin");
@@ -9,6 +9,8 @@ const app = express();
 const PORT = process.env.PORT; // Set your desired port
 
 // createUsersTable();
+// createMentorToStudentTable();
+// createMentorLogsTable();
 
 // Firebase Admin Authentication Middleware
 const auth = (req, res, next) => {

@@ -21,27 +21,14 @@ pool.getConnection((err, connection) => {
   connection.release(); // Release the connection back to the pool
 });
 
-/**
- * Creates the users table in the database if it doesn't already exist.
- *
- * The table has the following columns:
- *
- * - id: INT AUTO_INCREMENT PRIMARY KEY
- * - name: VARCHAR(255) NOT NULL
- * - email: VARCHAR(255) NOT NULL UNIQUE
- * - password: VARCHAR(255) NOT NULL
- * - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
- *
- * If the table already exists, this function does nothing.
- */
 function createUsersTable() {
   const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS users (
+      CREATE TABLE IF NOT EXISTS USERS (
           id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(255) NOT NULL,
-          email VARCHAR(255) NOT NULL UNIQUE,
-          password VARCHAR(255) NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          email VARCHAR(50) UNIQUE NOT NULL,
+          name VARCHAR(50) NOT NULL,
+          role ENUM('unassigned', 'mentor', 'school contact', 'staff', 'admin') NOT NULL
+          verified BOOLEAN NOT NULL,
       );
   `;
 
@@ -54,4 +41,51 @@ function createUsersTable() {
   });
 }
 
-module.exports = { pool, createUsersTable };
+function createMentorToStudentTable() {
+  const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS MENTOR_TO_STUDENT (
+          mentor_to_student_id INT AUTO_INCREMENT PRIMARY KEY,
+          mentor_id INT NOT NULL,
+          school_contact_id INT NOT NULL,
+          student_name VARCHAR(50) NOT NULL,
+          FOREIGN KEY (mentor_id) REFERENCES USERS (id),
+          FOREIGN KEY (school_contact_id) REFERENCES USERS (id)
+      );
+  `;
+
+  pool.query(createTableQuery, (err, result) => {
+    if (err) {
+      console.error("Error creating table:", err.message);
+      return;
+    }
+    console.log("Mentor to student table created or already exists.");
+  });
+}
+
+function createMentorLogsTable() {
+  const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS MENTOR_LOGS (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          mentor_id INT NOT NULL,
+          mentor_to_student_id INT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+          hours_logged FLOAT NOT NULL,
+          met BOOLEAN NOT NULL,
+          meeting_circumstance ENUM('in-person', 'virtual', 'did not meet') NOT NULL,
+          comments TEXT,
+          FOREIGN KEY (mentor_id) REFERENCES USERS (id),
+          FOREIGN KEY (mentor_to_student_id) REFERENCES MENTOR_TO_STUDENT (mentor_to_student_id)
+      );
+  `;
+
+  pool.query(createTableQuery, (err, result) => {
+    if (err) {
+      console.error("Error creating table:", err.message);
+      return;
+    }
+    console.log("Mentor logs table created or already exists.");
+  });
+}
+
+module.exports = { pool, createUsersTable, createMentorToStudentTable, createMentorLogsTable };
