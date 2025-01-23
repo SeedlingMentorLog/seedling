@@ -27,7 +27,7 @@ function createUsersTable() {
           id INT AUTO_INCREMENT PRIMARY KEY,
           email VARCHAR(50) UNIQUE NOT NULL,
           name VARCHAR(50) NOT NULL,
-          role ENUM('unassigned', 'mentor', 'school contact', 'staff', 'admin') NOT NULL
+          role ENUM('unassigned', 'mentor', 'school contact', 'staff', 'admin') NOT NULL,
           verified BOOLEAN NOT NULL,
       );
   `;
@@ -69,7 +69,7 @@ function createMentorLogsTable() {
           mentor_id INT NOT NULL,
           mentor_to_student_id INT NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           hours_logged FLOAT NOT NULL,
           met BOOLEAN NOT NULL,
           meeting_circumstance ENUM('in-person', 'virtual', 'did not meet') NOT NULL,
