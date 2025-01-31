@@ -30,7 +30,7 @@ const auth = (req, res, next) => {
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(auth);
+// app.use(auth);
 
 // Routes
 app.use("/get", getRoutes);

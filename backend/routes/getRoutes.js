@@ -11,9 +11,50 @@ router.get("/", (req, res) => {
       return res.status(500).json({ error: "Error executing query" });
     }
     const tables = result.map((row) => Object.values(row)[0]);
-    res.json({ tables });
+    res.status(200).json({ tables });
   });
 });
+
+// Get user by firebase id
+router.get("/user/:firebase_id", (req, res) => {
+  const firebase_id = req.params.firebase_id;
+  const query = `
+    SELECT *
+    FROM USERS u
+    WHERE u.firebase_id = ?;
+  `;
+  pool.query(query, [firebase_id], (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(200).json({ user: result[0] });
+  });
+});
+
+// Get all mentors (admin and staff only)
+router.get("/mentors", (req, res) => {
+  const query = `SELECT id, name FROM USERS WHERE role = 'mentor';`;
+  pool.query(query, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(200).json({ mentors: result });
+  });
+})
+
+// Get all school contacts (admin and staff only)
+router.get("/school_contacts", (req, res) => {
+  const query = `SELECT id, name FROM USERS WHERE role = 'school contact';`;
+  pool.query(query, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(200).json({ school_contacts: result });
+  });
+})
 
 // Get logs by mentor id
 router.get("/mentor_logs/:mentor_id", (req, res) => {
@@ -38,7 +79,7 @@ router.get("/mentor_logs/:mentor_id", (req, res) => {
       console.error("Error executing query:", err);
       return res.status(500).json({ error: "Error executing query" });
     }
-    res.json({ logs: result });
+    res.status(200).json({ logs: result });
   });
 });
 
@@ -65,12 +106,12 @@ router.get("/school_logs/:school_id", (req, res) => {
       console.error("Error executing query:", err);
       return res.status(500).json({ error: "Error executing query" });
     }
-    res.json({ logs: result });
+    res.status(200).json({ logs: result });
   });
 });
 
 router.get("/data", (req, res) => {
-  res.json({ message: "Hello from the backend!" });
+  res.status(200).json({ message: "Hello from the backend!" });
 });
 
 module.exports = router;

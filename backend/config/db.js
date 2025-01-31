@@ -25,6 +25,7 @@ function createUsersTable() {
   const createTableQuery = `
       CREATE TABLE IF NOT EXISTS USERS (
           id INT AUTO_INCREMENT PRIMARY KEY,
+          firebase_id VARCHAR(28) UNIQUE NOT NULL,
           email VARCHAR(50) UNIQUE NOT NULL,
           name VARCHAR(50) NOT NULL,
           role ENUM('unassigned', 'mentor', 'school contact', 'staff', 'admin') NOT NULL,
