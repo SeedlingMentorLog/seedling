@@ -3,16 +3,18 @@ import {useAuth} from '../contexts/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import GoogleButton from 'react-google-button';
 import Typography from '@mui/material/Typography';
-import { Button, Box } from '@mui/material';
+import { Button, Box, TextField } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-// import './App.css';
 
 const HomePage = () => {
   const { handleGoogleSignup } = useAuth();
   const { handleGoogleSignIn } = useAuth();
+  const { handleEmailPasswordSignIn } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleGoogleSigninClick = async () => {
     try {
@@ -22,7 +24,6 @@ const HomePage = () => {
     }
   };
 
-
   const handleGoogleSignupClick = async () => {
     try {
       await handleGoogleSignup(setError);
@@ -30,6 +31,15 @@ const HomePage = () => {
       console.log("Error:", error);
     }
   };
+
+  const handleEmailPasswordLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await handleEmailPasswordSignIn(email, password);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
 
   const CustomErrorMessage = ({ error, onClose }) => (
     <Box
@@ -75,10 +85,34 @@ const HomePage = () => {
           >
             Log in or sign up
           </Typography>
-          {/* Text after the line */}
 
           {/* Continue with Google button */}
           <GoogleButton onClick={handleGoogleSigninClick} />
+
+          {/* Email/Password Login Form */}
+          <form onSubmit={handleEmailPasswordLogin}>
+            <TextField 
+              label="Email" 
+              variant="outlined" 
+              fullWidth 
+              margin="normal" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+            />
+            <TextField 
+              label="Password" 
+              variant="outlined" 
+              type="password" 
+              fullWidth 
+              margin="normal" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+            />
+            <Button type="submit" variant="contained" fullWidth>
+              Log In
+            </Button>
+          </form>
+
           {error !== null && (
             <CustomErrorMessage error={error} onClose={handleCloseError} />
           )}
