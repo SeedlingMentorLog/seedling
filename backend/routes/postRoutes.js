@@ -51,6 +51,27 @@ router.post("/add_log", (req, res) => {
   });
 });
 
+// Add user (authentication process)
+router.post("/add_user", (req, res) => {
+  const { firebase_id, email, name } = req.body;
+  const role = 'unassigned';
+  const verified = false;
+  
+  const query = `
+    INSERT INTO USERS (firebase_id, email, name, role, verified)
+    VALUES (?, ?, ?, ?, ?);
+  `;
+
+  pool.query(query, [firebase_id, email, name, role, verified], (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(201).json({ message: "User added successfully" });
+  });
+});
+
+
 // Add a mentor-student relationship (admin only)
 router.post("/add_mentor_to_student", (req, res) => {
   const { mentor_id, school_contact_id, student_name } = req.body;
@@ -89,5 +110,24 @@ router.post("/verify_user", (req, res) => {
     res.status(201).json({ message: "Success" });
   });
 });
+
+// Update user profile
+router.post("/update_user_profile", (req, res) => {
+  const { email, name, role, id } = req.body;
+  const query = `
+    UPDATE USERS
+    SET email = ?, name = ?, role = ?
+    WHERE id = ?;
+  `;
+
+  pool.query(query, [email, name, role, id], (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(200).json({ message: "User profile updated successfully" });
+  });
+});
+
 
 module.exports = router;
