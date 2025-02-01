@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {useAuth} from './AuthContext.js';
+import {useAuth} from '../contexts/AuthContext.js';
 import { useNavigate } from 'react-router-dom';
 import GoogleButton from 'react-google-button';
 import Typography from '@mui/material/Typography';

@@ -1,4 +1,4 @@
-const mysql = require("mysql");
+const mysql = require("mysql2");
 require("dotenv").config({ path: __dirname + "/../.env" });
 
 // Create a connection pool
@@ -29,7 +29,7 @@ function createUsersTable() {
           email VARCHAR(50) UNIQUE NOT NULL,
           name VARCHAR(50) NOT NULL,
           role ENUM('unassigned', 'mentor', 'school contact', 'staff', 'admin') NOT NULL,
-          verified BOOLEAN NOT NULL,
+          verified BOOLEAN NOT NULL
       );
   `;
 

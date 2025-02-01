@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {GoogleAuthProvider, signInWithPopup, signOut} from 'firebase/auth'; 
-import {auth} from './firebaseConfig'; 
+import {auth} from '../components/firebaseConfig'; 
 
 //Creating a context for authentication
 const AuthContext = createContext();
