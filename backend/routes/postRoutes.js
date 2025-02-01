@@ -142,5 +142,4 @@ router.post("/update_user_profile", (req, res) => {
   });
 });
 
-
 module.exports = router;

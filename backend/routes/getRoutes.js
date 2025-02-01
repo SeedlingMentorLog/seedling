@@ -123,12 +123,6 @@ router.get("/school_logs/:school_id", (req, res) => {
   });
 });
 
-router.get("/data", (req, res) => {
-  res.status(200).json({ message: "Hello from the backend!" });
-});
-
-module.exports = router;
-
 // Get logs by date range (for a mentor or school contact)
 router.post("/get_logs_by_date_range", (req, res) => {
   const { start_date, end_date, mentor_id, school_contact_id } = req.body;
@@ -151,3 +145,5 @@ router.post("/get_logs_by_date_range", (req, res) => {
     res.status(200).json({ logs: result });
   });
 });
+
+module.exports = router;
