@@ -2,6 +2,19 @@ const express = require("express");
 const router = express.Router();
 const { pool } = require("../config/db");
 
+function verifyAdminOrStaffStatus(req, res, next) {
+  const user_role = req.params.user_role;
+  if (!user_role) {
+    return res.status(400).json({ error: "User role is required" });
+  }
+
+  if (user_role !== 'admin' && user_role !== 'staff') {
+    return res.status(403).json({ error: "Access denied" });
+  }
+
+  next();
+}
+
 // Routes
 router.get("/", (req, res) => {
   const query = "SHOW TABLES";
@@ -33,7 +46,7 @@ router.get("/user/:firebase_id", (req, res) => {
 });
 
 // Get all mentors (admin and staff only)
-router.get("/mentors", (req, res) => {
+router.get("/mentors/:user_role", verifyAdminOrStaffStatus, (req, res) => {
   const query = `SELECT id, name FROM USERS WHERE role = 'mentor';`;
   pool.query(query, (err, result) => {
     if (err) {
@@ -45,7 +58,7 @@ router.get("/mentors", (req, res) => {
 })
 
 // Get all school contacts (admin and staff only)
-router.get("/school_contacts", (req, res) => {
+router.get("/school_contacts/:user_role", verifyAdminOrStaffStatus, (req, res) => {
   const query = `SELECT id, name FROM USERS WHERE role = 'school contact';`;
   pool.query(query, (err, result) => {
     if (err) {

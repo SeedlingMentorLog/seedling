@@ -1,6 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
+function verifyAdminStatus(req, res, next) {
+  const user_role = req.params.user_role;
+  if (!user_role) {
+    return res.status(400).json({ error: "User role is required" });
+  }
+
+  if (user_role !== 'admin') {
+    return res.status(403).json({ error: "Access denied" });
+  }
+
+  next();
+}
+
 // Add log
 router.post("/add_log", (req, res) => {
   const {
@@ -73,7 +86,7 @@ router.post("/add_user", (req, res) => {
 
 
 // Add a mentor-student relationship (admin only)
-router.post("/add_mentor_to_student", (req, res) => {
+router.post("/add_mentor_to_student/:user_role", verifyAdminStatus, (req, res) => {
   const { mentor_id, school_contact_id, student_name } = req.body;
   const query = `
     INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name)
@@ -94,7 +107,7 @@ router.post("/add_mentor_to_student", (req, res) => {
 });
 
 // Verify a user (admin only)
-router.post("/verify_user", (req, res) => {
+router.post("/verify_user/:user_role", verifyAdminStatus, (req, res) => {
   const { id, role } = req.body;
   const query = `
     UPDATE USERS
