@@ -49,6 +49,8 @@ function createMentorToStudentTable() {
           mentor_id INT NOT NULL,
           school_contact_id INT NOT NULL,
           student_name VARCHAR(50) NOT NULL,
+          student_birthday DATE NOT NULL,
+          student_school VARCHAR(80) NOT NULL,
           FOREIGN KEY (mentor_id) REFERENCES USERS (id),
           FOREIGN KEY (school_contact_id) REFERENCES USERS (id)
       );
