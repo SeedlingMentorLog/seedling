@@ -10,9 +10,9 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/time-logged" element={<TimeLoggedPage />} />
-          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/time-logged" element={<TimeLoggedPage />} />
         </Routes>
       </AuthProvider>
     </Router>
