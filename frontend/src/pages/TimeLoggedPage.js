@@ -35,7 +35,6 @@ const TimeLoggedPage = (props) => {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            height: "50%",
             gap: 2,
           }}
         >

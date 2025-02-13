@@ -1,9 +1,10 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import {AuthProvider} from './contexts/AuthContext';
-import LoginPage from './components/LoginPage';
-import HomePage from './components/HomePage';
-import TimeLoggedPage from './components/TimeLoggedPage';
+import LoginPage from './pages/LoginPage';
+import HomePage from './pages/HomePage';
+import TimeLoggedPage from './pages/TimeLoggedPage';
+import YourMatchPage from './pages/YourMatchPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<HomePage />} />
           <Route path="/time-logged" element={<TimeLoggedPage />} />
+          <Route path="/your-match" element={<YourMatchPage />} />
         </Routes>
       </AuthProvider>
     </Router>
