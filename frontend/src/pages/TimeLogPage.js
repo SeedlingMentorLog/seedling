@@ -10,9 +10,16 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@mui/material";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const TimeLogPage = (props) => {
+  const [date, setDate] = useState(null);
+  const [mentee, setMentee] = useState(null);
+  const [comments, setComments] = useState(null);
+
   return (
     <Box
       sx={{
@@ -54,6 +61,8 @@ const TimeLogPage = (props) => {
           <InputLabel>Select Mentee</InputLabel>
           <Select
             label="Select Mentee"
+            value={mentee}
+            onChange={(event) => setMentee(event.target.value)}
             sx={{
               borderRadius: 2,
               border: "1px solid #EDF1F7",
@@ -67,13 +76,36 @@ const TimeLogPage = (props) => {
           </Select>
         </FormControl>
         <TextField
+          label="Comments"
           placeholder="Type the note here..."
+          value={comments}
+          onChange={(event) => setComments(event.target.value)}
           fullWidth
           multiline
           minRows={3}
           maxRows={3}
-          sx={{ borderRadius: 2, fontFamily: "Inter" }}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 2,
+            },
+            fontFamily: "Inter",
+            marginBottom: 2,
+          }}
         ></TextField>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="Date"
+            value={date}
+            onChange={(newDate) => setDate(newDate)}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+              alignItems: "center",
+              marginBottom: 2
+            }}
+          ></DatePicker>
+        </LocalizationProvider>
       </Box>
     </Box>
   );
