@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button, Link } from "@mui/material";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const TimeLoggedPage = (props) => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const TimeLoggedPage = (props) => {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          gap: 4,
+          gap: 6,
         }}
       >
         {/* Top box */}
@@ -40,11 +41,22 @@ const TimeLoggedPage = (props) => {
         >
           <Box
             sx={{
-              background: "#FFFFFF",
-              width: 212,
-              height: 153,
+              background: "#57C5CC",
+              width: 162,
+              height: 162,
+              borderRadius: "50%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
-          ></Box>
+          >
+            <CheckCircleIcon
+              sx={{
+                fontSize: 92,
+                color: "#FFF",
+              }}
+            />
+          </Box>
           <Typography
             sx={{
               alignSelf: "stretch",
