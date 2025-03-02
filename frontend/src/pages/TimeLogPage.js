@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useActionData, useNavigate } from "react-router-dom";
 import {
   Button,
   Box,
@@ -14,11 +14,20 @@ import {
 } from "@mui/material";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const TimeLogPage = (props) => {
   const [date, setDate] = useState(null);
   const [mentee, setMentee] = useState(null);
   const [comments, setComments] = useState(null);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  const [startTimeFocused, setStartTimeFocused] = useState(false);
+  const [endTimeFocused, setEndTimeFocused] = useState(false);
+
+  useEffect(() => {
+    setDate(dayjs()); 
+  }, []);
 
   return (
     <Box
@@ -57,6 +66,7 @@ const TimeLogPage = (props) => {
         >
           Add Time
         </Typography>
+
         <FormControl fullWidth>
           <InputLabel>Select Mentee</InputLabel>
           <Select
@@ -92,20 +102,100 @@ const TimeLogPage = (props) => {
             marginBottom: 2,
           }}
         ></TextField>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DatePicker
-            label="Date"
-            value={date}
-            onChange={(newDate) => setDate(newDate)}
+        <Box>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date"
+              value={date}
+              onChange={(newDate) => setDate(newDate)}
+              fullWidth
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2,
+                },
+                alignItems: "center",
+                marginBottom: 2
+              }}
+            ></DatePicker>
+          </LocalizationProvider>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            width: "100%",
+            gap: 2,
+            marginBottom: 2,
+          }}
+        >
+          <TextField
+            label="Start Time"
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            onFocus={() => setStartTimeFocused(true)}
+            onBlur={() => setStartTimeFocused(false)}
+            fullWidth
+            InputProps={{
+              startAdornment: !startTime && !startTimeFocused && (
+                <InputAdornment position="start"></InputAdornment>
+              ),
+            }}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: 2,
               },
-              alignItems: "center",
-              marginBottom: 2
+              fontFamily: "Inter",
             }}
-          ></DatePicker>
-        </LocalizationProvider>
+          />
+          <TextField
+            label="End Time"
+            type="time"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            onFocus={() => setEndTimeFocused(true)}
+            onBlur={() => setEndTimeFocused(false)}
+            fullWidth
+            InputProps={{
+              startAdornment: !endTime && !endTimeFocused && (
+                <InputAdornment position="start"></InputAdornment>
+              ),
+            }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 2,
+              },
+              fontFamily: "Inter",
+            }}
+          />
+        </Box>
+
+        <Button
+          variant="contained"
+          sx={{
+            width: "351px",
+            height: "50px",
+            flexShrink: 0,
+            borderRadius: "100px",
+            backgroundColor: "#57C5CC", 
+            color: "#FFFFFF", 
+            typography: {
+              color: "#FFF",
+              textAlign: "center",
+              fontFamily: "Inter",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 600,
+              lineHeight: "22px",
+            },
+            marginTop: 2,
+            "&:hover": {
+              backgroundColor: "#57C5CC",
+            },
+          }}
+        >
+          Submit
+        </Button>
       </Box>
     </Box>
   );

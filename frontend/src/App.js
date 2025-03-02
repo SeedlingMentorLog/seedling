@@ -12,9 +12,9 @@ function App() {
     <Router>
       <AuthProvider>
         <Routes>
-          <Route path="/time-log" element={<TimeLogPage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/time-log" element={<TimeLogPage />} />
           <Route path="/time-logged" element={<TimeLoggedPage />} />
           <Route path="/your-match" element={<YourMatchPage />} />
         </Routes>
