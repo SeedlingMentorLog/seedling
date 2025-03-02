@@ -75,6 +75,9 @@ router.get("/mentor_logs/:mentor_id", (req, res) => {
   const query = `
     SELECT ml.id,
            ml.created_at,
+           ml.date,
+           ml.start_time,
+           ml.end_time,
            ml.hours_logged,
            ml.met,
            ml.meeting_circumstance,
@@ -102,6 +105,9 @@ router.get("/school_logs/:school_id", (req, res) => {
   const query = `
     SELECT ml.id,
            ml.created_at,
+           ml.date,
+           ml.start_time,
+           ml.end_time,
            ml.hours_logged,
            ml.met,
            ml.meeting_circumstance,
@@ -127,14 +133,22 @@ router.get("/school_logs/:school_id", (req, res) => {
 router.post("/get_logs_by_date_range", (req, res) => {
   const { start_date, end_date, mentor_id, school_contact_id } = req.body;
   const query = `
-    SELECT ml.id, ml.created_at, ml.hours_logged, ml.met, ml.meeting_circumstance, ml.comments,
+    SELECT ml.id, 
+           ml.created_at, 
+           ml.date, 
+           ml.start_time, 
+           ml.end_time, 
+           ml.hours_logged, 
+           ml.met, 
+           ml.meeting_circumstance, 
+           ml.comments,
            u.name AS mentor_name, mts.student_name
     FROM MENTOR_LOGS ml
     JOIN USERS u ON ml.mentor_id = u.id
     JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id
-    WHERE ml.created_at BETWEEN ? AND ?
+    WHERE ml.date BETWEEN ? AND ?
     AND (ml.mentor_id = ? OR mts.school_contact_id = ?)
-    ORDER BY ml.created_at DESC;
+    ORDER BY ml.date DESC;
   `;
   
   pool.query(query, [start_date, end_date, mentor_id, school_contact_id], (err, result) => {

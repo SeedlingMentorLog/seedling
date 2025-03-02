@@ -7,7 +7,7 @@ function verifyAdminStatus(req, res, next) {
     return res.status(400).json({ error: "User role is required" });
   }
 
-  if (user_role !== 'admin') {
+  if (user_role !== "admin") {
     return res.status(403).json({ error: "Access denied" });
   }
 
@@ -19,6 +19,9 @@ router.post("/add_log", (req, res) => {
   const {
     mentor_id,
     student_name,
+    date,
+    start_time,
+    end_time,
     hours_logged,
     met,
     meeting_circumstance,
@@ -38,8 +41,8 @@ router.post("/add_log", (req, res) => {
     }
     const mentor_to_student_id = result[0].mentor_to_student_id;
     const insertQuery = `
-      INSERT INTO MENTOR_LOGS (mentor_id, mentor_to_student_id, hours_logged, met, meeting_circumstance, comments)
-      VALUES (?, ?, ?, ?, ?, ?);
+      INSERT INTO MENTOR_LOGS (mentor_id, mentor_to_student_id, date, start_time, end_time, hours_logged, met, meeting_circumstance, comments)
+      VALUES (?, ?, ?, ?, ?,?, ?, ?, ?);
     `;
 
     // Second query adds the log to the DB
@@ -48,6 +51,9 @@ router.post("/add_log", (req, res) => {
       [
         mentor_id,
         mentor_to_student_id,
+        date,
+        start_time,
+        end_time,
         hours_logged,
         met,
         meeting_circumstance,
@@ -64,47 +70,67 @@ router.post("/add_log", (req, res) => {
   });
 });
 
+// Delete log
+router.post("/delete_log", (req, res) => {
+  const { id } = req.body;
+  const query = `DELETE FROM MENTOR_LOGS WHERE id = ?;`;
+  pool.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(201).json({ message: "Success" });
+  });
+});
+
 // Add user (authentication process)
 router.post("/add_user", (req, res) => {
   const { firebase_id, email, name } = req.body;
-  const role = 'unassigned';
+  const role = "unassigned";
   const verified = false;
-  
+
   const query = `
     INSERT INTO USERS (firebase_id, email, name, role, verified)
     VALUES (?, ?, ?, ?, ?);
   `;
 
-  pool.query(query, [firebase_id, email, name, role, verified], (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error executing query" });
-    }
-    res.status(201).json({ message: "User added successfully" });
-  });
-});
-
-
-// Add a mentor-student relationship (admin only)
-router.post("/add_mentor_to_student/:user_role", verifyAdminStatus, (req, res) => {
-  const { mentor_id, school_contact_id, student_name } = req.body;
-  const query = `
-    INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name)
-    VALUES (?, ?, ?);
-  `;
-
   pool.query(
     query,
-    [mentor_id, school_contact_id, student_name],
+    [firebase_id, email, name, role, verified],
     (err, result) => {
       if (err) {
         console.error("Error executing query:", err);
         return res.status(500).json({ error: "Error executing query" });
       }
-      res.status(201).json({ message: "Success" });
+      res.status(201).json({ message: "User added successfully" });
     }
   );
 });
+
+// Add a mentor-student relationship (admin only)
+router.post(
+  "/add_mentor_to_student/:user_role",
+  verifyAdminStatus,
+  (req, res) => {
+    const { mentor_id, school_contact_id, student_name } = req.body;
+    const query = `
+    INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name)
+    VALUES (?, ?, ?);
+  `;
+
+    pool.query(
+      query,
+      [mentor_id, school_contact_id, student_name],
+      (err, result) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          return res.status(500).json({ error: "Error executing query" });
+        }
+        res.status(201).json({ message: "Success" });
+      }
+    );
+  }
+);
 
 // Verify a user (admin only)
 router.post("/verify_user/:user_role", verifyAdminStatus, (req, res) => {
