@@ -25,33 +25,31 @@ export const AuthProvider = ({ children }) => {
   const handleGoogleSignIn = async (setError, e) => {
     try {
       const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider).then(async (result) => {
-        const uid = result.user.uid;
+      const result = await signInWithPopup(auth, provider);
+      const uid = result.user.uid;
 
-        // Append user info to the user object
-        const userDetailsResponse = await fetch(`/user/${uid}`);
-        if (!userDetailsResponse.ok) {
-          const errorData = await userDetailsResponse.json();
-          throw new Error(
-            `Failed to fetch user details: ${
-              errorData.error || userDetailsResponse.statusText
-            }`
-          );
-        }
+      const userDetailsResponse = await fetch(`/get/user/${uid}`);
+      if (!userDetailsResponse.ok) {
+        const errorData = await userDetailsResponse.json();
+        throw new Error(
+          `Failed to fetch user details: ${
+            errorData.error || userDetailsResponse.statusText
+          }`
+        );
+      }
 
-        const userDetails = await userDetailsResponse.json();
-        const user = {
-          ...result.user,
-          name: result.user.displayName,
-          role: userDetails.user.role,
-          verified: userDetails.user.verified,
-          accessToken:
-            GoogleAuthProvider.credentialFromResult(result).accessToken,
-        };
+      const userDetails = await userDetailsResponse.json();
+      const user = {
+        ...result.user,
+        name: result.user.displayName,
+        role: userDetails.user.role,
+        verified: userDetails.user.verified,
+        accessToken:
+          GoogleAuthProvider.credentialFromResult(result)?.accessToken,
+      };
 
-        localStorage.setItem("currentUser", JSON.stringify(user));
-        setCurrentUser(user);
-      });
+      localStorage.setItem("currentUser", JSON.stringify(user));
+      setCurrentUser(user);
     } catch (error) {
       setError({
         errorHeader: "Google Error",
@@ -183,7 +181,7 @@ export const AuthProvider = ({ children }) => {
       const userName = result.user.displayName;
 
       // Adding user to the db
-      const addUserResponse = await fetch("/add_user", {
+      const addUserResponse = await fetch("/post/add_user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -207,7 +205,7 @@ export const AuthProvider = ({ children }) => {
       console.log("User added to database successfully");
 
       // Append user info to the user object
-      const userDetailsResponse = await fetch(`/user/${uid}`);
+      const userDetailsResponse = await fetch(`/get/user/${uid}`);
       if (!userDetailsResponse.ok) {
         const errorData = await userDetailsResponse.json();
         throw new Error(
@@ -240,21 +238,48 @@ export const AuthProvider = ({ children }) => {
 
   // Effect hook to handle authentication state changes
   useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-    }
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setCurrentUser(user);
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        localStorage.setItem("currentUser", JSON.stringify(user));
+        try {
+          const userDetailsResponse = await fetch(`/get/user/${user.uid}`);
+          if (!userDetailsResponse.ok) {
+            const errorData = await userDetailsResponse
+              .json()
+              .catch(() => ({}));
+            throw new Error(
+              `Failed to fetch user details: ${
+                errorData.error || userDetailsResponse.statusText
+              }`
+            );
+          }
+
+          // Merge firebase + database user data
+          const userDetails = await userDetailsResponse.json();
+          const mergedUser = {
+            ...user,
+            name: userDetails.user.name,
+            role: userDetails.user.role,
+            verified: userDetails.user.verified,
+          };
+
+          setCurrentUser(mergedUser);
+          localStorage.setItem("currentUser", JSON.stringify(mergedUser));
+        } catch (error) {
+          // Fetching failed
+          console.error(
+            "Failed to fetch user details on auth state change:",
+            error
+          );
+          setCurrentUser(user);
+          localStorage.setItem("currentUser", JSON.stringify(user));
+        }
       } else {
+        // There is no user
+        setCurrentUser(null);
         localStorage.removeItem("currentUser");
       }
       setLoading(false);
     });
-
     return unsubscribe;
   }, []);
 
