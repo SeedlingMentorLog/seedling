@@ -8,7 +8,7 @@ function verifyAdminOrStaffStatus(req, res, next) {
     return res.status(400).json({ error: "User role is required" });
   }
 
-  if (user_role !== 'admin' && user_role !== 'staff') {
+  if (user_role !== "admin" && user_role !== "staff") {
     return res.status(403).json({ error: "Access denied" });
   }
 
@@ -32,7 +32,7 @@ router.get("/", (req, res) => {
 router.get("/user/:firebase_id", (req, res) => {
   const firebase_id = req.params.firebase_id;
   const query = `
-    SELECT *
+    SELECT id, name, role, verified
     FROM USERS u
     WHERE u.firebase_id = ?;
   `;
@@ -55,19 +55,23 @@ router.get("/mentors/:user_role", verifyAdminOrStaffStatus, (req, res) => {
     }
     res.status(200).json({ mentors: result });
   });
-})
+});
 
 // Get all school contacts (admin and staff only)
-router.get("/school_contacts/:user_role", verifyAdminOrStaffStatus, (req, res) => {
-  const query = `SELECT id, name FROM USERS WHERE role = 'school contact';`;
-  pool.query(query, (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error executing query" });
-    }
-    res.status(200).json({ school_contacts: result });
-  });
-})
+router.get(
+  "/school_contacts/:user_role",
+  verifyAdminOrStaffStatus,
+  (req, res) => {
+    const query = `SELECT id, name FROM USERS WHERE role = 'school contact';`;
+    pool.query(query, (err, result) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).json({ error: "Error executing query" });
+      }
+      res.status(200).json({ school_contacts: result });
+    });
+  }
+);
 
 // Get logs by mentor id
 router.get("/mentor_logs/:mentor_id", (req, res) => {
@@ -150,14 +154,18 @@ router.post("/get_logs_by_date_range", (req, res) => {
     AND (ml.mentor_id = ? OR mts.school_contact_id = ?)
     ORDER BY ml.date DESC;
   `;
-  
-  pool.query(query, [start_date, end_date, mentor_id, school_contact_id], (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error executing query" });
+
+  pool.query(
+    query,
+    [start_date, end_date, mentor_id, school_contact_id],
+    (err, result) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).json({ error: "Error executing query" });
+      }
+      res.status(200).json({ logs: result });
     }
-    res.status(200).json({ logs: result });
-  });
+  );
 });
 
 module.exports = router;
