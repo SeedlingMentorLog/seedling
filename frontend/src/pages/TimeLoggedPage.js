@@ -1,10 +1,24 @@
 import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Link } from "@mui/material";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Box, Typography, Button, Link, IconButton } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MenuIcon from "@mui/icons-material/Menu";
+import MenuComponent from "../components/MenuComponent";
 
 const TimeLoggedPage = (props) => {
   const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open) => () => {
+    setDrawerOpen(open);
+  };
+
+  const handleNavigation = (path) => {
+    setDrawerOpen(false);
+    navigate(path);
+  };
+
   return (
     <Box
       sx={{
@@ -13,20 +27,44 @@ const TimeLoggedPage = (props) => {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh",
-        background:
-          "linear-gradient(180deg, var(--Light-Blue, #57C5CC) 0%, var(--Dark-Blue, #21545C) 100%)",
-        padding: 2,
+        bgcolor: "#57C5CC",
       }}
     >
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
-          width: "70%",
-          height: "50%",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          width: "90%",
+          height: "80%",
+          position: "absolute",
+        }}
+      >
+        <IconButton sx={{ margin: 0, padding: 0 }} onClick={toggleDrawer(true)}>
+          <MenuIcon sx={{ color: "white" }} />
+        </IconButton>
+        <Box sx={{ flexGrow: 1 }} />
+        <AccountCircleIcon sx={{ color: "white" }} />
+      </Box>
+
+      <MenuComponent
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        onNavigate={handleNavigation}
+      />
+
+      <Box
+        sx={{
+          display: "flex",
+          width: "80%",
+          height: "45%",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
-          gap: 6,
+          gap: 3,
+          bgcolor: "#FFF",
+          borderRadius: 6,
         }}
       >
         {/* Top box */}
@@ -42,8 +80,8 @@ const TimeLoggedPage = (props) => {
           <Box
             sx={{
               background: "#57C5CC",
-              width: 162,
-              height: 162,
+              width: 120,
+              height: 120,
               borderRadius: "50%",
               display: "flex",
               justifyContent: "center",
@@ -52,7 +90,7 @@ const TimeLoggedPage = (props) => {
           >
             <CheckCircleIcon
               sx={{
-                fontSize: 92,
+                fontSize: 116,
                 color: "#FFF",
               }}
             />
@@ -60,7 +98,7 @@ const TimeLoggedPage = (props) => {
           <Typography
             sx={{
               alignSelf: "stretch",
-              color: "#FFF",
+              color: "#000",
               fontFamily: "Inter",
               fontSize: 32,
               fontStyle: "normal",
@@ -94,21 +132,16 @@ const TimeLoggedPage = (props) => {
               background: "#57C5CC",
               boxShadow: "0px 5px 15px 0px rgba(33, 84, 92, 0.25)",
               textTransform: "none",
+              color: "#FFF",
+              fontFamily: "Inter",
+              fontSize: 16,
+              fontStyle: "normal",
+              fontWeight: 600,
+              letterSpacing: -0.32,
             }}
             onClick={() => navigate("/login")}
           >
-            <Typography
-              sx={{
-                color: "#FFF",
-                fontFamily: "Inter",
-                fontSize: 16,
-                fontStyle: "normal",
-                fontWeight: 600,
-                letterSpacing: -0.32,
-              }}
-            >
-              Log More Time
-            </Typography>
+            Log More Time
           </Button>
           <Link
             component={Button}
@@ -117,7 +150,7 @@ const TimeLoggedPage = (props) => {
               textDecoration: "underline",
               cursor: "pointer",
               textTransform: "none",
-              color: "rgba(255, 255, 255, 0.75)",
+              color: "#000",
               textAlign: "center",
               fontFamily: "Inter",
               fontSize: 16,

@@ -5,7 +5,7 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import TimeLoggedPage from './pages/TimeLoggedPage';
 import YourMatchPage from './pages/YourMatchPage';
-import TimeLogPage from './pages/TimeLogPage';
+import LogTimePage from './pages/LogTimePage';
 
 function App() {
   return (
@@ -14,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/time-log" element={<TimeLogPage />} />
+          <Route path="/log-time" element={<LogTimePage />} />
           <Route path="/time-logged" element={<TimeLoggedPage />} />
           <Route path="/your-match" element={<YourMatchPage />} />
         </Routes>
