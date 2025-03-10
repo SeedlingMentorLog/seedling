@@ -18,16 +18,25 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuComponent from "../components/MenuComponent";
+import CloseIcon from "@mui/icons-material/Close";
 
 const LogTimePage = () => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activity, setActivity] = useState("");
   const [person, setPerson] = useState("Jonny Webster");
+  const [note, setNote] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [error, setError] = useState(null);
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
+  };
+
+  const handleCloseError = () => {
+    setError(null);
   };
 
   const handleNavigation = (path) => {
@@ -43,8 +52,31 @@ const LogTimePage = () => {
     setPerson(event.target.value);
   };
 
+  const handleNoteChange = (event) => {
+    setNote(event.target.value);
+  };
+
   const handleDateChange = (event) => {
     setDate(event.target.value);
+  };
+
+  const handleStartTimeChange = (event) => {
+    setStartTime(event.target.value);
+  };
+
+  const handleEndTimeChange = (event) => {
+    setEndTime(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    if (!activity || !person || !date || !startTime || !endTime) {
+      setError({ errorMessage: "Please fill in all required fields." });
+      return;
+    }
+    
+    // Need to send a POST request to the backend to log the time
+    // Then navigate to the time-logged page
+    // However, we haven't populated the mentor-to-student table yet
   };
 
   return (
@@ -153,6 +185,8 @@ const LogTimePage = () => {
           multiline
           rows={3}
           fullWidth
+          value={note}
+          onChange={handleNoteChange}
           variant="outlined"
           sx={{
             backgroundColor: "#F9FAFB",
@@ -180,7 +214,8 @@ const LogTimePage = () => {
         <Box sx={{ display: "flex", gap: 2 }}>
           <TextField
             type="time"
-            placeholder="Start time"
+            value={startTime}
+            onChange={handleStartTimeChange}
             fullWidth
             sx={{
               backgroundColor: "#F9FAFB",
@@ -190,7 +225,8 @@ const LogTimePage = () => {
           />
           <TextField
             type="time"
-            placeholder="End time"
+            value={endTime}
+            onChange={handleEndTimeChange}
             fullWidth
             sx={{
               backgroundColor: "#F9FAFB",
@@ -217,7 +253,11 @@ const LogTimePage = () => {
             row
             value={activity}
             onChange={handleActivityChange}
-            sx={{ gap: 0 }}
+            sx={{
+              display: "flex",
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
           >
             <FormControlLabel
               value="In-Person"
@@ -338,6 +378,7 @@ const LogTimePage = () => {
 
         {/* Submit Button */}
         <Button
+          onClick={handleSubmit}
           fullWidth
           sx={{
             backgroundColor: "#57C5CC",
@@ -353,6 +394,43 @@ const LogTimePage = () => {
           Submit
         </Button>
       </Box>
+
+      {error && (
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            maxWidth: 400,
+            backgroundColor: "#FDE4E4",
+            padding: 4,
+            borderRadius: 4,
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          <IconButton
+            aria-label="close"
+            size="small"
+            sx={{ position: "absolute", right: 8, top: 8 }}
+            onClick={handleCloseError}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography
+            sx={{
+              fontFamily: "Inter",
+              fontSize: 20,
+              fontWeight: 400,
+              textAlign: "center",
+              color: "#000",
+            }}
+          >
+            {error.errorMessage}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };

@@ -17,8 +17,15 @@ import GroupIcon from "@mui/icons-material/Group";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import CloseIcon from "@mui/icons-material/Close";
+import { useAuth } from "../contexts/AuthContext.js";
 
 const MenuComponent = ({ open, onClose, onNavigate }) => {
+  const { handleSignOut, error, setError } = useAuth();
+
+  const handleLogout = async () => {
+    await handleSignOut();
+  };
+
   return (
     <Drawer anchor="left" open={open} onClose={onClose}>
       <Box
@@ -136,7 +143,7 @@ const MenuComponent = ({ open, onClose, onNavigate }) => {
           </ListItem>
 
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onNavigate("/logout")}>
+            <ListItemButton onClick={handleLogout}>
               <ListItemIcon>
                 <ExitToAppIcon color="primary" sx={{ color: "#57C5CC" }} />
               </ListItemIcon>

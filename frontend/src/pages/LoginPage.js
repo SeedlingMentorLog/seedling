@@ -1,45 +1,36 @@
-import React, { useState } from 'react';
-import {useAuth} from '../contexts/AuthContext.js';
-import { useNavigate } from 'react-router-dom';
-import GoogleButton from 'react-google-button';
-import Typography from '@mui/material/Typography';
-import { Button, Box, TextField, Link } from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
+import React, { useState } from "react";
+import { useAuth } from "../contexts/AuthContext.js";
+import { useNavigate } from "react-router-dom";
+import GoogleButton from "react-google-button";
+import Typography from "@mui/material/Typography";
+import { Button, Box, TextField, Link } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 const LoginPage = () => {
-  const { handleGoogleSignup } = useAuth();
-  const { handleGoogleSignIn } = useAuth();
-  const { handleEmailPasswordSignIn } = useAuth();
+  const {
+    handleGoogleSignup,
+    handleGoogleSignIn,
+    handleEmailPasswordSignIn,
+    error,
+    setError,
+  } = useAuth();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleGoogleSigninClick = async () => {
-    try {
-      await handleGoogleSignIn(setError);
-    } catch (error) {
-      console.log("Error:", error);
-    }
+    await handleGoogleSignIn();
   };
 
   const handleGoogleSignupClick = async () => {
-    try {
-      await handleGoogleSignup(setError);
-    } catch (error) {
-      console.log("Error:", error);
-    }
+    await handleGoogleSignup();
   };
 
   const handleEmailPasswordLogin = async (e) => {
     e.preventDefault();
-    try {
-      await handleEmailPasswordSignIn(email, password);
-    } catch (error) {
-      console.log("Error:", error);
-    }
-  }
+    await handleEmailPasswordSignIn(email, password);
+  };
 
   const handleCloseError = () => {
     setError(null);
@@ -48,30 +39,30 @@ const LoginPage = () => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        backgroundColor: '#DFF7FB',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        backgroundColor: "#DFF7FB",
         paddingX: 6,
       }}
     >
       <Box
         sx={{
-          width: '100%',
+          width: "100%",
           maxWidth: 400,
-          backgroundColor: 'white',
+          backgroundColor: "white",
           paddingX: 2,
           paddingY: 6,
           borderRadius: 4,
-          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
         }}
       >
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
+            display: "flex",
+            justifyContent: "center",
             marginBottom: 2,
           }}
         >
@@ -79,11 +70,11 @@ const LoginPage = () => {
             sx={{
               width: 48,
               height: 48,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#F6F8FB',
-              borderRadius: '50%',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "#F6F8FB",
+              borderRadius: "50%",
             }}
           >
             <Typography variant="h6" color="#788BA5">
@@ -98,13 +89,22 @@ const LoginPage = () => {
           variant="h5"
           align="center"
           gutterBottom
-          sx={{ fontWeight: 'bold', marginBottom: 2 }}
+          sx={{ fontWeight: "bold", marginBottom: 2 }}
         >
           Log In
         </Typography>
 
         <form onSubmit={handleEmailPasswordLogin}>
-          <Typography fontFamily="Inter" variant="body2" sx={{ marginBottom: 0.5 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              fontFamily: "Inter",
+              fontSize: 14,
+              fontWeight: 400,
+              color: "#181E25",
+              marginBottom: 0.5,
+            }}
+          >
             Email
           </Typography>
           <TextField
@@ -118,25 +118,35 @@ const LoginPage = () => {
             sx={{ marginBottom: 2 }}
           />
 
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              width: '100%'
-            }}>
-            <Typography fontFamily="Inter" variant="body2" sx={{ marginBottom: 0.5 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{
+                fontFamily: "Inter",
+                fontSize: 14,
+                fontWeight: 400,
+                color: "#181E25",
+                marginBottom: 0.5,
+              }}
+            >
               Password
             </Typography>
             <Typography
               fontFamily="Inter"
               variant="body2"
               sx={{
-                textAlign: 'right',
-                cursor: 'pointer',
-                color: '#1976d2',
-                textDecoration: 'none',
+                textAlign: "right",
+                cursor: "pointer",
+                color: "#1976d2",
+                textDecoration: "none",
               }}
-              onClick={() => navigate('/forgot-password')}
+              onClick={() => navigate("/forgot-password")}
             >
               Forgot password?
             </Typography>
@@ -159,8 +169,8 @@ const LoginPage = () => {
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: '#57C5CC',
-              color: 'white',
+              backgroundColor: "#57C5CC",
+              color: "white",
               borderRadius: 8,
               padding: 1,
               textTransform: "none",
@@ -173,9 +183,9 @@ const LoginPage = () => {
 
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             marginBottom: 2,
           }}
         >
@@ -183,16 +193,20 @@ const LoginPage = () => {
             sx={{
               height: 2,
               borderWidth: 1,
-              backgroundColor: '#DEE4ED',
+              backgroundColor: "#DEE4ED",
               flex: 5,
             }}
           />
-          <Typography sx={{ fontFamily: "Inter", marginX: 1, color: '#788BA5' }}>OR</Typography>
+          <Typography
+            sx={{ fontFamily: "Inter", marginX: 1, color: "#788BA5" }}
+          >
+            OR
+          </Typography>
           <Box
             sx={{
               height: 2,
               borderWidth: 1,
-              backgroundColor: '#DEE4ED',
+              backgroundColor: "#DEE4ED",
               flex: 5,
             }}
           />
@@ -204,18 +218,18 @@ const LoginPage = () => {
           fontFamily="Inter"
           variant="outlined"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             gap: 1,
             borderRadius: 8,
-            borderColor: '#ccc',
-            backgroundColor: 'white',
-            color: '#333',
-            textTransform: 'none',
+            borderColor: "#ccc",
+            backgroundColor: "white",
+            color: "#333",
+            textTransform: "none",
             padding: 1,
-            '&:hover': {
-              backgroundColor: '#f9f9f9',
+            "&:hover": {
+              backgroundColor: "#f9f9f9",
             },
             marginBottom: 2,
           }}
@@ -223,9 +237,9 @@ const LoginPage = () => {
           <Box
             component="span"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               width: 20,
               height: 20,
             }}
@@ -262,12 +276,17 @@ const LoginPage = () => {
         fontFamily="Inter"
         align="center"
         variant="body2"
-        sx={{ marginTop: 2, color: 'black' }}
+        sx={{ marginTop: 2, color: "black" }}
       >
-        Don’t have an account yet?{' '}
+        Don’t have an account yet?{" "}
         <Link
-          onClick={handleGoogleSignup}
-          sx={{ fontFamily: "Inter", cursor: 'pointer', color: '#57C5CC', textDecoration: "none"  }}
+          onClick={handleGoogleSignupClick}
+          sx={{
+            fontFamily: "Inter",
+            cursor: "pointer",
+            color: "#57C5CC",
+            textDecoration: "none",
+          }}
         >
           Sign up
         </Link>
@@ -276,28 +295,36 @@ const LoginPage = () => {
       {error && (
         <Box
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
             maxWidth: 400,
-            backgroundColor: 'white',
+            backgroundColor: "#FDE4E4",
             padding: 4,
             borderRadius: 4,
-            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)',
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
           }}
         >
           <IconButton
             aria-label="close"
             size="small"
-            sx={{ position: 'absolute', right: 8, top: 8 }}
+            sx={{ position: "absolute", right: 8, top: 8 }}
             onClick={handleCloseError}
           >
             <CloseIcon />
           </IconButton>
-          <Typography variant="h6" align="center" gutterBottom>
-            Error!
+          <Typography
+            sx={{
+              fontFamily: "Inter",
+              fontSize: 20,
+              fontWeight: 400,
+              textAlign: "center",
+              color: "#000",
+            }}
+          >
+            {error.errorMessage}
           </Typography>
         </Box>
       )}
