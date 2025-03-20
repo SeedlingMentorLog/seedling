@@ -29,27 +29,25 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const uid = result.user.uid;
 
-      const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${uid}`
-      );
-      if (!userDetailsResponse.ok) {
-        const errorData = await userDetailsResponse.json();
-        throw new Error(
-          `Failed to fetch user details: ${
-            errorData.error || userDetailsResponse.statusText
-          }`
-        );
-      }
+      // TODO: uncomment out the fetch request to backend
+      // const userDetailsResponse = await fetch(
+      //   `${process.env.REACT_APP_BACKEND}/get/user/${uid}`
+      // );
+      // if (!userDetailsResponse.ok) {
+      //   const errorData = await userDetailsResponse.json();
+      //   throw new Error(
+      //     `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
+      //   );
+      // }
 
-      const userDetails = await userDetailsResponse.json();
+      // TODO: remove temp dummy user
       const user = {
         ...result.user,
-        id: userDetails.user.id,
+        id: "dummy_id",
         name: result.user.displayName,
-        role: userDetails.user.role,
-        verified: userDetails.user.verified,
-        accessToken:
-          GoogleAuthProvider.credentialFromResult(result)?.accessToken,
+        role: "user", // Or some dummy role
+        verified: true, // Or false based on your requirement
+        accessToken: GoogleAuthProvider.credentialFromResult(result)?.accessToken,
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
@@ -73,21 +71,27 @@ export const AuthProvider = ({ children }) => {
         password
       );
 
-      // Append user info to the user object
-      console.log(process.env.REACT_APP_BACKEND);
-      const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`
-      );
-      if (!userDetailsResponse.ok) {
-        const errorData = await userDetailsResponse.json();
-        throw new Error(
-          `Failed to fetch user details: ${
-            errorData.error || userDetailsResponse.statusText
-          }`
-        );
-      }
+      // TODO: uncomment out the fetch request to backend
+      // const userDetailsResponse = await fetch(
+      //   `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`
+      // );
+      // if (!userDetailsResponse.ok) {
+      //   const errorData = await userDetailsResponse.json();
+      //   throw new Error(
+      //     `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
+      //   );
+      // }
 
-      const userDetails = await userDetailsResponse.json();
+      // TODO: remove temp dummy user
+      const userDetails = {
+        user: {
+          id: "dummy_id",
+          name: userCredential.user.displayName,
+          role: "user", // Or some dummy role
+          verified: true, // Or false based on your requirement
+        },
+      };
+
       const user = {
         ...userCredential.user,
         id: userDetails.user.id,
@@ -130,50 +134,44 @@ export const AuthProvider = ({ children }) => {
         password
       );
 
-      // Adding user to the db
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND}/post/add_user`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firebase_id: userCredential.user.uid,
-            email: email,
-            name: "John Doe", // Add name later
-          }),
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          `Failed to add user to database: ${
-            errorData.error || response.statusText
-          }`
-        );
-      }
+      // TODO: uncomment out the fetch request to backend
+      // const response = await fetch(
+      //   `${process.env.REACT_APP_BACKEND}/post/add_user`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       firebase_id: userCredential.user.uid,
+      //       email: email,
+      //       name: "John Doe", // Add name later
+      //     }),
+      //   }
+      // );
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   throw new Error(
+      //     `Failed to add user to database: ${errorData.error || response.statusText}`
+      //   );
+      // }
 
-      // Append user info to the user object
-      const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`
-      );
-      if (!userDetailsResponse.ok) {
-        const errorData = await userDetailsResponse.json();
-        throw new Error(
-          `Failed to fetch user details: ${
-            errorData.error || userDetailsResponse.statusText
-          }`
-        );
-      }
+      // TODO: remove temp dummy user
+      const userDetailsResponse = {
+        user: {
+          id: "dummy_id",
+          name: "John Doe", // Dummy name
+          role: "user", // Dummy role
+          verified: true, // Or false based on your requirement
+        },
+      };
 
-      const userDetails = await userDetailsResponse.json();
       const user = {
         ...userCredential.user,
-        id: userDetails.user.id,
-        name: userDetails.user.name,
-        role: userDetails.user.role,
-        verified: userDetails.user.verified,
+        id: userDetailsResponse.user.id,
+        name: userDetailsResponse.user.name,
+        role: userDetailsResponse.user.role,
+        verified: userDetailsResponse.user.verified,
       };
 
       setCurrentUser(user);
@@ -191,60 +189,44 @@ export const AuthProvider = ({ children }) => {
   // Function to handle Google signup
   const handleGoogleSignup = async () => {
     try {
-      // Sign up with Google
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const userEmail = result.user.email;
       const uid = result.user.uid;
       const userName = result.user.displayName;
 
-      // Adding user to the db
-      const addUserResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/post/add_user`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            firebase_id: uid,
-            email: userEmail,
-            name: userName,
-          }),
-        }
-      );
+      // TODO: uncomment out the fetch request to backend
+      // const addUserResponse = await fetch(
+      //   `${process.env.REACT_APP_BACKEND}/post/add_user`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       firebase_id: uid,
+      //       email: userEmail,
+      //       name: userName,
+      //     }),
+      //   }
+      // );
 
-      if (!addUserResponse.ok) {
-        const errorData = await addUserResponse.json();
-        throw new Error(
-          `Failed to add user to database: ${
-            errorData.error || addUserResponse.statusText
-          }`
-        );
-      }
+      // TODO: remove temp dummy user
+      const userDetailsResponse = {
+        user: {
+          id: "dummy_id",
+          name: userName,
+          role: "user", // Or some dummy role
+          verified: true, // Or false based on your requirement
+        },
+      };
 
-      console.log("User added to database successfully");
-
-      // Append user info to the user object
-      const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${uid}`
-      );
-      if (!userDetailsResponse.ok) {
-        const errorData = await userDetailsResponse.json();
-        throw new Error(
-          `Failed to fetch user details: ${
-            errorData.error || userDetailsResponse.statusText
-          }`
-        );
-      }
-
-      const userDetails = await userDetailsResponse.json();
       const user = {
         ...result.user,
-        id: userDetails.user.id,
+        id: userDetailsResponse.user.id,
         name: userName,
-        role: userDetails.user.role,
-        verified: userDetails.user.verified,
+        role: userDetailsResponse.user.role,
+        verified: userDetailsResponse.user.verified,
         accessToken:
           GoogleAuthProvider.credentialFromResult(result).accessToken,
       };
@@ -276,22 +258,30 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          const userDetailsResponse = await fetch(
-            `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`
-          );
-          if (!userDetailsResponse.ok) {
-            const errorData = await userDetailsResponse
-              .json()
-              .catch(() => ({}));
-            throw new Error(
-              `Failed to fetch user details: ${
-                errorData.error || userDetailsResponse.statusText
-              }`
-            );
-          }
+          // TODO: uncomment out the fetch request to backend
+          // const userDetailsResponse = await fetch(
+          //   `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`
+          // );
+          // if (!userDetailsResponse.ok) {
+          //   const errorData = await userDetailsResponse
+          //     .json()
+          //     .catch(() => ({}));
+          //   throw new Error(
+          //     `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
+          //   );
+          // }
 
-          // Merge firebase + database user data
-          const userDetails = await userDetailsResponse.json();
+          
+          // TODO: remove temp dummy user
+          const userDetails = {
+            user: {
+              id: "dummy_id",
+              name: user.displayName,
+              role: "user", // Or some dummy role
+              verified: true, // Or false based on your requirement
+            },
+          };
+
           const mergedUser = {
             ...user,
             name: userDetails.user.name,
@@ -302,7 +292,6 @@ export const AuthProvider = ({ children }) => {
           setCurrentUser(mergedUser);
           localStorage.setItem("currentUser", JSON.stringify(mergedUser));
         } catch (error) {
-          // Fetching failed
           console.error(
             "Failed to fetch user details on auth state change:",
             error
