@@ -8,6 +8,7 @@ import YourMatchPage from './pages/YourMatchPage';
 import LogTimePage from './pages/LogTimePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import CalendarPage from './pages/CalendarPage';
+import MentorHomePage from './pages/MentorHomePage';
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
           <Route path="/time-logged" element={<TimeLoggedPage />} />
           <Route path="/your-match" element={<YourMatchPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/mentor-homepage" element={<MentorHomePage />} />
         </Routes>
       </AuthProvider>
     </Router>
