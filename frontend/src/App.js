@@ -7,6 +7,7 @@ import TimeLoggedPage from './pages/TimeLoggedPage';
 import YourMatchPage from './pages/YourMatchPage';
 import LogTimePage from './pages/LogTimePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import CalendarPage from './pages/CalendarPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/log-time" element={<LogTimePage />} />
           <Route path="/time-logged" element={<TimeLoggedPage />} />
           <Route path="/your-match" element={<YourMatchPage />} />
+          <Route path="/calendar" element={<CalendarPage />} />
         </Routes>
       </AuthProvider>
     </Router>
