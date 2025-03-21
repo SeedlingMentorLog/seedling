@@ -1,43 +1,113 @@
-import { useState } from "react"
-import { Box, Typography, Button, IconButton, Paper, Avatar, Chip } from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
-import AddIcon from "@mui/icons-material/Add"
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
-import CheckIcon from "@mui/icons-material/Check"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  IconButton,
+  Paper,
+  Chip,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import AddIcon from "@mui/icons-material/Add";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import CheckIcon from "@mui/icons-material/Check";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MenuComponent from "../components/MenuComponent";
+import { useNavigate } from "react-router-dom";
 
 const MentorHomepage = () => {
-  const navigate = useNavigate()
-  const [selectedDay, setSelectedDay] = useState(3)
+  const navigate = useNavigate();
+  const [selectedDay, setSelectedDay] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [weekDates, setWeekDates] = useState([]);
 
-  const days = [
-    { number: 3, day: "SAT" },
-    { number: 4, day: "SUN" },
-    { number: 5, day: "MON" },
-    { number: 6, day: "TUE" },
-    { number: 7, day: "WED" },
-    { number: 8, day: "THU" },
-    { number: 9, day: "FRI" },
-  ]
+  const toggleDrawer = (open) => () => {
+    setDrawerOpen(open);
+  };
 
-  const meetings = [
-    {
-      id: 1,
-      name: "Jonny Webster",
-      time: "2:15 PM",
-      location: "2348 Guadalupe St",
-      tags: ["Mentoring Hours", "In-Person"],
-      completed: true,
-    },
-    {
-      id: 2,
-      name: "Jessie Smith",
-      time: "4:15 PM",
-      location: "2348 Guadalupe St",
-      tags: ["Mentoring Hours", "Virtual"],
-      completed: false,
-    },
-  ]
+  const handleNavigation = (path) => {
+    setDrawerOpen(false);
+    navigate(path);
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDay(date);
+    const filtered = logs.filter((log) => {
+      const logDate = new Date(log.date).toISOString().split("T")[0];
+      return logDate === date; // Match the log's date to the selected day
+    });
+    console.log(filtered);
+    setFilteredLogs(filtered);
+  };
+
+  const getWeekDates = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // Get current day (0 = Sunday, 1 = Monday, etc.)
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek); // Set to last Sunday
+    const week = [];
+
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+
+      let dayName;
+      switch (i) {
+        case 0:
+          dayName = "SUN";
+          break;
+        case 1:
+          dayName = "MON";
+          break;
+        case 2:
+          dayName = "TUE";
+          break;
+        case 3:
+          dayName = "WED";
+          break;
+        case 4:
+          dayName = "THU";
+          break;
+        case 5:
+          dayName = "FRI";
+          break;
+        default:
+          dayName = "SAT";
+          break;
+      }
+      week.push({
+        number: day.toISOString().split("T")[0].substring(8),
+        date: day.toISOString().split("T")[0],
+        day: dayName,
+      }); // Format to YYYY-MM-DD
+    }
+
+    handleDateChange(week[0].date); // Set the initial selected day to the first day of the week
+    setWeekDates(week); // Set the dates for the current week
+  };
+
+  useEffect(() => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const mentorID = currentUser?.id;
+    fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs/${mentorID}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setLogs(data.logs);
+        setLoading(false);
+        getWeekDates();
+      })
+      .catch((error) => {
+        console.error("Error fetching mentor logs:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <Box
@@ -53,30 +123,44 @@ const MentorHomepage = () => {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          marginTop: 4,
           padding: 2,
           borderBottom: "1px solid #eee",
           backgroundColor: "#FFFFFF",
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <IconButton>
+          <IconButton
+            sx={{ margin: 0, padding: 0 }}
+            onClick={toggleDrawer(true)}
+          >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" sx={{ fontWeight: 500, color: "#333" }}>
+          <Typography
+            sx={{
+              color: "#222B45",
+              fontFamily: "Inter",
+              fontSize: 20,
+              fontStyle: "normal",
+              fontWeight: 590,
+              lineHeight: "normal",
+              letterSpacing: -0.4,
+            }}
+          >
             Seedling
           </Typography>
         </Box>
-        <Avatar
-          sx={{
-            width: 32,
-            height: 32,
-            backgroundColor: "#f0f0f0",
-          }}
-        />
+        <AccountCircleIcon sx={{ color: "#57C5CC" }} />
       </Box>
 
+      <MenuComponent
+        open={drawerOpen}
+        onClose={toggleDrawer(false)}
+        onNavigate={handleNavigation}
+      />
+
       {/* Main Content */}
-      <Box sx={{ padding: 2.5, }}>
+      <Box sx={{ padding: 2.5 }}>
         {/* Greeting Section */}
         <Box
           sx={{
@@ -104,7 +188,10 @@ const MentorHomepage = () => {
               <CalendarTodayIcon sx={{ color: "#57C5CC" }} />
             </Box>
             <Box>
-              <Typography variant="h6" sx={{ fontWeight: 500, marginBottom: 0.5 }}>
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 500, marginBottom: 0.5 }}
+              >
                 Hi, <span style={{ color: "#57C5CC" }}>Josie</span>
               </Typography>
               <Typography variant="body2" sx={{ color: "#666" }}>
@@ -137,10 +224,10 @@ const MentorHomepage = () => {
             scrollbarWidth: "none",
           }}
         >
-          {days.map((day) => (
+          {weekDates.map((day) => (
             <Button
               key={day.number}
-              onClick={() => setSelectedDay(day.number)}
+              onClick={() => handleDateChange(day.date)}
               sx={{
                 display: "flex",
                 flexDirection: "column",
@@ -149,10 +236,12 @@ const MentorHomepage = () => {
                 borderRadius: 3,
                 border: "1px solid #eee",
                 padding: 1,
-                backgroundColor: selectedDay === day.number ? "#57C5CC" : "transparent",
-                color: selectedDay === day.number ? "white" : "inherit",
+                backgroundColor:
+                  selectedDay === day.date ? "#57C5CC" : "transparent",
+                color: selectedDay === day.date ? "white" : "inherit",
                 "&:hover": {
-                  backgroundColor: selectedDay === day.number ? "#57C5CC" : "#f5f5f5",
+                  backgroundColor:
+                    selectedDay === day.date ? "#57C5CC" : "#f5f5f5",
                 },
               }}
             >
@@ -182,16 +271,16 @@ const MentorHomepage = () => {
               backgroundColor: "#7ac9c9",
             },
           }}
-          onClick={() => navigate("/your-match")}
+          onClick={() => navigate("/log-time")}
         >
           Log Time
         </Button>
 
         {/* Meetings List */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {meetings.map((meeting) => (
+          {filteredLogs.map((log) => (
             <Paper
-              key={meeting.id}
+              key={log.id}
               elevation={0}
               sx={{
                 display: "flex",
@@ -202,17 +291,23 @@ const MentorHomepage = () => {
               }}
             >
               <Box>
-                <Typography variant="subtitle1" sx={{ fontWeight: 500, marginBottom: 1 }}>
-                  {meeting.name}
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: 500, marginBottom: 0 }}
+                >
+                  {log.student_name}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "#666", marginBottom: 0.5 }}>
-                  {meeting.time} | {meeting.location}
+                <Typography
+                  variant="body2"
+                  sx={{ color: "#666", marginBottom: 0.5 }}
+                >
+                  {log.start_time.substring(0, 5)} -
+                  {log.end_time.substring(0, 5)} | {log.date.substring(0, 10)}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1 }}>
-                  {meeting.tags.map((tag, index) => (
+                  {log.meeting_circumstance && (
                     <Chip
-                      key={index}
-                      label={tag}
+                      label={log.meeting_circumstance}
                       size="small"
                       sx={{
                         backgroundColor: "#57C5CC",
@@ -221,7 +316,19 @@ const MentorHomepage = () => {
                         height: 24,
                       }}
                     />
-                  ))}
+                  )}
+                  {log.activity && (
+                    <Chip
+                      label={log.activity}
+                      size="small"
+                      sx={{
+                        backgroundColor: "#57C5CC",
+                        color: "#000000",
+                        fontSize: 12,
+                        height: 24,
+                      }}
+                    />
+                  )}
                 </Box>
               </Box>
               <Box
@@ -232,19 +339,18 @@ const MentorHomepage = () => {
                   width: 40,
                   height: 40,
                   borderRadius: "50%",
-                  backgroundColor: meeting.completed ? "#57C5CC" : "#eee",
-                  color: meeting.completed ? "white" : "transparent",
+                  backgroundColor: log.met ? "#57C5CC" : "#eee",
+                  color: log.met ? "white" : "transparent",
                 }}
               >
-                {meeting.completed && <CheckIcon />}
+                {log.met && <CheckIcon />}
               </Box>
             </Paper>
           ))}
         </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default MentorHomepage
-
+export default MentorHomepage;

@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { pool } = require("../config/db");
 
 function verifyAdminStatus(req, res, next) {
   const user_role = req.params.user_role;
@@ -18,56 +19,45 @@ function verifyAdminStatus(req, res, next) {
 router.post("/add_log", (req, res) => {
   const {
     mentor_id,
-    student_name,
+    mentor_to_student_id,
     date,
     start_time,
     end_time,
     hours_logged,
+    activity,
     met,
     meeting_circumstance,
     comments,
   } = req.body;
-  const query = `
-    SELECT mts.mentor_to_student_id
-    FROM MENTOR_TO_STUDENT mts
-    WHERE mts.mentor_id = ? AND mts.student_name = ?;
-  `;
 
-  // First query retrieves the mentor to student ID for the given mentor ID and student name
-  pool.query(query, [mentor_id, student_name], (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error executing query" });
-    }
-    const mentor_to_student_id = result[0].mentor_to_student_id;
-    const insertQuery = `
-      INSERT INTO MENTOR_LOGS (mentor_id, mentor_to_student_id, date, start_time, end_time, hours_logged, met, meeting_circumstance, comments)
-      VALUES (?, ?, ?, ?, ?,?, ?, ?, ?);
+  const query = `
+      INSERT INTO MENTOR_LOGS (mentor_id, mentor_to_student_id, date, start_time, end_time, hours_logged, activity, met, meeting_circumstance, comments)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
 
-    // Second query adds the log to the DB
-    pool.query(
-      insertQuery,
-      [
-        mentor_id,
-        mentor_to_student_id,
-        date,
-        start_time,
-        end_time,
-        hours_logged,
-        met,
-        meeting_circumstance,
-        comments,
-      ],
-      (err, result) => {
-        if (err) {
-          console.error("Error executing query:", err);
-          return res.status(500).json({ error: "Error executing query" });
-        }
-        res.status(201).json({ message: "Success" });
+  // Second query adds the log to the DB
+  pool.query(
+    query,
+    [
+      mentor_id,
+      mentor_to_student_id,
+      date,
+      start_time,
+      end_time,
+      hours_logged,
+      activity,
+      met,
+      meeting_circumstance,
+      comments,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).json({ error: "Error executing query" });
       }
-    );
-  });
+      res.status(201).json({ message: "Success" });
+    }
+  );
 });
 
 // Delete log
@@ -109,8 +99,8 @@ router.post("/add_user", (req, res) => {
           id: result.insertId,
           name: name,
           role: role,
-          verified: verified
-        }
+          verified: verified,
+        },
       });
     }
   );

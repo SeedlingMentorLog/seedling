@@ -51,7 +51,7 @@ const MenuComponent = ({ open, onClose, onNavigate }) => {
         {/* Drawer Items */}
         <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onNavigate("/")}>
+            <ListItemButton onClick={() => onNavigate("/mentor-homepage")}>
               <ListItemIcon>
                 <HomeIcon color="primary" sx={{ color: "#57C5CC" }} />
               </ListItemIcon>

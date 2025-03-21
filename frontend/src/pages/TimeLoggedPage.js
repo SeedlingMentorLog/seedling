@@ -37,7 +37,7 @@ const TimeLoggedPage = (props) => {
           justifyContent: "space-between",
           alignItems: "flex-start",
           width: "90%",
-          height: "80%",
+          height: "90%",
           position: "absolute",
         }}
       >
@@ -145,7 +145,7 @@ const TimeLoggedPage = (props) => {
           </Button>
           <Link
             component={Button}
-            onClick={() => navigate("/home")}
+            onClick={() => navigate("/mentor-homepage")}
             sx={{
               textDecoration: "underline",
               cursor: "pointer",

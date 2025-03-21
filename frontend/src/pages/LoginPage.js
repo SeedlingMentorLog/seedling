@@ -44,7 +44,7 @@ const LoginPage = () => {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh",
-        backgroundColor: "#DFF7FB",
+        backgroundColor: "#57C5CC",
         paddingX: 6,
       }}
     >
@@ -231,7 +231,7 @@ const LoginPage = () => {
             "&:hover": {
               backgroundColor: "#f9f9f9",
             },
-            marginBottom: 2,
+            marginBottom: 4,
           }}
         >
           <Box
@@ -270,27 +270,27 @@ const LoginPage = () => {
           </Box>
           Log in with Google
         </Button>
-      </Box>
 
-      <Typography
-        fontFamily="Inter"
-        align="center"
-        variant="body2"
-        sx={{ marginTop: 2, color: "black" }}
-      >
-        Don’t have an account yet?{" "}
-        <Link
-          onClick={handleGoogleSignupClick}
-          sx={{
-            fontFamily: "Inter",
-            cursor: "pointer",
-            color: "#57C5CC",
-            textDecoration: "none",
-          }}
+        <Typography
+          fontFamily="Inter"
+          align="center"
+          variant="body2"
+          sx={{ marginTop: 6, color: "black" }}
         >
-          Sign up
-        </Link>
-      </Typography>
+          Don’t have an account yet?{" "}
+          <Link
+            onClick={handleGoogleSignupClick}
+            sx={{
+              fontFamily: "Inter",
+              cursor: "pointer",
+              color: "#57C5CC",
+              textDecoration: "none",
+            }}
+          >
+            Sign up
+          </Link>
+        </Typography>
+      </Box>
 
       {error && (
         <Box

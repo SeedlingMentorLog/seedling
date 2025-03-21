@@ -74,6 +74,7 @@ function createMentorLogsTable() {
           date DATE NOT NULL,
           start_time TIME NOT NULL,
           end_time TIME NOT NULL,
+          activity VARCHAR(50) NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           hours_logged FLOAT NOT NULL,
           met BOOLEAN NOT NULL,

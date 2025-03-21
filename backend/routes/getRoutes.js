@@ -15,19 +15,6 @@ function verifyAdminOrStaffStatus(req, res, next) {
   next();
 }
 
-// Routes
-router.get("/", (req, res) => {
-  const query = "SHOW TABLES";
-  pool.query(query, (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error executing query" });
-    }
-    const tables = result.map((row) => Object.values(row)[0]);
-    res.status(200).json({ tables });
-  });
-});
-
 // Get user by firebase id
 router.get("/user/:firebase_id", (req, res) => {
   const firebase_id = req.params.firebase_id;
@@ -44,13 +31,13 @@ router.get("/user/:firebase_id", (req, res) => {
     if (!result || result.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    res.status(200).json({ 
+    res.status(200).json({
       user: {
         id: result[0].id,
         name: result[0].name,
         role: result[0].role,
-        verified: result[0].verified
-      } 
+        verified: result[0].verified,
+      },
     });
   });
 });
@@ -83,6 +70,34 @@ router.get(
   }
 );
 
+router.get("/students/:mentor_id", (req, res) => {
+  const mentor_id = req.params.mentor_id;
+  const query = `
+        SELECT mts.mentor_to_student_id,
+               mts.mentor_id,
+               mts.school_contact_id,
+               mts.student_name,
+               mts.student_birthday,
+               mts.student_school,
+               u.name AS mentor_name,
+               sc.name AS school_contact_name
+        FROM MENTOR_TO_STUDENT mts
+        JOIN USERS u ON mts.mentor_id = u.id
+        JOIN USERS sc ON mts.school_contact_id = sc.id
+        WHERE mts.mentor_id = ?;
+    `;
+
+  pool.query(query, [mentor_id], (err, results) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res
+        .status(500)
+        .json({ error: "Error retrieving mentor-to-student records" });
+    }
+    res.json(results);
+  });
+});
+
 // Get logs by mentor id
 router.get("/mentor_logs/:mentor_id", (req, res) => {
   const mentor_id = req.params.mentor_id;
@@ -93,6 +108,7 @@ router.get("/mentor_logs/:mentor_id", (req, res) => {
            ml.start_time,
            ml.end_time,
            ml.hours_logged,
+           ml.activity,
            ml.met,
            ml.meeting_circumstance,
            ml.comments,
@@ -123,6 +139,7 @@ router.get("/school_logs/:school_id", (req, res) => {
            ml.start_time,
            ml.end_time,
            ml.hours_logged,
+           ml.activity,
            ml.met,
            ml.meeting_circumstance,
            ml.comments,
@@ -153,6 +170,7 @@ router.post("/get_logs_by_date_range", (req, res) => {
            ml.start_time, 
            ml.end_time, 
            ml.hours_logged, 
+           ml.activity,
            ml.met, 
            ml.meeting_circumstance, 
            ml.comments,

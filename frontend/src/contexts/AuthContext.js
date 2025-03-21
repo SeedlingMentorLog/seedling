@@ -260,6 +260,7 @@ export const AuthProvider = ({ children }) => {
 
           const mergedUser = {
             ...user,
+            id: userDetails.user.id,
             name: userDetails.user.name,
             role: userDetails.user.role,
             verified: userDetails.user.verified,

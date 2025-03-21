@@ -23,8 +23,9 @@ import CloseIcon from "@mui/icons-material/Close";
 const LogTimePage = () => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [students, setStudents] = useState([]);
   const [activity, setActivity] = useState("");
-  const [person, setPerson] = useState("Jonny Webster");
+  const [person, setPerson] = useState("");
   const [note, setNote] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [startTime, setStartTime] = useState("");
@@ -68,16 +69,94 @@ const LogTimePage = () => {
     setEndTime(event.target.value);
   };
 
+  const calculateHours = (startTime, endTime) => {
+    // Split the time strings into hours and minutes
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+
+    // Convert start and end times into minutes from midnight
+    const startTotalMinutes = startHour * 60 + startMinute;
+    const endTotalMinutes = endHour * 60 + endMinute;
+
+    // Calculate the difference in minutes
+    let diffInMinutes = endTotalMinutes - startTotalMinutes;
+
+    // If the end time is earlier than the start time (crossing midnight), adjust the difference
+    if (diffInMinutes < 0) {
+      diffInMinutes += 24 * 60;
+    }
+
+    // Convert minutes into hours (with decimal)
+    const hoursLogged = diffInMinutes / 60;
+    return hoursLogged;
+  };
+
+  // Add a log to the database
   const handleSubmit = async () => {
     if (!activity || !person || !date || !startTime || !endTime) {
       setError({ errorMessage: "Please fill in all required fields." });
       return;
     }
-    
-    // Need to send a POST request to the backend to log the time
-    // Then navigate to the time-logged page
-    // However, we haven't populated the mentor-to-student table yet
+
+    const data = {
+      mentor_id: JSON.parse(person).mentor_id,
+      mentor_to_student_id: JSON.parse(person).mentor_to_student_id,
+      date: date,
+      start_time: startTime,
+      end_time: endTime,
+      hours_logged: calculateHours(startTime, endTime),
+      activity: activity,
+      met: true,
+      meeting_circumstance: "in-person",
+      comments: note,
+    };
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND}/post/add_log`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Log added successfully");
+        navigate("/time-logged");
+      } else {
+        const errorData = await response.json();
+        setError({ errorMessage: errorData.error || "Something went wrong!" });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setError({ errorMessage: "Network error, please try again later." });
+    }
   };
+
+  useEffect(() => {
+    // Fetch data from the API when the component loads
+    const fetchStudents = async () => {
+      try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const mentorID = currentUser?.id;
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND}/get/students/${mentorID}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch students");
+        }
+        const data = await response.json();
+        setStudents(data); // Store the fetched data in state
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
+
+    fetchStudents();
+  }, []);
 
   return (
     <Box
@@ -98,7 +177,7 @@ const LogTimePage = () => {
           justifyContent: "space-between",
           alignItems: "flex-start",
           width: "90%",
-          height: "80%",
+          height: "90%",
           position: "absolute",
         }}
       >
@@ -173,9 +252,17 @@ const LogTimePage = () => {
               "& .MuiOutlinedInput-notchedOutline": { border: "none" },
             }}
           >
-            <MenuItem value={"Jonny Webster"}>Jonny Webster</MenuItem>
-            <MenuItem value={"Mentee #2"}>Mentee #2</MenuItem>
-            <MenuItem value={"Mentee #3"}>Mentee #3</MenuItem>
+            <MenuItem value="" disabled>
+              Select a student
+            </MenuItem>
+            {students.map((student) => (
+              <MenuItem
+                key={student.mentor_to_student_id}
+                value={JSON.stringify(student)}
+              >
+                {student.student_name}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 

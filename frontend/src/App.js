@@ -21,9 +21,10 @@ function App() {
           <Route path="/log-time" element={<LogTimePage />} />
           <Route path="/time-logged" element={<TimeLoggedPage />} />
           <Route path="/your-match" element={<YourMatchPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/mentor-homepage" element={<MentorHomePage />} />
+
+          {/* This is for admins */}
+          <Route path="/calendar" element={<CalendarPage />} />
         </Routes>
       </AuthProvider>
     </Router>
