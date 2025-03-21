@@ -29,24 +29,23 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const uid = result.user.uid;
 
-      // TODO: uncomment out the fetch request to backend
-      // const userDetailsResponse = await fetch(
-      //   `${process.env.REACT_APP_BACKEND}/get/user/${uid}`
-      // );
-      // if (!userDetailsResponse.ok) {
-      //   const errorData = await userDetailsResponse.json();
-      //   throw new Error(
-      //     `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
-      //   );
-      // }
+      const userDetailsResponse = await fetch(
+        `${process.env.REACT_APP_BACKEND}/get/user/${uid}`
+      );
+      if (!userDetailsResponse.ok) {
+        const errorData = await userDetailsResponse.json();
+        throw new Error(
+          `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
+        );
+      }
 
-      // TODO: remove temp dummy user
+      const userDetails = await userDetailsResponse.json();
       const user = {
         ...result.user,
-        id: "dummy_id",
-        name: result.user.displayName,
-        role: "user", // Or some dummy role
-        verified: true, // Or false based on your requirement
+        id: userDetails.user.id,
+        name: userDetails.user.name,
+        role: userDetails.user.role,
+        verified: userDetails.user.verified,
         accessToken: GoogleAuthProvider.credentialFromResult(result)?.accessToken,
       };
 
@@ -71,27 +70,17 @@ export const AuthProvider = ({ children }) => {
         password
       );
 
-      // TODO: uncomment out the fetch request to backend
-      // const userDetailsResponse = await fetch(
-      //   `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`
-      // );
-      // if (!userDetailsResponse.ok) {
-      //   const errorData = await userDetailsResponse.json();
-      //   throw new Error(
-      //     `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
-      //   );
-      // }
+      const userDetailsResponse = await fetch(
+        `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`
+      );
+      if (!userDetailsResponse.ok) {
+        const errorData = await userDetailsResponse.json();
+        throw new Error(
+          `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
+        );
+      }
 
-      // TODO: remove temp dummy user
-      const userDetails = {
-        user: {
-          id: "dummy_id",
-          name: userCredential.user.displayName,
-          role: "user", // Or some dummy role
-          verified: true, // Or false based on your requirement
-        },
-      };
-
+      const userDetails = await userDetailsResponse.json();
       const user = {
         ...userCredential.user,
         id: userDetails.user.id,
@@ -134,38 +123,28 @@ export const AuthProvider = ({ children }) => {
         password
       );
 
-      // TODO: uncomment out the fetch request to backend
-      // const response = await fetch(
-      //   `${process.env.REACT_APP_BACKEND}/post/add_user`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       firebase_id: userCredential.user.uid,
-      //       email: email,
-      //       name: "John Doe", // Add name later
-      //     }),
-      //   }
-      // );
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   throw new Error(
-      //     `Failed to add user to database: ${errorData.error || response.statusText}`
-      //   );
-      // }
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND}/post/add_user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firebase_id: userCredential.user.uid,
+            email: email,
+            name: "John Doe", // Add name later
+          }),
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          `Failed to add user to database: ${errorData.error || response.statusText}`
+        );
+      }
 
-      // TODO: remove temp dummy user
-      const userDetailsResponse = {
-        user: {
-          id: "dummy_id",
-          name: "John Doe", // Dummy name
-          role: "user", // Dummy role
-          verified: true, // Or false based on your requirement
-        },
-      };
-
+      const userDetailsResponse = await response.json();
       const user = {
         ...userCredential.user,
         id: userDetailsResponse.user.id,
@@ -195,40 +174,36 @@ export const AuthProvider = ({ children }) => {
       const uid = result.user.uid;
       const userName = result.user.displayName;
 
-      // TODO: uncomment out the fetch request to backend
-      // const addUserResponse = await fetch(
-      //   `${process.env.REACT_APP_BACKEND}/post/add_user`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       firebase_id: uid,
-      //       email: userEmail,
-      //       name: userName,
-      //     }),
-      //   }
-      // );
+      const addUserResponse = await fetch(
+        `${process.env.REACT_APP_BACKEND}/post/add_user`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            firebase_id: uid,
+            email: userEmail,
+            name: userName,
+          }),
+        }
+      );
 
-      // TODO: remove temp dummy user
-      const userDetailsResponse = {
-        user: {
-          id: "dummy_id",
-          name: userName,
-          role: "user", // Or some dummy role
-          verified: true, // Or false based on your requirement
-        },
-      };
+      if (!addUserResponse.ok) {
+        const errorData = await addUserResponse.json();
+        throw new Error(
+          `Failed to add user to database: ${errorData.error || addUserResponse.statusText}`
+        );
+      }
 
+      const userDetailsResponse = await addUserResponse.json();
       const user = {
         ...result.user,
         id: userDetailsResponse.user.id,
         name: userName,
         role: userDetailsResponse.user.role,
         verified: userDetailsResponse.user.verified,
-        accessToken:
-          GoogleAuthProvider.credentialFromResult(result).accessToken,
+        accessToken: GoogleAuthProvider.credentialFromResult(result).accessToken,
       };
       setCurrentUser(user);
       localStorage.setItem("currentUser", JSON.stringify(user));
@@ -258,29 +233,30 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          // TODO: uncomment out the fetch request to backend
-          // const userDetailsResponse = await fetch(
-          //   `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`
-          // );
-          // if (!userDetailsResponse.ok) {
-          //   const errorData = await userDetailsResponse
-          //     .json()
-          //     .catch(() => ({}));
-          //   throw new Error(
-          //     `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
-          //   );
-          // }
-
+          console.log('Attempting to fetch user details for uid:', user.uid);
+          const url = `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`;
+          console.log('Fetching from URL:', url);
           
-          // TODO: remove temp dummy user
-          const userDetails = {
-            user: {
-              id: "dummy_id",
-              name: user.displayName,
-              role: "user", // Or some dummy role
-              verified: true, // Or false based on your requirement
-            },
-          };
+          const userDetailsResponse = await fetch(url);
+          console.log('Response status:', userDetailsResponse.status);
+          console.log('Response headers:', Object.fromEntries(userDetailsResponse.headers.entries()));
+          
+          const responseText = await userDetailsResponse.text();
+          console.log('Raw response:', responseText);
+          
+          if (!userDetailsResponse.ok) {
+            throw new Error(
+              `Failed to fetch user details: ${userDetailsResponse.status} ${userDetailsResponse.statusText}\nResponse: ${responseText}`
+            );
+          }
+
+          let userDetails;
+          try {
+            userDetails = JSON.parse(responseText);
+          } catch (parseError) {
+            console.error('Failed to parse response as JSON:', parseError);
+            throw new Error(`Invalid JSON response from server: ${responseText.substring(0, 100)}...`);
+          }
 
           const mergedUser = {
             ...user,
@@ -294,14 +270,21 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
           console.error(
             "Failed to fetch user details on auth state change:",
-            error
+            error.message
           );
-          setCurrentUser(user);
-          localStorage.setItem("currentUser", JSON.stringify(user));
-          navigate("/log-time");
+          if (error.message.includes('Failed to fetch')) {
+            console.error('Network or server error - not proceeding with navigation');
+            setError({
+              errorHeader: "Server Error",
+              errorMessage: "Unable to connect to the server. Please try again later."
+            });
+          } else {
+            setCurrentUser(user);
+            localStorage.setItem("currentUser", JSON.stringify(user));
+            navigate("/log-time");
+          }
         }
       } else {
-        // There is no user
         setCurrentUser(null);
         localStorage.removeItem("currentUser");
         navigate("/login");

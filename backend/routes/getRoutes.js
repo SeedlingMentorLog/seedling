@@ -41,7 +41,17 @@ router.get("/user/:firebase_id", (req, res) => {
       console.error("Error executing query:", err);
       return res.status(500).json({ error: "Error executing query" });
     }
-    res.status(200).json({ user: result[0] });
+    if (!result || result.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    res.status(200).json({ 
+      user: {
+        id: result[0].id,
+        name: result[0].name,
+        role: result[0].role,
+        verified: result[0].verified
+      } 
+    });
   });
 });
 

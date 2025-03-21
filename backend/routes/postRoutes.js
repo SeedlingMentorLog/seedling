@@ -102,7 +102,16 @@ router.post("/add_user", (req, res) => {
         console.error("Error executing query:", err);
         return res.status(500).json({ error: "Error executing query" });
       }
-      res.status(201).json({ message: "User added successfully" });
+
+      // Return the newly created user data
+      res.status(201).json({
+        user: {
+          id: result.insertId,
+          name: name,
+          role: role,
+          verified: verified
+        }
+      });
     }
   );
 });
