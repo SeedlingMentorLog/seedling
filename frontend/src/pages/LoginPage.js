@@ -279,7 +279,7 @@ const LoginPage = () => {
         >
           Don’t have an account yet?{" "}
           <Link
-            onClick={handleGoogleSignupClick}
+            onClick={() => navigate("/signup")}
             sx={{
               fontFamily: "Inter",
               cursor: "pointer",

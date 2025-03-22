@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   signOut,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../components/firebaseConfig";
 
@@ -19,7 +19,6 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Function to handle Google sign-in
@@ -35,7 +34,9 @@ export const AuthProvider = ({ children }) => {
       if (!userDetailsResponse.ok) {
         const errorData = await userDetailsResponse.json();
         throw new Error(
-          `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
+          `Failed to fetch user details: ${
+            errorData.error || userDetailsResponse.statusText
+          }`
         );
       }
 
@@ -46,12 +47,12 @@ export const AuthProvider = ({ children }) => {
         name: userDetails.user.name,
         role: userDetails.user.role,
         verified: userDetails.user.verified,
-        accessToken: GoogleAuthProvider.credentialFromResult(result)?.accessToken,
+        accessToken:
+          GoogleAuthProvider.credentialFromResult(result)?.accessToken,
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
-      setCurrentUser(user);
-      navigate("/log-time");
+      navigate("/mentor-homepage");
     } catch (error) {
       setError({
         errorHeader: "Google Error",
@@ -76,7 +77,9 @@ export const AuthProvider = ({ children }) => {
       if (!userDetailsResponse.ok) {
         const errorData = await userDetailsResponse.json();
         throw new Error(
-          `Failed to fetch user details: ${errorData.error || userDetailsResponse.statusText}`
+          `Failed to fetch user details: ${
+            errorData.error || userDetailsResponse.statusText
+          }`
         );
       }
 
@@ -89,9 +92,8 @@ export const AuthProvider = ({ children }) => {
         verified: userDetails.user.verified,
       };
 
-      setCurrentUser(user);
       localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/log-time");
+      navigate("/mentor-homepage");
     } catch (error) {
       setError({
         errorHeader: "Email/Password Sign-In Error",
@@ -105,7 +107,6 @@ export const AuthProvider = ({ children }) => {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      setCurrentUser(null);
       localStorage.removeItem("currentUser");
       navigate("/login");
     } catch (error) {
@@ -115,7 +116,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Function to handle email/password signup
-  const handleEmailPasswordSignup = async (email, password) => {
+  const handleEmailPasswordSignup = async (email, password, name) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -133,14 +134,16 @@ export const AuthProvider = ({ children }) => {
           body: JSON.stringify({
             firebase_id: userCredential.user.uid,
             email: email,
-            name: "John Doe", // Add name later
+            name: name,
           }),
         }
       );
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          `Failed to add user to database: ${errorData.error || response.statusText}`
+          `Failed to add user to database: ${
+            errorData.error || response.statusText
+          }`
         );
       }
 
@@ -153,9 +156,8 @@ export const AuthProvider = ({ children }) => {
         verified: userDetailsResponse.user.verified,
       };
 
-      setCurrentUser(user);
       localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/log-time");
+      navigate("/mentor-homepage");
     } catch (error) {
       setError({
         errorHeader: "Email/Password Sign-Up Error",
@@ -192,7 +194,9 @@ export const AuthProvider = ({ children }) => {
       if (!addUserResponse.ok) {
         const errorData = await addUserResponse.json();
         throw new Error(
-          `Failed to add user to database: ${errorData.error || addUserResponse.statusText}`
+          `Failed to add user to database: ${
+            errorData.error || addUserResponse.statusText
+          }`
         );
       }
 
@@ -203,11 +207,11 @@ export const AuthProvider = ({ children }) => {
         name: userName,
         role: userDetailsResponse.user.role,
         verified: userDetailsResponse.user.verified,
-        accessToken: GoogleAuthProvider.credentialFromResult(result).accessToken,
+        accessToken:
+          GoogleAuthProvider.credentialFromResult(result).accessToken,
       };
-      setCurrentUser(user);
       localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/log-time");
+      navigate("/mentor-homepage");
     } catch (error) {
       setError({
         errorHeader: "Google Error",
@@ -233,17 +237,20 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          console.log('Attempting to fetch user details for uid:', user.uid);
+          console.log("Attempting to fetch user details for uid:", user.uid);
           const url = `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`;
-          console.log('Fetching from URL:', url);
-          
+          console.log("Fetching from URL:", url);
+
           const userDetailsResponse = await fetch(url);
-          console.log('Response status:', userDetailsResponse.status);
-          console.log('Response headers:', Object.fromEntries(userDetailsResponse.headers.entries()));
-          
+          console.log("Response status:", userDetailsResponse.status);
+          console.log(
+            "Response headers:",
+            Object.fromEntries(userDetailsResponse.headers.entries())
+          );
+
           const responseText = await userDetailsResponse.text();
-          console.log('Raw response:', responseText);
-          
+          console.log("Raw response:", responseText);
+
           if (!userDetailsResponse.ok) {
             throw new Error(
               `Failed to fetch user details: ${userDetailsResponse.status} ${userDetailsResponse.statusText}\nResponse: ${responseText}`
@@ -254,8 +261,13 @@ export const AuthProvider = ({ children }) => {
           try {
             userDetails = JSON.parse(responseText);
           } catch (parseError) {
-            console.error('Failed to parse response as JSON:', parseError);
-            throw new Error(`Invalid JSON response from server: ${responseText.substring(0, 100)}...`);
+            console.error("Failed to parse response as JSON:", parseError);
+            throw new Error(
+              `Invalid JSON response from server: ${responseText.substring(
+                0,
+                100
+              )}...`
+            );
           }
 
           const mergedUser = {
@@ -266,27 +278,27 @@ export const AuthProvider = ({ children }) => {
             verified: userDetails.user.verified,
           };
 
-          setCurrentUser(mergedUser);
           localStorage.setItem("currentUser", JSON.stringify(mergedUser));
         } catch (error) {
           console.error(
             "Failed to fetch user details on auth state change:",
             error.message
           );
-          if (error.message.includes('Failed to fetch')) {
-            console.error('Network or server error - not proceeding with navigation');
+          if (error.message.includes("Failed to fetch")) {
+            console.error(
+              "Network or server error - not proceeding with navigation"
+            );
             setError({
               errorHeader: "Server Error",
-              errorMessage: "Unable to connect to the server. Please try again later."
+              errorMessage:
+                "Unable to connect to the server. Please try again later.",
             });
           } else {
-            setCurrentUser(user);
             localStorage.setItem("currentUser", JSON.stringify(user));
             navigate("/log-time");
           }
         }
       } else {
-        setCurrentUser(null);
         localStorage.removeItem("currentUser");
         navigate("/login");
       }
@@ -296,7 +308,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const value = {
-    currentUser,
     loading,
     error,
     setError,

@@ -39,7 +39,6 @@ const MentorHomepage = () => {
       const logDate = new Date(log.date).toISOString().split("T")[0];
       return logDate === date; // Match the log's date to the selected day
     });
-    console.log(filtered);
     setFilteredLogs(filtered);
   };
 
@@ -90,8 +89,8 @@ const MentorHomepage = () => {
   };
 
   useEffect(() => {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    const mentorID = currentUser?.id;
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const mentorID = user?.id;
     fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs/${mentorID}`)
       .then((response) => response.json())
       .then((data) => {
@@ -160,17 +159,18 @@ const MentorHomepage = () => {
       />
 
       {/* Main Content */}
-      <Box sx={{ padding: 2.5 }}>
+      <Box sx={{}}>
         {/* Greeting Section */}
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 3,
+            padding: 2.5,
+            marginBottom: 1,
 
             // TODO: figure out how to make entire greeting section white
-            // backgroundColor: "#FFFFFF",
+            backgroundColor: "#FFFFFF",
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -192,7 +192,10 @@ const MentorHomepage = () => {
                 variant="h6"
                 sx={{ fontWeight: 500, marginBottom: 0.5 }}
               >
-                Hi, <span style={{ color: "#57C5CC" }}>Josie</span>
+                Hi,{" "}
+                <span style={{ color: "#57C5CC" }}>
+                  {JSON.parse(localStorage.getItem("currentUser"))?.name}
+                </span>
               </Typography>
               <Typography variant="body2" sx={{ color: "#666" }}>
                 Let's log those hours!
@@ -217,6 +220,7 @@ const MentorHomepage = () => {
             gap: 1,
             overflowX: "auto",
             marginBottom: 3,
+            padding: 2.5,
             pb: 1,
             "&::-webkit-scrollbar": {
               display: "none",
@@ -236,8 +240,7 @@ const MentorHomepage = () => {
                 borderRadius: 3,
                 border: "1px solid #eee",
                 padding: 1,
-                backgroundColor:
-                  selectedDay === day.date ? "#57C5CC" : "transparent",
+                backgroundColor: selectedDay === day.date ? "#57C5CC" : "white",
                 color: selectedDay === day.date ? "white" : "inherit",
                 "&:hover": {
                   backgroundColor:
@@ -256,28 +259,38 @@ const MentorHomepage = () => {
         </Box>
 
         {/* Log Time Button */}
-        <Button
-          variant="contained"
-          fullWidth
-          sx={{
-            backgroundColor: "#57C5CC",
-            color: "white",
-            borderRadius: 2,
-            padding: 1.5,
-            textTransform: "none",
-            fontWeight: 500,
-            marginBottom: 3,
-            "&:hover": {
-              backgroundColor: "#7ac9c9",
-            },
-          }}
-          onClick={() => navigate("/log-time")}
-        >
-          Log Time
-        </Button>
+        <Box sx={{ paddingLeft: 2.5, paddingRight: 2.5 }}>
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{
+              backgroundColor: "#57C5CC",
+              color: "white",
+              borderRadius: 2,
+              padding: 1.5,
+              textTransform: "none",
+              fontWeight: 500,
+              marginBottom: 3,
+              "&:hover": {
+                backgroundColor: "#7ac9c9",
+              },
+            }}
+            onClick={() => navigate("/log-time")}
+          >
+            Log Time
+          </Button>
+        </Box>
 
         {/* Meetings List */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            paddingLeft: 2.5,
+            paddingRight: 2.5,
+          }}
+        >
           {filteredLogs.map((log) => (
             <Paper
               key={log.id}
@@ -293,13 +306,20 @@ const MentorHomepage = () => {
               <Box>
                 <Typography
                   variant="subtitle1"
-                  sx={{ fontWeight: 500, marginBottom: 0 }}
+                  sx={{
+                    marginBottom: 0,
+                    color: "#000",
+                    fontFamily: "Inter",
+                    fontSize: 16,
+                    fontStyle: "normal",
+                    fontWeight: 500,
+                  }}
                 >
                   {log.student_name}
                 </Typography>
                 <Typography
                   variant="body2"
-                  sx={{ color: "#666", marginBottom: 0.5 }}
+                  sx={{ color: "#AFB3B7", marginBottom: 0.5 }}
                 >
                   {log.start_time.substring(0, 5)} -
                   {log.end_time.substring(0, 5)} | {log.date.substring(0, 10)}
@@ -314,6 +334,7 @@ const MentorHomepage = () => {
                         color: "#000000",
                         fontSize: 12,
                         height: 24,
+                        fontStyle: "italic",
                       }}
                     />
                   )}
@@ -322,10 +343,11 @@ const MentorHomepage = () => {
                       label={log.activity}
                       size="small"
                       sx={{
-                        backgroundColor: "#57C5CC",
+                        backgroundColor: "#AEF4F9",
                         color: "#000000",
                         fontSize: 12,
                         height: 24,
+                        fontStyle: "italic",
                       }}
                     />
                   )}

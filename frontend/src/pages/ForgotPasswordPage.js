@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
 const ForgotPasswordPage = (props) => {
+  const navigate = useNavigate();
   const { resetPassword, error, setError } = useAuth();
   const [email, setEmail] = useState("");
 
@@ -27,7 +28,7 @@ const ForgotPasswordPage = (props) => {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh",
-        backgroundColor: "#DFF7FB",
+        backgroundColor: "#57C5CC",
         paddingX: 6,
       }}
     >
@@ -82,6 +83,20 @@ const ForgotPasswordPage = (props) => {
             Send Reset Email
           </Button>
         </form>
+        <Button
+            fullWidth
+            sx={{
+              backgroundColor: "#57C5CC",
+              color: "white",
+              borderRadius: 8,
+              padding: 1,
+              textTransform: "none",
+              fontFamily: "Inter",
+            }}
+            onClick={() => navigate("/login")}
+          >
+            Back to Login
+          </Button>
       </Box>
 
       {error && (

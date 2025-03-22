@@ -1,7 +1,6 @@
 import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button, Link } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const CardComponent = (props) => {
   return (
@@ -9,13 +8,15 @@ const CardComponent = (props) => {
       sx={{
         display: "flex",
         width: "95%",
-        height: "60%",
+        height: "20%",
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "center",
         borderRadius: 5,
         background: "#FFF",
         boxShadow: "0px 8px 7.6px 1px rgba(0, 0, 0, 0.25)",
+        marginBottom: 2,
+        paddingBottom: 1,
       }}
     >
       <Typography
@@ -30,38 +31,7 @@ const CardComponent = (props) => {
           paddingBottom: 2,
         }}
       >
-        Your Match
-      </Typography>
-      <AccountCircleIcon
-        fontSize="large"
-        sx={{ width: 124, height: 124, color: "#FED007" }}
-      />
-      <Typography
-        sx={{
-          color: "#000",
-          fontFamily: "Inter",
-          fontSize: 20,
-          fontStyle: "normal",
-          fontWeight: 500,
-          lineHeight: "normal",
-          paddingTop: 2,
-          paddingBottom: 1,
-        }}
-      >
         {props.name}
-      </Typography>
-      <Typography
-        sx={{
-          color: "var(--light-gray, #AFB3B7)",
-          fontFamily: "Inter",
-          fontSize: 16,
-          fontStyle: "normal",
-          fontWeight: 500,
-          lineHeight: "normal",
-          paddingBottom: 4,
-        }}
-      >
-        Match Since: {props.matchSince}
       </Typography>
       <Box
         sx={{
@@ -85,7 +55,7 @@ const CardComponent = (props) => {
             gap: 8,
             flexShrink: 0,
             borderRadius: 10,
-            background: "#FED007",
+            background: "#AEF4F9",
           }}
         >
           <Typography
@@ -135,7 +105,7 @@ const CardComponent = (props) => {
             gap: 8,
             flexShrink: 0,
             borderRadius: 10,
-            background: "#FED007",
+            background: "#AEF4F9",
           }}
         >
           <Typography
