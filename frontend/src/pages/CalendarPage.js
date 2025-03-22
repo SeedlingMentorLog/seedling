@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState } from "react";
 import {
   Box,
   Typography,
@@ -12,61 +12,60 @@ import {
   Divider,
   useMediaQuery,
   useTheme,
-} from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
-import HomeIcon from "@mui/icons-material/Home"
-import ListIcon from "@mui/icons-material/List"
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
-import FavoriteIcon from "@mui/icons-material/Favorite"
-import PeopleIcon from "@mui/icons-material/People"
-import PersonIcon from "@mui/icons-material/Person"
-import SettingsIcon from "@mui/icons-material/Settings"
-import LogoutIcon from "@mui/icons-material/Logout"
-import AddIcon from "@mui/icons-material/Add"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
-import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import { useNavigate } from "react-router-dom"
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import HomeIcon from "@mui/icons-material/Home";
+import ListIcon from "@mui/icons-material/List";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import PeopleIcon from "@mui/icons-material/People";
+import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+import AddIcon from "@mui/icons-material/Add";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import { useNavigate } from "react-router-dom";
 
 const CalendarPage = () => {
-  const navigate = useNavigate()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [activeView, setActiveView] = useState("Month")
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activeView, setActiveView] = useState("Month");
 
   const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen)
-  }
+    setDrawerOpen(!drawerOpen);
+  };
 
-  const weekdays = ["MON", "TUE", "WED", "THE", "FRI", "SAT", "SUN"]
+  const weekdays = ["MON", "TUE", "WED", "THE", "FRI", "SAT", "SUN"];
 
   // Generate calendar days
   const generateCalendarDays = () => {
-    const days = []
+    const days = [];
 
     // Previous month days
     for (let i = 25; i <= 30; i++) {
-      days.push({ day: i, type: "prev-month" })
+      days.push({ day: i, type: "prev-month" });
     }
 
     // Current month days
     for (let i = 1; i <= 31; i++) {
-      const events = []
+      const events = [];
       if (i === 10 || i === 16 || i === 25) {
-        events.push("Mentor Meeting")
+        events.push("Mentor Meeting");
       }
-      days.push({ day: i, type: "current", events })
+      days.push({ day: i, type: "current", events });
     }
 
     // Next month days
     for (let i = 1; i <= 5; i++) {
-      days.push({ day: i, type: "next-month" })
+      days.push({ day: i, type: "next-month" });
     }
 
-    return days
-  }
+    return days;
+  };
 
-  const calendarDays = generateCalendarDays()
+  const calendarDays = generateCalendarDays();
 
   const meetings = [
     {
@@ -90,7 +89,7 @@ const CalendarPage = () => {
       location: "2438 Guadalupe St.",
       city: "Austin, TX",
     },
-  ]
+  ];
 
   return (
     <Box
@@ -278,13 +277,22 @@ const CalendarPage = () => {
                     <CalendarTodayIcon fontSize="small" />
                   </Box>
                   <Box>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 500, marginBottom: 0.5 }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ fontWeight: 500, marginBottom: 0.5 }}
+                    >
                       {meeting.title}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#666", marginBottom: 0.5 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#666", marginBottom: 0.5 }}
+                    >
                       {meeting.time}
                     </Typography>
-                    <Typography variant="body2" sx={{ color: "#666", marginBottom: 0.5 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "#666", marginBottom: 0.5 }}
+                    >
                       {meeting.location}
                     </Typography>
                     <Typography variant="body2" sx={{ color: "#666" }}>
@@ -383,9 +391,11 @@ const CalendarPage = () => {
                     sx={{
                       borderRadius: 1,
                       color: activeView === view ? "white" : "#666",
-                      backgroundColor: activeView === view ? "#57C5CC" : "transparent",
+                      backgroundColor:
+                        activeView === view ? "#57C5CC" : "transparent",
                       "&:hover": {
-                        backgroundColor: activeView === view ? "#57C5CC" : "#f0f0f0",
+                        backgroundColor:
+                          activeView === view ? "#57C5CC" : "#f0f0f0",
                       },
                     }}
                     onClick={() => setActiveView(view)}
@@ -433,7 +443,8 @@ const CalendarPage = () => {
                   <Box
                     key={index}
                     sx={{
-                      borderRight: index % 7 === 6 ? "none" : "1px solid #eaeaea",
+                      borderRight:
+                        index % 7 === 6 ? "none" : "1px solid #eaeaea",
                       borderBottom: "1px solid #eaeaea",
                       padding: 1,
                       position: "relative",
@@ -467,12 +478,12 @@ const CalendarPage = () => {
         </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
 // Sidebar content component
 const SidebarContent = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const menuItems = [
     { icon: <HomeIcon />, text: "Home" },
@@ -481,18 +492,18 @@ const SidebarContent = () => {
     { icon: <FavoriteIcon />, text: "Item" },
     { icon: <FavoriteIcon />, text: "Item" },
     { icon: <FavoriteIcon />, text: "Item" },
-  ]
+  ];
 
   const pageItems = [
     { icon: <CalendarTodayIcon />, text: "Calendar" },
     { icon: <PeopleIcon />, text: "Your Matches" },
     { icon: <PersonIcon />, text: "Mentors" },
-  ]
+  ];
 
   const footerItems = [
     { icon: <SettingsIcon />, text: "Settings" },
     { icon: <LogoutIcon />, text: "Logout" },
-  ]
+  ];
 
   return (
     <>
@@ -549,9 +560,13 @@ const SidebarContent = () => {
                 backgroundColor: "#f0f0f0",
               },
             }}
-            onClick={() => navigate(item.text.toLowerCase().replace(/\s+/g, "-"))}
+            onClick={() =>
+              navigate(item.text.toLowerCase().replace(/\s+/g, "-"))
+            }
           >
-            <ListItemIcon sx={{ minWidth: 36, color: "#555" }}>{item.icon}</ListItemIcon>
+            <ListItemIcon sx={{ minWidth: 36, color: "#555" }}>
+              {item.icon}
+            </ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
@@ -573,14 +588,15 @@ const SidebarContent = () => {
             }}
             onClick={() => navigate(item.text.toLowerCase())}
           >
-            <ListItemIcon sx={{ minWidth: 36, color: "#555" }}>{item.icon}</ListItemIcon>
+            <ListItemIcon sx={{ minWidth: 36, color: "#555" }}>
+              {item.icon}
+            </ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
         ))}
       </List>
     </>
-  )
-}
+  );
+};
 
-export default CalendarPage
-
+export default CalendarPage;

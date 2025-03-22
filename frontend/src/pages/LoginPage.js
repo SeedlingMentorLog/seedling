@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { useAuth } from "../contexts/AuthContext.js";
 import { useNavigate } from "react-router-dom";
-import GoogleButton from "react-google-button";
 import Typography from "@mui/material/Typography";
 import { Button, Box, TextField, Link } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 
 const LoginPage = () => {
   const { handleGoogleSignIn, handleEmailPasswordSignIn } = useAuth();
