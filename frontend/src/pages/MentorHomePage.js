@@ -90,8 +90,9 @@ const MentorHomepage = () => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("currentUser"));
-    const mentorID = user?.id;
-    fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs/${mentorID}`)
+    const ID = user?.id;
+    const logs = user?.role === "school contact" ? "school_logs" : "mentor_logs";
+    fetch(`${process.env.REACT_APP_BACKEND}/get/${logs}/${ID}`)
       .then((response) => response.json())
       .then((data) => {
         setLogs(data.logs);
@@ -99,7 +100,7 @@ const MentorHomepage = () => {
         getWeekDates();
       })
       .catch((error) => {
-        console.error("Error fetching mentor logs:", error);
+        console.error("Error fetching logs:", error);
         setLoading(false);
       });
   }, []);

@@ -8,13 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
 const LoginPage = () => {
-  const {
-    handleGoogleSignup,
-    handleGoogleSignIn,
-    handleEmailPasswordSignIn,
-    error,
-    setError,
-  } = useAuth();
+  const { handleGoogleSignIn, handleEmailPasswordSignIn } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,17 +17,9 @@ const LoginPage = () => {
     await handleGoogleSignIn();
   };
 
-  const handleGoogleSignupClick = async () => {
-    await handleGoogleSignup();
-  };
-
   const handleEmailPasswordLogin = async (e) => {
     e.preventDefault();
     await handleEmailPasswordSignIn(email, password);
-  };
-
-  const handleCloseError = () => {
-    setError(null);
   };
 
   return (
@@ -277,7 +263,7 @@ const LoginPage = () => {
           variant="body2"
           sx={{ marginTop: 6, color: "black" }}
         >
-          Don’t have an account yet?{" "}
+          Don’t have an account yet?
           <Link
             onClick={() => navigate("/signup")}
             sx={{
@@ -291,43 +277,6 @@ const LoginPage = () => {
           </Link>
         </Typography>
       </Box>
-
-      {error && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            maxWidth: 400,
-            backgroundColor: "#FDE4E4",
-            padding: 4,
-            borderRadius: 4,
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <IconButton
-            aria-label="close"
-            size="small"
-            sx={{ position: "absolute", right: 8, top: 8 }}
-            onClick={handleCloseError}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography
-            sx={{
-              fontFamily: "Inter",
-              fontSize: 20,
-              fontWeight: 400,
-              textAlign: "center",
-              color: "#000",
-            }}
-          >
-            {error.errorMessage}
-          </Typography>
-        </Box>
-      )}
     </Box>
   );
 };

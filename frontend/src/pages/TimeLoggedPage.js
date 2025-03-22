@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Button, Link, IconButton } from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuComponent from "../components/MenuComponent";
@@ -79,19 +79,18 @@ const TimeLoggedPage = (props) => {
         >
           <Box
             sx={{
-              background: "#57C5CC",
+              background: "white",
               width: 120,
               height: 120,
-              borderRadius: "50%",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <CheckCircleIcon
+            <VerifiedIcon
               sx={{
-                fontSize: 116,
-                color: "#FFF",
+                fontSize: 128,
+                color: "#57C5CC",
               }}
             />
           </Box>

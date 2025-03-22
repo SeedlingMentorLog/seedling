@@ -7,8 +7,12 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
 const SignupPage = () => {
-  const { handleGoogleSignup, handleEmailPasswordSignup, error, setError } =
-    useAuth();
+  const {
+    handleGoogleSignup,
+    handleEmailPasswordSignup,
+    setError,
+    setShowError,
+  } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -20,11 +24,15 @@ const SignupPage = () => {
 
   const handleEmailPasswordSignupClick = async (e) => {
     e.preventDefault();
+    if (!name) {
+      setError({
+        errorHeader: "Missing Name",
+        errorMessage: "Please enter your name.",
+      });
+      setShowError(true);
+      return;
+    }
     await handleEmailPasswordSignup(email, password, name);
-  };
-
-  const handleCloseError = () => {
-    setError(null);
   };
 
   return (
@@ -280,43 +288,6 @@ const SignupPage = () => {
           </Link>
         </Typography>
       </Box>
-
-      {error && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            maxWidth: 400,
-            backgroundColor: "#FDE4E4",
-            padding: 4,
-            borderRadius: 4,
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-          }}
-        >
-          <IconButton
-            aria-label="close"
-            size="small"
-            sx={{ position: "absolute", right: 8, top: 8 }}
-            onClick={handleCloseError}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography
-            sx={{
-              fontFamily: "Inter",
-              fontSize: 20,
-              fontWeight: 400,
-              textAlign: "center",
-              color: "#000",
-            }}
-          >
-            {error.errorMessage}
-          </Typography>
-        </Box>
-      )}
     </Box>
   );
 };

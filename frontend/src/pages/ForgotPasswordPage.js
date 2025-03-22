@@ -2,22 +2,16 @@ import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Typography from "@mui/material/Typography";
-import { Button, Box, TextField, Link } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
+import { Button, Box, TextField } from "@mui/material";
 
 const ForgotPasswordPage = (props) => {
   const navigate = useNavigate();
-  const { resetPassword, error, setError } = useAuth();
+  const { resetPassword } = useAuth();
   const [email, setEmail] = useState("");
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
     await resetPassword(email);
-  };
-
-  const handleCloseError = () => {
-    setError(null);
   };
 
   return (
@@ -84,57 +78,20 @@ const ForgotPasswordPage = (props) => {
           </Button>
         </form>
         <Button
-            fullWidth
-            sx={{
-              backgroundColor: "#57C5CC",
-              color: "white",
-              borderRadius: 8,
-              padding: 1,
-              textTransform: "none",
-              fontFamily: "Inter",
-            }}
-            onClick={() => navigate("/login")}
-          >
-            Back to Login
-          </Button>
-      </Box>
-
-      {error && (
-        <Box
+          fullWidth
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            maxWidth: 400,
-            backgroundColor: "#FDE4E4",
-            padding: 4,
-            borderRadius: 4,
-            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
+            backgroundColor: "#57C5CC",
+            color: "white",
+            borderRadius: 8,
+            padding: 1,
+            textTransform: "none",
+            fontFamily: "Inter",
           }}
+          onClick={() => navigate("/login")}
         >
-          <IconButton
-            aria-label="close"
-            size="small"
-            sx={{ position: "absolute", right: 8, top: 8 }}
-            onClick={handleCloseError}
-          >
-            <CloseIcon />
-          </IconButton>
-          <Typography
-            sx={{
-              fontFamily: "Inter",
-              fontSize: 20,
-              fontWeight: 400,
-              textAlign: "center",
-              color: "#000",
-            }}
-          >
-            {error.errorMessage}
-          </Typography>
-        </Box>
-      )}
+          Back to Login
+        </Button>
+      </Box>
     </Box>
   );
 };

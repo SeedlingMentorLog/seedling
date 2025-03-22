@@ -9,6 +9,7 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import { auth } from "../components/firebaseConfig";
+import { Snackbar, Alert } from "@mui/material";
 
 const AuthContext = createContext();
 
@@ -19,6 +20,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
+  const [showError, setShowError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Function to handle Google sign-in
@@ -58,6 +60,7 @@ export const AuthProvider = ({ children }) => {
         errorHeader: "Google Error",
         errorMessage: error.message || "Error signing in with Google",
       });
+      setShowError(true);
       console.error("Error during Google sign-in:", error);
     }
   };
@@ -99,6 +102,7 @@ export const AuthProvider = ({ children }) => {
         errorHeader: "Email/Password Sign-In Error",
         errorMessage: error.message,
       });
+      setShowError(true);
       console.log("Error signing in with email and password: ", error);
     }
   };
@@ -163,6 +167,7 @@ export const AuthProvider = ({ children }) => {
         errorHeader: "Email/Password Sign-Up Error",
         errorMessage: error.message,
       });
+      setShowError(true);
       console.log("Error signing up with email and password: ", error);
     }
   };
@@ -217,6 +222,7 @@ export const AuthProvider = ({ children }) => {
         errorHeader: "Google Error",
         errorMessage: error.message || "Error signing up with Google",
       });
+      setShowError(true);
       console.error("Error during Google sign-up process: ", error);
     }
   };
@@ -229,7 +235,13 @@ export const AuthProvider = ({ children }) => {
         errorHeader: "Password Reset Error",
         errorMessage: error.message,
       });
+      setShowError(true);
     }
+  };
+
+  const closeError = () => {
+    setError(null);
+    setShowError(false);
   };
 
   // Effect hook to handle authentication state changes
@@ -293,6 +305,7 @@ export const AuthProvider = ({ children }) => {
               errorMessage:
                 "Unable to connect to the server. Please try again later.",
             });
+            setShowError(true);
           } else {
             localStorage.setItem("currentUser", JSON.stringify(user));
             navigate("/log-time");
@@ -310,7 +323,9 @@ export const AuthProvider = ({ children }) => {
   const value = {
     loading,
     error,
+    showError,
     setError,
+    setShowError,
     handleEmailPasswordSignIn,
     handleEmailPasswordSignup,
     handleGoogleSignIn,
@@ -319,5 +334,21 @@ export const AuthProvider = ({ children }) => {
     resetPassword,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={closeError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {error && (
+          <Alert onClose={closeError} severity="error" sx={{ width: "100%" }}>
+            {error.errorHeader}: {error.errorMessage}
+          </Alert>
+        )}
+      </Snackbar>
+    </AuthContext.Provider>
+  );
 };
