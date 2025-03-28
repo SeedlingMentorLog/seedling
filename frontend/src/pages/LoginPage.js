@@ -260,7 +260,7 @@ const LoginPage = () => {
           variant="body2"
           sx={{ marginTop: 6, color: "black" }}
         >
-          Don’t have an account yet?
+          Don’t have an account yet?{" "}
           <Link
             onClick={() => navigate("/signup")}
             sx={{

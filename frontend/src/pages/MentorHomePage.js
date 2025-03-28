@@ -23,6 +23,7 @@ const MentorHomepage = () => {
   const [filteredLogs, setFilteredLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [weekDates, setWeekDates] = useState([]);
+  const [weekOffset, setWeekOffset] = useState(0);
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
@@ -44,9 +45,11 @@ const MentorHomepage = () => {
 
   const getWeekDates = () => {
     const today = new Date();
-    const dayOfWeek = today.getDay(); // Get current day (0 = Sunday, 1 = Monday, etc.)
+    // Adjust the base date according to the weekOffset (0=current week, -1=previous week, 1=next week, etc.)
+    today.setDate(today.getDate() + weekOffset * 7);
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - dayOfWeek); // Set to last Sunday
+    startOfWeek.setDate(today.getDate() - dayOfWeek); // set to Sunday of that week
     const week = [];
 
     for (let i = 0; i < 7; i++) {
@@ -81,18 +84,25 @@ const MentorHomepage = () => {
         number: day.toISOString().split("T")[0].substring(8),
         date: day.toISOString().split("T")[0],
         day: dayName,
-      }); // Format to YYYY-MM-DD
+      });
     }
 
-    handleDateChange(week[0].date); // Set the initial selected day to the first day of the week
-    setWeekDates(week); // Set the dates for the current week
+    // Set the initial selected day to the first day of the week
+    handleDateChange(week[0].date);
+    setWeekDates(week);
   };
+
+  // When weekOffset changes, update the weekDates.
+  useEffect(() => {
+    getWeekDates();
+  }, [weekOffset]);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("currentUser"));
     const ID = user?.id;
-    const logs = user?.role === "school contact" ? "school_logs" : "mentor_logs";
-    fetch(`${process.env.REACT_APP_BACKEND}/get/${logs}/${ID}`)
+    const logsKey =
+      user?.role === "school contact" ? "school_logs" : "mentor_logs";
+    fetch(`${process.env.REACT_APP_BACKEND}/get/${logsKey}/${ID}`)
       .then((response) => response.json())
       .then((data) => {
         setLogs(data.logs);
@@ -160,7 +170,7 @@ const MentorHomepage = () => {
       />
 
       {/* Main Content */}
-      <Box sx={{}}>
+      <Box>
         {/* Greeting Section */}
         <Box
           sx={{
@@ -169,8 +179,6 @@ const MentorHomepage = () => {
             alignItems: "center",
             padding: 2.5,
             marginBottom: 1,
-
-            // TODO: figure out how to make entire greeting section white
             backgroundColor: "#FFFFFF",
           }}
         >
@@ -231,7 +239,7 @@ const MentorHomepage = () => {
         >
           {weekDates.map((day) => (
             <Button
-              key={day.number}
+              key={day.date}
               onClick={() => handleDateChange(day.date)}
               sx={{
                 display: "flex",
@@ -257,6 +265,31 @@ const MentorHomepage = () => {
               </Typography>
             </Button>
           ))}
+        </Box>
+
+        {/* Navigation Buttons for Previous and Next Week */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: 2.5,
+            paddingTop: 0,
+          }}
+        >
+          <Button
+            variant="outlined"
+            onClick={() => setWeekOffset(weekOffset - 1)}
+            sx={{ flex: 1, marginRight: 1, backgroundColor: "#FFF", textTransform: "none" }}
+          >
+            Previous Week
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setWeekOffset(weekOffset + 1)}
+            sx={{ flex: 1, marginLeft: 1, backgroundColor: "#FFF", textTransform: "none" }}
+          >
+            Next Week
+          </Button>
         </Box>
 
         {/* Log Time Button */}
@@ -322,7 +355,7 @@ const MentorHomepage = () => {
                   variant="body2"
                   sx={{ color: "#AFB3B7", marginBottom: 0.5 }}
                 >
-                  {log.start_time.substring(0, 5)} -
+                  {log.start_time.substring(0, 5)} -{" "}
                   {log.end_time.substring(0, 5)} | {log.date.substring(0, 10)}
                 </Typography>
                 <Box sx={{ display: "flex", gap: 1 }}>
@@ -371,6 +404,8 @@ const MentorHomepage = () => {
             </Paper>
           ))}
         </Box>
+
+        
       </Box>
     </Box>
   );
