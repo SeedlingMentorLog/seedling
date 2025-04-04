@@ -12,7 +12,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CheckIcon from "@mui/icons-material/Check";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MenuComponent from "../components/MenuComponent";
+import MenuComponent from "../../components/MenuComponent";
 import { useNavigate } from "react-router-dom";
 
 const MentorHomepage = () => {
@@ -279,14 +279,24 @@ const MentorHomepage = () => {
           <Button
             variant="outlined"
             onClick={() => setWeekOffset(weekOffset - 1)}
-            sx={{ flex: 1, marginRight: 1, backgroundColor: "#FFF", textTransform: "none" }}
+            sx={{
+              flex: 1,
+              marginRight: 1,
+              backgroundColor: "#FFF",
+              textTransform: "none",
+            }}
           >
             Previous Week
           </Button>
           <Button
             variant="outlined"
             onClick={() => setWeekOffset(weekOffset + 1)}
-            sx={{ flex: 1, marginLeft: 1, backgroundColor: "#FFF", textTransform: "none" }}
+            sx={{
+              flex: 1,
+              marginLeft: 1,
+              backgroundColor: "#FFF",
+              textTransform: "none",
+            }}
           >
             Next Week
           </Button>
@@ -404,8 +414,6 @@ const MentorHomepage = () => {
             </Paper>
           ))}
         </Box>
-
-        
       </Box>
     </Box>
   );

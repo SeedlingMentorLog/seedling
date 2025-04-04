@@ -1,10 +1,10 @@
 import { React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, IconButton } from "@mui/material";
-import CardComponent from "../components/CardComponent";
+import CardComponent from "../../components/CardComponent";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MenuComponent from "../components/MenuComponent";
+import MenuComponent from "../../components/MenuComponent";
 
 const YourMatchPage = () => {
   const navigate = useNavigate();

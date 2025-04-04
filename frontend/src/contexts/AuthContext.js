@@ -54,7 +54,11 @@ export const AuthProvider = ({ children }) => {
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/mentor-homepage");
+      if (user.role === "admin" || user.role === "staff") {
+        navigate("/mentor-logs");
+      } else {
+        navigate("/mentor-homepage");
+      }
     } catch (error) {
       setError({
         errorHeader: "Google Error",
@@ -96,7 +100,11 @@ export const AuthProvider = ({ children }) => {
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/mentor-homepage");
+      if (user.role === "admin" || user.role === "staff") {
+        navigate("/mentor-logs");
+      } else {
+        navigate("/mentor-homepage");
+      }
     } catch (error) {
       setError({
         errorHeader: "Email/Password Sign-In Error",

@@ -98,6 +98,39 @@ router.get("/students/:mentor_id", (req, res) => {
   });
 });
 
+// Get all mentor logs (admin and staff only)
+router.get("/mentor_logs", (req, res) => {
+  const query = `
+    SELECT ml.id,
+           ml.created_at,
+           ml.date,
+           ml.start_time,
+           ml.end_time,
+           ml.hours_logged,
+           ml.activity,
+           ml.met,
+           ml.meeting_circumstance,
+           ml.comments,
+           u.name AS mentor_name,
+           mts.student_name AS student_name,
+           mts.student_school AS student_school,
+           sc.name AS school_contact_name
+    FROM MENTOR_LOGS ml
+    JOIN USERS u ON ml.mentor_id = u.id
+    JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id
+    JOIN USERS sc ON mts.school_contact_id = sc.id
+    ORDER BY ml.created_at DESC;
+  `;
+
+  pool.query(query, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(200).json({ logs: result });
+  });
+});
+
 // Get logs by mentor id
 router.get("/mentor_logs/:mentor_id", (req, res) => {
   const mentor_id = req.params.mentor_id;

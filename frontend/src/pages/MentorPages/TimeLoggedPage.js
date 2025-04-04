@@ -4,7 +4,7 @@ import { Box, Typography, Button, Link, IconButton } from "@mui/material";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
-import MenuComponent from "../components/MenuComponent";
+import MenuComponent from "../../components/MenuComponent";
 
 const TimeLoggedPage = (props) => {
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../contexts/AuthContext.js";
+import { useAuth } from "../../contexts/AuthContext.js";
 import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import { Button, Box, TextField, Link } from "@mui/material";

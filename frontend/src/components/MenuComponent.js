@@ -120,29 +120,6 @@ const MenuComponent = ({ open, onClose, onNavigate }) => {
           </ListItem>
 
           <ListItem disablePadding>
-            <ListItemButton onClick={() => onNavigate("/calendar")}>
-              <ListItemIcon>
-                <CalendarTodayIcon color="primary" sx={{ color: "#57C5CC" }} />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography
-                  sx={{
-                    color: "#000",
-                    textAlign: "left",
-                    fontFamily: "Inter",
-                    fontSize: 16,
-                    fontStyle: "normal",
-                    fontWeight: 600,
-                    letterSpacing: -0.32,
-                  }}
-                >
-                  Calendar
-                </Typography>
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
-
-          <ListItem disablePadding>
             <ListItemButton onClick={handleLogout}>
               <ListItemIcon>
                 <ExitToAppIcon color="primary" sx={{ color: "#57C5CC" }} />
