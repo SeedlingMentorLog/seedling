@@ -11,6 +11,7 @@ import LogTimePage from "./pages/MentorPages/LogTimePage";
 import MentorHomePage from "./pages/MentorPages/MentorHomePage";
 // import CalendarPage from './pages/CalendarPage';
 
+import DashboardPage from "./pages/AdminPages/DashboardPage";
 import MemberInfoPage from "./pages/AdminPages/MemberInfoPage";
 import MentorLogsPage from "./pages/AdminPages/MentorLogsPage";
 
@@ -48,6 +49,10 @@ function App() {
           {/* Admin */}
           {/* <Route path="/calendar" element={<CalendarPage />} /> */}
           <Route
+            path="/dashboard"
+            element={<AdminRouteComponent element={<DashboardPage />} />}
+          />
+          <Route
             path="/member-info"
             element={<AdminRouteComponent element={<MemberInfoPage />} />}
           />
@@ -55,7 +60,6 @@ function App() {
             path="/mentor-logs"
             element={<AdminRouteComponent element={<MentorLogsPage />} />}
           />
-          
         </Routes>
       </AuthProvider>
     </Router>

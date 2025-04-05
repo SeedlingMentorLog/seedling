@@ -32,12 +32,15 @@ const MemberInfoPage = () => {
   const [sortBy, setSortBy] = useState("A-Z");
   const [page, setPage] = useState(1);
   const [openVerifyPopup, setOpenVerifyPopup] = useState(false);
+  const [openEditPopup, setOpenEditPopup] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedRole, setSelectedRole] = useState("");
-  const [schoolContacts, setSchoolContacts] = useState([]);
+  const [editUserData, setEditUserData] = useState({ name: "", email: "" });
+  const [roleChange, setRoleChange] = useState("");
   const [relationships, setRelationships] = useState([]);
-  const rowsPerPage = 10;
+  const [schoolContacts, setSchoolContacts] = useState([]);
 
+  const rowsPerPage = 10;
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const userRole = currentUser?.role.toLowerCase();
 
@@ -48,7 +51,14 @@ const MemberInfoPage = () => {
           `${process.env.REACT_APP_BACKEND}/get/users`
         );
         const data = await response.json();
+        const schoolContactsData = data.users.filter(
+          (user) => user.role === "school contact"
+        );
         setUsers(data.users || []);
+        setSchoolContacts(schoolContactsData || []);
+
+        console.log("Fetched users:", data.users);
+        console.log("Fetched school contacts:", schoolContactsData);
       } catch (error) {
         console.error("Failed to fetch users", error);
       }
@@ -57,92 +67,143 @@ const MemberInfoPage = () => {
     fetchUsers();
   }, []);
 
-  const handleVerifyClick = (user) => {
-    setSelectedUser(user);
-    setOpenVerifyPopup(true);
+  const handleEditClick = async (user) => {
+    fetch(`${process.env.REACT_APP_BACKEND}/get/students/${user.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setRelationships(
+          data.students.map((student) => ({
+            contactId: student.school_contact_id,
+            studentName: student.student_name,
+            birthday: student.student_birthday,
+            school: student.student_school,
+            primaryId: student.mentor_to_student_id,
+            notAdded: false,
+          }))
+        );
+        setSelectedUser(user);
+        setEditUserData({ name: user.name, email: user.email });
+        setRoleChange(user.role);
+        setOpenEditPopup(true);
+      })
+      .catch((err) => console.error("Failed to fetch school contacts", err));
   };
 
-  const handleClosePopup = () => {
-    setOpenVerifyPopup(false);
-    setSelectedUser(null);
-    setSelectedRole("");
-    setRelationships([]);
+  const handleEditChange = (field, value) => {
+    setEditUserData((prev) => ({ ...prev, [field]: value }));
   };
 
-  useEffect(() => {
-    if (selectedRole === "mentor" && userRole) {
-      fetch(`${process.env.REACT_APP_BACKEND}/get/school_contacts/${userRole}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setSchoolContacts(data.school_contacts || []);
-        })
-        .catch((err) => console.error("Failed to fetch school contacts", err));
-    }
-  }, [selectedRole, userRole]);
+  const handleRoleChange = (e) => {
+    const newRole = e.target.value;
+    setRoleChange(newRole);
+  };
 
   const handleAddRelationship = () => {
     setRelationships([
       ...relationships,
-      { contactId: "", studentName: "", birthday: "", school: "" },
+      {
+        contactId: "",
+        studentName: "",
+        birthday: "",
+        school: "",
+        notAdded: true,
+      },
     ]);
   };
 
   const handleRelationshipChange = (index, field, value) => {
-    const newRelationships = [...relationships];
-    newRelationships[index][field] = value;
-    setRelationships(newRelationships);
+    const newRel = [...relationships];
+    newRel[index][field] = value;
+    setRelationships(newRel);
   };
 
-  const handleVerifyUserSubmit = async () => {
+  const handleEditSubmit = async () => {
     try {
       await fetch(
-        `${process.env.REACT_APP_BACKEND}/post/verify_user/${userRole}`,
+        `${process.env.REACT_APP_BACKEND}/post/update_user_profile/${userRole}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: selectedUser.id, role: selectedRole }),
+          body: JSON.stringify({
+            id: selectedUser.id,
+            ...editUserData,
+            role: roleChange,
+          }),
         }
       );
 
-      if (selectedRole === "mentor") {
+      if (
+        roleChange === "mentor" ||
+        roleChange === "admin" ||
+        roleChange === "staff"
+      ) {
         for (const rel of relationships) {
           if (
             !rel.contactId ||
             !rel.studentName ||
             !rel.birthday ||
             !rel.school
-          ) {
-            continue; // Skip if any field is empty
+          )
+            continue;
+
+          console.log("rel: ", rel);
+          // Add the new relationship
+          if (rel.notAdded) {
+            await fetch(
+              `${process.env.REACT_APP_BACKEND}/post/add_mentor_to_student/${userRole}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  mentor_id: selectedUser.id,
+                  school_contact_id: rel.contactId,
+                  student_name: rel.studentName,
+                  student_birthday: rel.birthday,
+                  student_school: rel.school,
+                }),
+              }
+            );
+          } else {
+            // Update the existing relationship
+            await fetch(
+              `${process.env.REACT_APP_BACKEND}/post/update_mentor_to_student/${userRole}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  relationship_id: rel.primaryId,
+                  school_contact_id: rel.contactId,
+                  student_name: rel.studentName,
+                  student_birthday: rel.birthday.split("T")[0],
+                  student_school: rel.school,
+                }),
+              }
+            );
           }
-          await fetch(
-            `${process.env.REACT_APP_BACKEND}/post/add_mentor_to_student/${userRole}`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                mentor_id: selectedUser.id,
-                school_contact_id: rel.contactId,
-                student_name: rel.studentName,
-                student_birthday: rel.birthday,
-                student_school: rel.school,
-              }),
-            }
-          );
         }
       }
 
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === selectedUser.id
-            ? { ...user, verified: true, role: selectedRole }
-            : user
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === selectedUser.id
+            ? { ...u, ...editUserData, role: roleChange }
+            : u
         )
       );
-
-      handleClosePopup();
+      setOpenEditPopup(false);
     } catch (error) {
-      console.error("Error verifying user or adding relationships:", error);
+      console.error("Failed to update user or add relationships:", error);
     }
+  };
+
+  const handleClosePopup = () => {
+    setOpenEditPopup(false);
+    setOpenVerifyPopup(false);
+    setSelectedUser(null);
+    setSelectedRole("");
+    setRelationships([]);
+    setEditUserData({ name: "", email: "" });
+    setRoleChange("");
   };
 
   const getRoleStyles = (role) => {
@@ -167,7 +228,11 @@ const MemberInfoPage = () => {
   };
 
   const filtered = users
-    .filter((u) => u.name.toLowerCase().includes(searchValue.toLowerCase()))
+    .filter(
+      (u) =>
+        u.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchValue.toLowerCase())
+    )
     .sort((a, b) =>
       sortBy === "A-Z"
         ? a.name.localeCompare(b.name)
@@ -192,7 +257,7 @@ const MemberInfoPage = () => {
             Member Information
           </Typography>
 
-          {/* Action Bar */}
+          {/* Search and Sort */}
           <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
             <Box sx={{ display: "flex", gap: 2 }}>
               <FormControl
@@ -209,18 +274,8 @@ const MemberInfoPage = () => {
                   sx={{ borderRadius: 4 }}
                   MenuProps={{ PaperProps: { sx: { fontFamily: "Poppins" } } }}
                 >
-                  <MenuItem
-                    value="A-Z"
-                    sx={{ fontWeight: sortBy === "A-Z" ? 600 : 400 }}
-                  >
-                    A - Z
-                  </MenuItem>
-                  <MenuItem
-                    value="Z-A"
-                    sx={{ fontWeight: sortBy === "Z-A" ? 600 : 400 }}
-                  >
-                    Z - A
-                  </MenuItem>
+                  <MenuItem value="A-Z">A - Z</MenuItem>
+                  <MenuItem value="Z-A">Z - A</MenuItem>
                 </Select>
               </FormControl>
               <Box
@@ -253,13 +308,13 @@ const MemberInfoPage = () => {
             component={Paper}
             sx={{ borderRadius: 2, bgcolor: "#fff" }}
           >
-            <Table>
+            <Table sx={{ fontFamily: "Poppins" }}>
               <TableHead sx={{ backgroundColor: "#F0F0F0" }}>
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
                   <TableCell>Role</TableCell>
-                  <TableCell>Verification</TableCell>
+                  <TableCell>Update User</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -271,27 +326,23 @@ const MemberInfoPage = () => {
                       <Chip label={user.role} sx={getRoleStyles(user.role)} />
                     </TableCell>
                     <TableCell>
-                      {user.verified ? (
-                        ""
-                      ) : (
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() => handleVerifyClick(user)}
-                          sx={{
-                            bgcolor: "#57C5CC",
-                            color: "#FFFFFF",
-                            fontSize: 14,
-                            textTransform: "none",
-                            fontFamily: "Poppins",
-                            fontWeight: 400,
-                            borderRadius: 4,
-                            "&:hover": { bgcolor: "#4aa7ad" },
-                          }}
-                        >
-                          Verify user
-                        </Button>
-                      )}
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => handleEditClick(user)}
+                        sx={{
+                          bgcolor: "#57C5CC",
+                          color: "#fff",
+                          fontSize: 14,
+                          fontFamily: "Poppins",
+                          fontWeight: 400,
+                          borderRadius: 4,
+                          textTransform: "none",
+                          "&:hover": { bgcolor: "#4aa7ad" },
+                        }}
+                      >
+                        {user.verified ? "Modify" : "Verify"}
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -299,82 +350,82 @@ const MemberInfoPage = () => {
             </Table>
           </TableContainer>
 
-          {/* Footer */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mt: 2,
-              bgcolor: "#fff",
-              px: 2,
-              py: 1,
-              borderRadius: 2,
-            }}
-          >
-            <Typography fontSize={14}>
-              Showing data {start + 1} to {end} of {total} entries
-            </Typography>
-            <Pagination
-              count={Math.ceil(total / rowsPerPage)}
-              page={page}
-              onChange={(e, value) => setPage(value)}
-              sx={{
-                "& .MuiPaginationItem-root": { backgroundColor: "#F5F5F5" },
-                "& .MuiPaginationItem-previousNext": {
-                  backgroundColor: "#F5F5F5",
-                },
-                "& .Mui-selected": {
-                  backgroundColor: "#57C5CC !important",
-                  color: "#fff",
-                },
-              }}
-            />
-          </Box>
-
-          {/* Verification Popup */}
+          {/* Edit Dialog */}
           <Dialog
-            open={openVerifyPopup}
+            open={openEditPopup}
             onClose={handleClosePopup}
             maxWidth="sm"
             fullWidth
           >
-            <DialogTitle>Verify User</DialogTitle>
+            <DialogTitle>Edit User</DialogTitle>
             <DialogContent>
-              {/* Role Selector */}
+              <TextField
+                fullWidth
+                label="Name"
+                value={editUserData.name}
+                onChange={(e) => handleEditChange("name", e.target.value)}
+                sx={{
+                  mt: 2,
+                  "& .MuiInputBase-root": {
+                    borderRadius: 4,
+                    fontFamily: "Poppins",
+                  },
+                  "& .MuiInputLabel-root": { fontFamily: "Poppins" },
+                }}
+              />
+              <TextField
+                fullWidth
+                label="Email"
+                value={editUserData.email}
+                onChange={(e) => handleEditChange("email", e.target.value)}
+                sx={{
+                  mt: 2,
+                  "& .MuiInputBase-root": {
+                    borderRadius: 4,
+                    fontFamily: "Poppins",
+                  },
+                  "& .MuiInputLabel-root": { fontFamily: "Poppins" },
+                }}
+              />
               <FormControl fullWidth sx={{ mt: 2 }}>
-                <InputLabel
-                  id="role-select-label"
-                  sx={{ fontFamily: "Poppins" }}
-                >
-                  Assign Role
+                <InputLabel id="role-label" sx={{ fontFamily: "Poppins" }}>
+                  Role
                 </InputLabel>
                 <Select
-                  labelId="role-select-label"
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  label="Assign Role"
+                  labelId="role-label"
+                  value={roleChange}
+                  label="Role"
+                  onChange={handleRoleChange}
                   sx={{ borderRadius: 4, fontFamily: "Poppins" }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: { fontFamily: "Poppins" },
-                    },
-                  }}
+                  MenuProps={{ PaperProps: { sx: { fontFamily: "Poppins" } } }}
                 >
-                  <MenuItem value="mentor">Mentor</MenuItem>
                   <MenuItem value="admin">Admin</MenuItem>
-                  <MenuItem value="school contact">School Contact</MenuItem>
                   <MenuItem value="staff">Staff</MenuItem>
+                  <MenuItem value="mentor">Mentor</MenuItem>
+                  <MenuItem value="school contact">School Contact</MenuItem>
                 </Select>
               </FormControl>
 
-              {/* Mentor Relationships */}
-              {selectedRole === "mentor" &&
+              {/* Mentor-Specific Fields */}
+              {(roleChange === "mentor" ||
+                roleChange === "admin" ||
+                roleChange === "staff") &&
                 relationships.map((r, i) => (
                   <Box
                     key={i}
                     sx={{ mt: 3, display: "flex", gap: 2, flexWrap: "wrap" }}
                   >
+                    <Typography
+                      sx={{
+                        marginTop: 2,
+                        marginLeft: 1,
+                        fontSize: 16,
+                        fontFamily: "Poppins",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Mentor-Student Relationship {i + 1}
+                    </Typography>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontFamily: "Poppins" }}>
                         School Contact
@@ -388,12 +439,10 @@ const MemberInfoPage = () => {
                             e.target.value
                           )
                         }
-                        label="Assign Contact"
+                        label="School Contact"
                         sx={{ borderRadius: 4, fontFamily: "Poppins" }}
                         MenuProps={{
-                          PaperProps: {
-                            sx: { fontFamily: "Poppins" },
-                          },
+                          PaperProps: { sx: { fontFamily: "Poppins" } },
                         }}
                       >
                         {schoolContacts.map((c) => (
@@ -403,7 +452,6 @@ const MemberInfoPage = () => {
                         ))}
                       </Select>
                     </FormControl>
-
                     <TextField
                       fullWidth
                       label="Student Name"
@@ -420,18 +468,15 @@ const MemberInfoPage = () => {
                           borderRadius: 4,
                           fontFamily: "Poppins",
                         },
-                        "& .MuiInputLabel-root": {
-                          fontFamily: "Poppins",
-                        },
+                        "& .MuiInputLabel-root": { fontFamily: "Poppins" },
                       }}
                     />
-
                     <TextField
                       fullWidth
                       label="Birthday"
                       type="date"
                       InputLabelProps={{ shrink: true }}
-                      value={r.birthday}
+                      value={r.birthday ? r.birthday.split("T")[0] : ""}
                       onChange={(e) =>
                         handleRelationshipChange(i, "birthday", e.target.value)
                       }
@@ -440,12 +485,9 @@ const MemberInfoPage = () => {
                           borderRadius: 4,
                           fontFamily: "Poppins",
                         },
-                        "& .MuiInputLabel-root": {
-                          fontFamily: "Poppins",
-                        },
+                        "& .MuiInputLabel-root": { fontFamily: "Poppins" },
                       }}
                     />
-
                     <TextField
                       fullWidth
                       label="School"
@@ -458,15 +500,15 @@ const MemberInfoPage = () => {
                           borderRadius: 4,
                           fontFamily: "Poppins",
                         },
-                        "& .MuiInputLabel-root": {
-                          fontFamily: "Poppins",
-                        },
+                        "& .MuiInputLabel-root": { fontFamily: "Poppins" },
                       }}
                     />
                   </Box>
                 ))}
 
-              {selectedRole === "mentor" && (
+              {(roleChange === "mentor" ||
+                roleChange === "admin" ||
+                roleChange === "staff") && (
                 <Button
                   onClick={handleAddRelationship}
                   sx={{
@@ -474,7 +516,6 @@ const MemberInfoPage = () => {
                     bgcolor: "#DDD",
                     color: "#626262",
                     fontSize: 14,
-                    textTransform: "none",
                     fontFamily: "Poppins",
                     fontWeight: 400,
                     borderRadius: 4,
@@ -492,30 +533,27 @@ const MemberInfoPage = () => {
                   bgcolor: "#DDD",
                   color: "#626262",
                   fontSize: 14,
-                  textTransform: "none",
                   fontFamily: "Poppins",
                   fontWeight: 400,
                   borderRadius: 4,
-                  "&:hover": { bgcolor: "#ccc" },
                 }}
               >
                 Cancel
               </Button>
               <Button
+                onClick={handleEditSubmit}
                 variant="contained"
                 sx={{
                   bgcolor: "#57C5CC",
                   color: "#fff",
                   fontSize: 14,
-                  textTransform: "none",
                   fontFamily: "Poppins",
                   fontWeight: 400,
                   borderRadius: 4,
                   "&:hover": { bgcolor: "#4aa7ad" },
                 }}
-                onClick={handleVerifyUserSubmit}
               >
-                Submit
+                Save Changes
               </Button>
             </DialogActions>
           </Dialog>

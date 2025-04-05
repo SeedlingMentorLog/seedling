@@ -33,7 +33,7 @@ const YourMatchPage = () => {
         }
         const data = await response.json();
         console.log(data);
-        setStudents(data);
+        setStudents(data.students);
       } catch (error) {
         console.error("Error fetching students:", error);
       }

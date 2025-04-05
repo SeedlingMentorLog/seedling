@@ -111,7 +111,13 @@ router.post(
   "/add_mentor_to_student/:user_role",
   verifyAdminStatus,
   (req, res) => {
-    const { mentor_id, school_contact_id, student_name, student_birthday, student_school } = req.body;
+    const {
+      mentor_id,
+      school_contact_id,
+      student_name,
+      student_birthday,
+      student_school,
+    } = req.body;
     const query = `
     INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name, student_birthday, student_school)
     VALUES (?, ?, ?, ?, ?);
@@ -119,13 +125,61 @@ router.post(
 
     pool.query(
       query,
-      [mentor_id, school_contact_id, student_name, student_birthday, student_school],
+      [
+        mentor_id,
+        school_contact_id,
+        student_name,
+        student_birthday,
+        student_school,
+      ],
       (err, result) => {
         if (err) {
           console.error("Error executing query:", err);
           return res.status(500).json({ error: "Error executing query" });
         }
         res.status(201).json({ message: "Success" });
+      }
+    );
+  }
+);
+
+// Add a mentor-student relationship (admin only)
+router.post(
+  "/update_mentor_to_student/:user_role",
+  verifyAdminStatus,
+  (req, res) => {
+    const {
+      relationship_id, // required to identify which row to update
+      school_contact_id,
+      student_name,
+      student_birthday,
+      student_school,
+    } = req.body;
+
+    const query = `
+      UPDATE MENTOR_TO_STUDENT
+      SET school_contact_id = ?,
+          student_name = ?,
+          student_birthday = ?,
+          student_school = ?
+      WHERE mentor_to_student_id = ?;
+    `;
+
+    pool.query(
+      query,
+      [
+        school_contact_id,
+        student_name,
+        student_birthday,
+        student_school,
+        relationship_id,
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          return res.status(500).json({ error: "Error executing query" });
+        }
+        res.status(200).json({ message: "Relationship updated successfully" });
       }
     );
   }
@@ -150,11 +204,11 @@ router.post("/verify_user/:user_role", verifyAdminStatus, (req, res) => {
 });
 
 // Update user profile
-router.post("/update_user_profile", (req, res) => {
+router.post("/update_user_profile/:user_role", verifyAdminStatus,(req, res) => {
   const { email, name, role, id } = req.body;
   const query = `
     UPDATE USERS
-    SET email = ?, name = ?, role = ?
+    SET email = ?, name = ?, role = ?, verified = TRUE
     WHERE id = ?;
   `;
 

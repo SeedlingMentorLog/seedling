@@ -14,11 +14,11 @@ const SidebarComponent = ({ currentPage }) => {
   const navigate = useNavigate();
 
   const navItems = [
-    { label: "Home Page", icon: <HomeIcon />, key: "Home Page", path: "/" },
+    { label: "Dashboard", icon: <HomeIcon />, key: "Dashboard", path: "/dashboard" },
     { label: "Mentor Log", icon: <AccessTimeIcon />, key: "Mentor Log", path: "/mentor-logs" },
     { label: "Member Info", icon: <PeopleIcon />, key: "Member Info", path: "/member-info" },
-    { label: "Your Matches", icon: <GroupsIcon />, key: "Your Matches", path: "/matches" },
-    { label: "Mentors", icon: <CalendarMonthIcon />, key: "Mentors", path: "/mentors" },
+    // { label: "Your Matches", icon: <GroupsIcon />, key: "Your Matches", path: "/matches" },
+    // { label: "Mentors", icon: <CalendarMonthIcon />, key: "Mentors", path: "/mentors" },
   ];
 
   const getListItemTextStyles = (isSelected) => ({

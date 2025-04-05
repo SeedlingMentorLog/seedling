@@ -106,7 +106,7 @@ router.get("/students/:mentor_id", (req, res) => {
         .status(500)
         .json({ error: "Error retrieving mentor-to-student records" });
     }
-    res.json(results);
+    res.status(200).json({ students: results });
   });
 });
 

@@ -126,7 +126,9 @@ const MentorLogsPage = () => {
               Download Excel File
             </Button>
             <Box sx={{ display: "flex", gap: 2 }}>
-              <FormControl sx={{ minWidth: 150, bgcolor: "#fff", borderRadius: 4 }}>
+              <FormControl
+                sx={{ minWidth: 150, bgcolor: "#fff", borderRadius: 4 }}
+              >
                 <InputLabel id="sort-label" sx={{ fontFamily: "Poppins" }}>
                   Sort by
                 </InputLabel>
@@ -191,36 +193,62 @@ const MentorLogsPage = () => {
           {/* Table */}
           <TableContainer
             component={Paper}
-            sx={{ borderRadius: 2, bgcolor: "#fff" }}
+            sx={{ borderRadius: 2, bgcolor: "#fff", fontFamily: "Poppins" }}
           >
-            <Table>
-              <TableHead sx={{ backgroundColor: "#F0F0F0" }}>
-                <TableRow>
-                  <TableCell>Mentor</TableCell>
-                  <TableCell>Student</TableCell>
-                  <TableCell>School Contact</TableCell>
-                  <TableCell>School</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Start</TableCell>
-                  <TableCell>End</TableCell>
-                  <TableCell>Hours</TableCell>
-                  <TableCell>Activity</TableCell>
-                  <TableCell>Meeting Circumstance</TableCell>
+            <Table sx={{ fontFamily: "Poppins" }}>
+              <TableHead
+                sx={{ backgroundColor: "#F0F0F0", fontFamily: "Poppins" }}
+              >
+                <TableRow sx={{ fontFamily: "Poppins" }}>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Mentor</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Student</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>
+                    School Contact
+                  </TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>School</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Date</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Start</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>End</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Hours</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Activity</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>
+                    Meeting Circumstance
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {paginatedLogs.map((log, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>{log.mentor_name}</TableCell>
-                    <TableCell>{log.student_name}</TableCell>
-                    <TableCell>{log.school_contact_name}</TableCell>
-                    <TableCell>{log.student_school}</TableCell>
-                    <TableCell>{formatDate(log.date)}</TableCell>
-                    <TableCell>{formatTime(log.start_time)}</TableCell>
-                    <TableCell>{formatTime(log.end_time)}</TableCell>
-                    <TableCell>{roundHours(log.hours_logged)}</TableCell>
-                    <TableCell>{log.activity}</TableCell>
-                    <TableCell>{log.meeting_circumstance}</TableCell>
+                  <TableRow key={idx} sx={{ fontFamily: "Poppins" }}>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {log.mentor_name}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {log.student_name}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {log.school_contact_name}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {log.student_school}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {formatDate(log.date)}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {formatTime(log.start_time)}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {formatTime(log.end_time)}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {roundHours(log.hours_logged)}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {log.activity}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {log.meeting_circumstance}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -234,13 +262,14 @@ const MentorLogsPage = () => {
               justifyContent: "space-between",
               alignItems: "center",
               mt: 2,
-              bgcolor: "#fff", // white footer
+              bgcolor: "#fff",
               px: 2,
               py: 1,
               borderRadius: 2,
+              fontFamily: "Poppins",
             }}
           >
-            <Typography fontSize={14}>
+            <Typography fontSize={14} sx={{ fontFamily: "Poppins" }}>
               Showing data {startIndex + 1} to {endIndex} of {totalEntries}{" "}
               entries
             </Typography>
@@ -249,8 +278,10 @@ const MentorLogsPage = () => {
               page={page}
               onChange={handlePageChange}
               sx={{
+                fontFamily: "Poppins",
                 "& .MuiPaginationItem-root": {
                   backgroundColor: "#F5F5F5",
+                  fontFamily: "Poppins",
                 },
                 "& .MuiPaginationItem-previousNext": {
                   backgroundColor: "#F5F5F5",

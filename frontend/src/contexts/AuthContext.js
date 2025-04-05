@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("currentUser", JSON.stringify(user));
       if (user.role === "admin" || user.role === "staff") {
-        navigate("/mentor-logs");
+        navigate("/dashboard");
       } else {
         navigate("/mentor-homepage");
       }
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("currentUser", JSON.stringify(user));
       if (user.role === "admin" || user.role === "staff") {
-        navigate("/mentor-logs");
+        navigate("/dashboard");
       } else {
         navigate("/mentor-homepage");
       }
@@ -169,7 +169,6 @@ export const AuthProvider = ({ children }) => {
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/mentor-homepage");
     } catch (error) {
       setError({
         errorHeader: "Email/Password Sign-Up Error",
@@ -224,7 +223,6 @@ export const AuthProvider = ({ children }) => {
           GoogleAuthProvider.credentialFromResult(result).accessToken,
       };
       localStorage.setItem("currentUser", JSON.stringify(user));
-      navigate("/mentor-homepage");
     } catch (error) {
       setError({
         errorHeader: "Google Error",

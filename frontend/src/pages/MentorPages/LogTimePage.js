@@ -147,7 +147,7 @@ const LogTimePage = () => {
           throw new Error("Failed to fetch students");
         }
         const data = await response.json();
-        setStudents(data); // Store the fetched data in state
+        setStudents(data.students); // Store the fetched data in state
       } catch (error) {
         console.error("Error fetching students:", error);
       }
