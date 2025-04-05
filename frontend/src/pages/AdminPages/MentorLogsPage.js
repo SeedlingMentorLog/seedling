@@ -16,18 +16,56 @@ import {
   TableRow,
   Paper,
   Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import SearchIcon from "@mui/icons-material/Search";
 import SidebarComponent from "../../components/SidebarComponent";
 import HeaderComponent from "../../components/HeaderComponent";
+import { saveAs } from "file-saver";
 
 const MentorLogsPage = () => {
+  const rowsPerPage = 10;
   const [mentorLogs, setMentorLogs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [sortBy, setSortBy] = useState("Newest");
   const [page, setPage] = useState(1);
-  const rowsPerPage = 10;
+  const [downloadDialogOpen, setDownloadDialogOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [csvPreviewData, setCsvPreviewData] = useState([]);
+  const [selectedColumns, setSelectedColumns] = useState([
+    "mentor_name",
+    "student_name",
+    "school_contact_name",
+    "student_school",
+    "date",
+    "start_time",
+    "end_time",
+    "hours_logged",
+    "activity",
+    "meeting_circumstance",
+  ]);
+
+  const allColumns = [
+    { key: "mentor_name", label: "Mentor" },
+    { key: "student_name", label: "Student" },
+    { key: "school_contact_name", label: "School Contact" },
+    { key: "student_school", label: "School" },
+    { key: "date", label: "Date" },
+    { key: "start_time", label: "Start Time" },
+    { key: "end_time", label: "End Time" },
+    { key: "hours_logged", label: "Hours" },
+    { key: "activity", label: "Activity" },
+    { key: "meeting_circumstance", label: "Meeting Circumstance" },
+    { key: "met", label: "Met?" },
+    { key: "comments", label: "Comments" },
+  ];
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -47,11 +85,10 @@ const MentorLogsPage = () => {
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${month}-${day}-${year}`; // prefix with apostrophe
   };
 
   const formatTime = (timeStr) => {
@@ -94,9 +131,61 @@ const MentorLogsPage = () => {
   const endIndex = Math.min(startIndex + rowsPerPage, totalEntries);
   const paginatedLogs = filteredLogs.slice(startIndex, endIndex);
 
+  const handleColumnToggle = (key) => {
+    setSelectedColumns((prev) =>
+      prev.includes(key) ? prev.filter((col) => col !== key) : [...prev, key]
+    );
+  };
+
+  const generatePreviewData = () => {
+    const previewRows = mentorLogs.slice(0, 5).map((log) =>
+      selectedColumns.map((key) => {
+        let val = log[key];
+        if (key === "date") val = formatDate(val);
+        else if (key === "start_time" || key === "end_time")
+          val = formatTime(val);
+        else if (key === "hours_logged") val = roundHours(val);
+        return val ?? "";
+      })
+    );
+    setCsvPreviewData(previewRows);
+    setDownloadDialogOpen(false);
+    setPreviewOpen(true);
+  };
+
+  const handleDownload = () => {
+    const csvHeader = selectedColumns
+      .map((key) => {
+        const col = allColumns.find((c) => c.key === key);
+        return `"${col?.label || key}"`;
+      })
+      .join(",");
+
+    const csvRows = mentorLogs.map((log) =>
+      selectedColumns
+        .map((key) => {
+          let val = log[key];
+          if (key === "date") val = formatDate(val);
+          else if (key === "start_time" || key === "end_time")
+            val = formatTime(val);
+          else if (key === "hours_logged") val = roundHours(val);
+          if (val === null || val === undefined) return '""';
+          return `"${String(val).replace(/"/g, '""')}"`;
+        })
+        .join(",")
+    );
+
+    const blob = new Blob([csvHeader + "\n" + csvRows.join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    saveAs(blob, "mentor_logs.csv");
+    setPreviewOpen(false);
+  };
+
   return (
     <Box sx={{ display: "flex", height: "100vh", fontFamily: "Poppins" }}>
-      <SidebarComponent currentPage="Mentor Log" />
+      <SidebarComponent currentPage="Mentor Logs" />
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <HeaderComponent />
         <Box sx={{ flexGrow: 1, p: 3, bgcolor: "#F5F6FA" }}>
@@ -112,6 +201,7 @@ const MentorLogsPage = () => {
             <Button
               variant="contained"
               startIcon={<FileDownloadIcon />}
+              onClick={() => setDownloadDialogOpen(true)}
               sx={{
                 bgcolor: "#DDD",
                 color: "#626262",
@@ -125,6 +215,7 @@ const MentorLogsPage = () => {
             >
               Download Excel File
             </Button>
+
             <Box sx={{ display: "flex", gap: 2 }}>
               <FormControl
                 sx={{ minWidth: 150, bgcolor: "#fff", borderRadius: 4 }}
@@ -294,6 +385,140 @@ const MentorLogsPage = () => {
             />
           </Box>
         </Box>
+        <Dialog
+          open={downloadDialogOpen}
+          onClose={() => setDownloadDialogOpen(false)}
+        >
+          <DialogTitle sx={{ fontFamily: "Poppins" }}>
+            Select Columns to Export
+          </DialogTitle>
+          <DialogContent>
+            <FormGroup>
+              {allColumns.map((col) => (
+                <FormControlLabel
+                  key={col.key}
+                  control={
+                    <Checkbox
+                      checked={selectedColumns.includes(col.key)}
+                      onChange={() => handleColumnToggle(col.key)}
+                      sx={{
+                        color: "#57C5CC",
+                        "&.Mui-checked": {
+                          color: "#57C5CC",
+                        },
+                      }}
+                    />
+                  }
+                  label={col.label}
+                  sx={{ fontFamily: "Poppins" }}
+                />
+              ))}
+            </FormGroup>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setDownloadDialogOpen(false)}
+              sx={{
+                bgcolor: "#DDD",
+                color: "#626262",
+                fontSize: 14,
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                borderRadius: 4,
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={generatePreviewData}
+              variant="contained"
+              sx={{
+                bgcolor: "#57C5CC",
+                color: "#fff",
+                fontSize: 14,
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                borderRadius: 4,
+                "&:hover": { bgcolor: "#4aa7ad" },
+              }}
+            >
+              Next
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          maxWidth="lg"
+          fullWidth
+        >
+          <DialogTitle sx={{ fontFamily: "Poppins" }}>CSV Preview</DialogTitle>
+          <DialogContent>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead
+                  sx={{ backgroundColor: "#F0F0F0", fontFamily: "Poppins" }}
+                >
+                  <TableRow>
+                    {selectedColumns.map((key) => {
+                      const label =
+                        allColumns.find((c) => c.key === key)?.label || key;
+                      return (
+                        <TableCell
+                          key={key}
+                          sx={{ fontFamily: "Poppins", fontWeight: "bold" }}
+                        >
+                          {label}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {csvPreviewData.map((row, idx) => (
+                    <TableRow key={idx}>
+                      {row.map((val, i) => (
+                        <TableCell key={i} sx={{ fontFamily: "Poppins" }}>
+                          {val}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setPreviewOpen(false)}
+              sx={{
+                bgcolor: "#DDD",
+                color: "#626262",
+                fontSize: 14,
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                borderRadius: 4,
+              }}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleDownload}
+              variant="contained"
+              sx={{
+                bgcolor: "#57C5CC",
+                color: "#fff",
+                fontSize: 14,
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                borderRadius: 4,
+                "&:hover": { bgcolor: "#4aa7ad" },
+              }}
+            >
+              Download CSV
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );
