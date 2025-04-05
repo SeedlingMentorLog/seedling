@@ -3,20 +3,22 @@ import HomeIcon from "@mui/icons-material/Home";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import GroupsIcon from "@mui/icons-material/Groups";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import PeopleIcon from "@mui/icons-material/People"; // NEW icon for Member Info
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.js";
 
 const SidebarComponent = ({ currentPage }) => {
   const { handleSignOut } = useAuth();
+  const navigate = useNavigate();
 
   const navItems = [
-    { label: "Home Page", icon: <HomeIcon />, key: "Home Page" },
-    { label: "Mentor Log", icon: <AccessTimeIcon />, key: "Mentor Log" },
-    { label: "Calendar", icon: <CalendarMonthIcon />, key: "Calendar" },
-    { label: "Your Matches", icon: <GroupsIcon />, key: "Your Matches" },
-    { label: "Mentors", icon: <PeopleAltIcon />, key: "Mentors" },
+    { label: "Home Page", icon: <HomeIcon />, key: "Home Page", path: "/" },
+    { label: "Mentor Log", icon: <AccessTimeIcon />, key: "Mentor Log", path: "/mentor-logs" },
+    { label: "Member Info", icon: <PeopleIcon />, key: "Member Info", path: "/member-info" },
+    { label: "Your Matches", icon: <GroupsIcon />, key: "Your Matches", path: "/matches" },
+    { label: "Mentors", icon: <CalendarMonthIcon />, key: "Mentors", path: "/mentors" },
   ];
 
   const getListItemTextStyles = (isSelected) => ({
@@ -45,12 +47,13 @@ const SidebarComponent = ({ currentPage }) => {
     >
       <Box>
         <List>
-          {navItems.map(({ label, icon, key }) => {
+          {navItems.map(({ label, icon, key, path }) => {
             const isSelected = currentPage === label;
             return (
               <ListItem
                 key={key}
                 button
+                onClick={() => navigate(path)}
                 sx={{
                   cursor: "pointer",
                   backgroundColor: isSelected ? "#57C5CC" : "transparent",
@@ -63,10 +66,7 @@ const SidebarComponent = ({ currentPage }) => {
                 }}
               >
                 {icon}
-                <ListItemText
-                  sx={getListItemTextStyles(isSelected)}
-                  primary={label}
-                />
+                <ListItemText sx={getListItemTextStyles(isSelected)} primary={label} />
               </ListItem>
             );
           })}
@@ -86,10 +86,7 @@ const SidebarComponent = ({ currentPage }) => {
             }}
           >
             <SettingsIcon sx={{ mr: 1 }} />
-            <ListItemText
-              sx={getListItemTextStyles(false)}
-              primary="Settings"
-            />
+            <ListItemText sx={getListItemTextStyles(false)} primary="Settings" />
           </ListItem>
           <ListItem
             button
@@ -101,10 +98,7 @@ const SidebarComponent = ({ currentPage }) => {
             }}
           >
             <LogoutIcon sx={{ mr: 1 }} />
-            <ListItemText
-              sx={getListItemTextStyles(false)}
-              primary="Logout"
-            />
+            <ListItemText sx={getListItemTextStyles(false)} primary="Logout" />
           </ListItem>
         </List>
       </Box>

@@ -99,8 +99,11 @@ const MentorLogsPage = () => {
       <SidebarComponent currentPage="Mentor Log" />
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <HeaderComponent />
-        <Box sx={{ flexGrow: 1, p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, fontFamily: "Nunito Sans" }}>
+        <Box sx={{ flexGrow: 1, p: 3, bgcolor: "#F5F6FA" }}>
+          <Typography
+            variant="h5"
+            sx={{ mb: 3, fontWeight: 600, fontFamily: "Nunito Sans" }}
+          >
             Mentor Logs
           </Typography>
 
@@ -123,7 +126,7 @@ const MentorLogsPage = () => {
               Download Excel File
             </Button>
             <Box sx={{ display: "flex", gap: 2 }}>
-              <FormControl sx={{ minWidth: 150 }}>
+              <FormControl sx={{ minWidth: 150, bgcolor: "#fff", borderRadius: 4 }}>
                 <InputLabel id="sort-label" sx={{ fontFamily: "Poppins" }}>
                   Sort by
                 </InputLabel>
@@ -186,7 +189,10 @@ const MentorLogsPage = () => {
           </Box>
 
           {/* Table */}
-          <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
+          <TableContainer
+            component={Paper}
+            sx={{ borderRadius: 2, bgcolor: "#fff" }}
+          >
             <Table>
               <TableHead sx={{ backgroundColor: "#F0F0F0" }}>
                 <TableRow>
@@ -228,6 +234,10 @@ const MentorLogsPage = () => {
               justifyContent: "space-between",
               alignItems: "center",
               mt: 2,
+              bgcolor: "#fff", // white footer
+              px: 2,
+              py: 1,
+              borderRadius: 2,
             }}
           >
             <Typography fontSize={14}>
@@ -240,7 +250,9 @@ const MentorLogsPage = () => {
               onChange={handlePageChange}
               sx={{
                 "& .MuiPaginationItem-root": {
-                  fontFamily: "Inter",
+                  backgroundColor: "#F5F5F5",
+                },
+                "& .MuiPaginationItem-previousNext": {
                   backgroundColor: "#F5F5F5",
                 },
                 "& .Mui-selected": {

@@ -42,6 +42,18 @@ router.get("/user/:firebase_id", (req, res) => {
   });
 });
 
+// Get all users
+router.get("/users", (req, res) => {
+  const query = `SELECT id, email, name, role, verified FROM USERS;`;
+  pool.query(query, (err, result) => {
+    if (err) {
+      console.error("Error executing query:", err);
+      return res.status(500).json({ error: "Error executing query" });
+    }
+    res.status(200).json({ users: result });
+  });
+});
+
 // Get all mentors (admin and staff only)
 router.get("/mentors/:user_role", verifyAdminOrStaffStatus, (req, res) => {
   const query = `SELECT id, name FROM USERS WHERE role = 'mentor';`;

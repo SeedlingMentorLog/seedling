@@ -111,15 +111,15 @@ router.post(
   "/add_mentor_to_student/:user_role",
   verifyAdminStatus,
   (req, res) => {
-    const { mentor_id, school_contact_id, student_name } = req.body;
+    const { mentor_id, school_contact_id, student_name, student_birthday, student_school } = req.body;
     const query = `
-    INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name)
-    VALUES (?, ?, ?);
+    INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name, student_birthday, student_school)
+    VALUES (?, ?, ?, ?, ?);
   `;
 
     pool.query(
       query,
-      [mentor_id, school_contact_id, student_name],
+      [mentor_id, school_contact_id, student_name, student_birthday, student_school],
       (err, result) => {
         if (err) {
           console.error("Error executing query:", err);

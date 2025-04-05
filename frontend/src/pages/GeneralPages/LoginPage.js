@@ -270,7 +270,7 @@ const LoginPage = () => {
               textDecoration: "none",
             }}
           >
-            Sign up
+            Create an account
           </Link>
         </Typography>
       </Box>

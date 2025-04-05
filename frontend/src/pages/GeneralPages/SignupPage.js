@@ -87,32 +87,10 @@ const SignupPage = () => {
           gutterBottom
           sx={{ fontWeight: "bold", marginBottom: 2 }}
         >
-          Sign Up
+          Create an Account
         </Typography>
 
         <form onSubmit={handleEmailPasswordSignupClick}>
-          <Typography
-            variant="body2"
-            sx={{
-              fontFamily: "Inter",
-              fontSize: 14,
-              color: "#181E25",
-              marginBottom: 0.5,
-            }}
-          >
-            Name
-          </Typography>
-          <TextField
-            fontFamily="Inter"
-            variant="outlined"
-            fullWidth
-            margin="dense"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            sx={{ marginBottom: 2 }}
-          />
-
           <Typography
             variant="body2"
             sx={{
@@ -132,6 +110,28 @@ const SignupPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="yourname@company.com"
+            sx={{ marginBottom: 2 }}
+          />
+
+          <Typography
+            variant="body2"
+            sx={{
+              fontFamily: "Inter",
+              fontSize: 14,
+              color: "#181E25",
+              marginBottom: 0.5,
+            }}
+          >
+            Name
+          </Typography>
+          <TextField
+            fontFamily="Inter"
+            variant="outlined"
+            fullWidth
+            margin="dense"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
             sx={{ marginBottom: 2 }}
           />
 

@@ -8,7 +8,7 @@ import {
   signOut,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { auth } from "../components/firebaseConfig";
+import { auth } from "./firebaseConfig";
 import { Snackbar, Alert } from "@mui/material";
 
 const AuthContext = createContext();

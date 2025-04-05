@@ -11,10 +11,11 @@ import LogTimePage from "./pages/MentorPages/LogTimePage";
 import MentorHomePage from "./pages/MentorPages/MentorHomePage";
 // import CalendarPage from './pages/CalendarPage';
 
+import MemberInfoPage from "./pages/AdminPages/MemberInfoPage";
 import MentorLogsPage from "./pages/AdminPages/MentorLogsPage";
 
-import PrivateRouteComponent from "./components/PrivateRouteComponent";
-import AdminRouteComponent from "./components/AdminRouteComponent";
+import PrivateRouteComponent from "./components/RoutingComponents/PrivateRouteComponent";
+import AdminRouteComponent from "./components/RoutingComponents/AdminRouteComponent";
 
 function App() {
   return (
@@ -46,6 +47,10 @@ function App() {
 
           {/* Admin */}
           {/* <Route path="/calendar" element={<CalendarPage />} /> */}
+          <Route
+            path="/member-info"
+            element={<AdminRouteComponent element={<MemberInfoPage />} />}
+          />
           <Route
             path="/mentor-logs"
             element={<AdminRouteComponent element={<MentorLogsPage />} />}
