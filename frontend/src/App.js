@@ -11,12 +11,17 @@ import LogTimePage from "./pages/MentorPages/LogTimePage";
 import MentorHomePage from "./pages/MentorPages/MentorHomePage";
 // import CalendarPage from './pages/CalendarPage';
 
-import DashboardPage from "./pages/AdminPages/DashboardPage";
-import MemberInfoPage from "./pages/AdminPages/MemberInfoPage";
-import MentorLogsPage from "./pages/AdminPages/MentorLogsPage";
+import AdminDashboardPage from "./pages/AdminPages/DashboardPage";
+import AdminMemberInfoPage from "./pages/AdminPages/MemberInfoPage";
+import AdminMentorLogsPage from "./pages/AdminPages/MentorLogsPage";
+
+import SCDashboardPage from "./pages/SchoolContactPages/DashboardPage";
+import SCMemberInfoPage from "./pages/SchoolContactPages/MemberInfoPage";
+import SCMentorLogsPage from "./pages/SchoolContactPages/MentorLogsPage";
 
 import PrivateRouteComponent from "./components/RoutingComponents/PrivateRouteComponent";
 import AdminRouteComponent from "./components/RoutingComponents/AdminRouteComponent";
+import SchoolContactRouteComponent from "./components/RoutingComponents/SchoolContactComponent";
 
 function App() {
   return (
@@ -49,16 +54,28 @@ function App() {
           {/* Admin */}
           {/* <Route path="/calendar" element={<CalendarPage />} /> */}
           <Route
-            path="/dashboard"
-            element={<AdminRouteComponent element={<DashboardPage />} />}
+            path="/admin-dashboard"
+            element={<AdminRouteComponent element={<AdminDashboardPage />} />}
           />
           <Route
-            path="/member-info"
-            element={<AdminRouteComponent element={<MemberInfoPage />} />}
+            path="/admin-member-info"
+            element={<AdminRouteComponent element={<AdminMemberInfoPage />} />}
           />
           <Route
-            path="/mentor-logs"
-            element={<AdminRouteComponent element={<MentorLogsPage />} />}
+            path="/admin-mentor-logs"
+            element={<AdminRouteComponent element={<AdminMentorLogsPage />} />}
+          />
+          <Route
+            path="/school-contact-dashboard"
+            element={<SchoolContactRouteComponent element={<SCDashboardPage />} />}
+          />
+          <Route
+            path="/school-contact-member-info"
+            element={<SchoolContactRouteComponent element={<SCMemberInfoPage />} />}
+          />
+          <Route
+            path="/school-contact-mentor-logs"
+            element={<SchoolContactRouteComponent element={<SCMentorLogsPage />} />}
           />
         </Routes>
       </AuthProvider>
