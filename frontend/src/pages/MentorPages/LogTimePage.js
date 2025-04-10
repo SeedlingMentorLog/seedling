@@ -28,6 +28,8 @@ const LogTimePage = () => {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [customActivity, setCustomActivity] = useState("");
+  const [metStatus, setMetStatus] = useState("");
   const [error, setError] = useState(null);
 
   const toggleDrawer = (open) => () => {
@@ -45,7 +47,11 @@ const LogTimePage = () => {
 
   const handleActivityChange = (event) => {
     setActivity(event.target.value);
+    if (event.target.value !== "Other") {
+      setCustomActivity("");
+    }
   };
+
 
   const handlePersonChange = (event) => {
     setPerson(event.target.value);
@@ -99,14 +105,14 @@ const LogTimePage = () => {
     const data = {
       mentor_id: JSON.parse(person).mentor_id,
       mentor_to_student_id: JSON.parse(person).mentor_to_student_id,
-      date: date,
+      date,
       start_time: startTime,
       end_time: endTime,
       hours_logged: calculateHours(startTime, endTime),
-      activity: activity,
+      activity: activity === "Other" ? customActivity : activity,
       meeting_circumstance: "in-person",
       comments: note,
-    };
+    };    
 
     try {
       const response = await fetch(
@@ -263,7 +269,118 @@ const LogTimePage = () => {
           </Select>
         </FormControl>
 
-        {/* Note Input */}
+        {/* Did you meet with student? */}
+        <FormControl component="fieldset">
+          <RadioGroup
+            value={metStatus}
+            onChange={(e) => setMetStatus(e.target.value)}
+            sx={{ paddingTop: 1 }}
+          >
+            <FormControlLabel
+              value="met"
+              control={<Radio />}
+              label="Met with student"
+            />
+            <FormControlLabel
+              value="no_show"
+              control={<Radio />}
+              label="Student did not show up"
+            />
+            <FormControlLabel
+              value="not_met"
+              control={<Radio />}
+              label="Did not meet with student"
+            />
+          </RadioGroup>
+        </FormControl>
+
+        {/* Conditional Fields */}
+        {metStatus === "met" && (
+          <>
+            {/* Date */}
+            <TextField
+              type="date"
+              fullWidth
+              value={date}
+              onChange={handleDateChange}
+              sx={{
+                backgroundColor: "#F9FAFB",
+                borderRadius: 2,
+                "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+              }}
+            />
+
+            {/* Start and End Time */}
+            <Box sx={{ display: "flex", gap: 2 }}>
+              <TextField
+                type="time"
+                value={startTime}
+                onChange={handleStartTimeChange}
+                fullWidth
+                sx={{
+                  backgroundColor: "#F9FAFB",
+                  borderRadius: 2,
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+              <TextField
+                type="time"
+                value={endTime}
+                onChange={handleEndTimeChange}
+                fullWidth
+                sx={{
+                  backgroundColor: "#F9FAFB",
+                  borderRadius: 2,
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+            </Box>
+
+            {/* Activity Selector - no label now */}
+            <FormControl component="fieldset">
+              <Select
+                value={activity}
+                onChange={handleActivityChange}
+                displayEmpty
+                inputProps={{ "aria-label": "Activity" }}
+                sx={{
+                  backgroundColor: "#F9FAFB",
+                  borderRadius: 2,
+                  border: "1px solid #EDF1F7",
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              >
+                <MenuItem value="" disabled>
+                  Select an activity
+                </MenuItem>
+                <MenuItem value="talked">Talked</MenuItem>
+                <MenuItem value="played games">Played Games</MenuItem>
+                <MenuItem value="did art projects">Did Art Projects</MenuItem>
+                <MenuItem value="read">Read</MenuItem>
+                <MenuItem value="Played sports">Played sports</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </Select>
+              {activity === "Other" && (
+                <TextField
+                  fullWidth
+                  placeholder="Describe the activity"
+                  value={customActivity}
+                  onChange={(e) => setCustomActivity(e.target.value)}
+                  variant="outlined"
+                  sx={{
+                    mt: 2,
+                    backgroundColor: "#F9FAFB",
+                    borderRadius: 2,
+                    border: "1px solid #EDF1F7",
+                    "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                  }}
+                />
+              )}
+            </FormControl>
+          </>
+        )}
+
+        {/* Note Input - always at the bottom */}
         <TextField
           placeholder="Type the note here..."
           multiline
@@ -279,186 +396,6 @@ const LogTimePage = () => {
             "& .MuiOutlinedInput-notchedOutline": { border: "none" },
           }}
         />
-
-        {/* Date and Time */}
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <TextField
-            type="date"
-            fullWidth
-            value={date}
-            onChange={handleDateChange}
-            sx={{
-              backgroundColor: "#F9FAFB",
-              borderRadius: 2,
-              "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-            }}
-          />
-        </Box>
-
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <TextField
-            type="time"
-            value={startTime}
-            onChange={handleStartTimeChange}
-            fullWidth
-            sx={{
-              backgroundColor: "#F9FAFB",
-              borderRadius: 2,
-              "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-            }}
-          />
-          <TextField
-            type="time"
-            value={endTime}
-            onChange={handleEndTimeChange}
-            fullWidth
-            sx={{
-              backgroundColor: "#F9FAFB",
-              borderRadius: 2,
-              "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-            }}
-          />
-        </Box>
-
-        {/* Activity */}
-        <Typography
-          sx={{
-            fontFamily: "Inter",
-            fontSize: 16,
-            fontWeight: 500,
-            color: "#000",
-          }}
-        >
-          Activity
-        </Typography>
-
-        <FormControl component="fieldset">
-          <RadioGroup
-            row
-            value={activity}
-            onChange={handleActivityChange}
-            sx={{
-              display: "flex",
-              justifyContent: "space-evenly",
-              alignItems: "center",
-            }}
-          >
-            <FormControlLabel
-              value="In-Person"
-              control={
-                <Radio
-                  sx={{
-                    color: "#222B45",
-                    padding: 1,
-                    paddingRight: 0.5,
-                    paddingLeft: 0.5,
-                    "&.Mui-checked": {
-                      color: "#FED007",
-                    },
-                  }}
-                />
-              }
-              label="In-Person"
-              sx={{
-                backgroundColor: "#FFFFE8",
-                borderRadius: 2,
-                paddingRight: 1,
-                color: "#222B45",
-                display: "flex",
-                alignItems: "center",
-                "& .MuiTypography-root": {
-                  color: "#222B45",
-                  fontFamily: "Inter",
-                  fontSize: 14,
-                  fontStyle: "normal",
-                  fontWeight: 500,
-                  letterSpacing: 0.875,
-                },
-              }}
-            />
-
-            <FormControlLabel
-              value="Career"
-              control={
-                <Radio
-                  sx={{
-                    color: "#222B45",
-                    padding: 1,
-                    paddingRight: 0.5,
-                    paddingLeft: 0.5,
-                    "&.Mui-checked": {
-                      color: "#21545C",
-                    },
-                  }}
-                />
-              }
-              label="Career"
-              sx={{
-                backgroundColor: "#DFE4E9",
-                borderRadius: 2,
-                paddingRight: 1,
-                color: "#222B45",
-                display: "flex",
-                alignItems: "center",
-                "& .MuiTypography-root": {
-                  color: "#222B45",
-                  fontFamily: "Inter",
-                  fontSize: 14,
-                  fontStyle: "normal",
-                  fontWeight: 500,
-                  letterSpacing: 0.875,
-                },
-              }}
-            />
-
-            <FormControlLabel
-              value="Other"
-              control={
-                <Radio
-                  sx={{
-                    color: "#222B45",
-                    padding: 1,
-                    paddingRight: 0.5,
-                    paddingLeft: 0.5,
-                    "&.Mui-checked": {
-                      color: "#57C5CC",
-                    },
-                  }}
-                />
-              }
-              label="Other"
-              sx={{
-                backgroundColor: "#DEFDFD",
-                borderRadius: 2,
-                paddingRight: 1,
-                color: "#222B45",
-                display: "flex",
-                alignItems: "center",
-                "& .MuiTypography-root": {
-                  color: "#222B45",
-                  fontFamily: "Inter",
-                  fontSize: 14,
-                  fontStyle: "normal",
-                  fontWeight: 500,
-                  letterSpacing: 0.875,
-                },
-              }}
-            />
-          </RadioGroup>
-        </FormControl>
-
-        {/* Add New */}
-        <Typography
-          sx={{
-            fontFamily: "Inter",
-            fontSize: 14,
-            fontWeight: 500,
-            color: "#57C5CC",
-            cursor: "pointer",
-          }}
-        >
-          + Add new
-        </Typography>
 
         {/* Submit Button */}
         <Button
