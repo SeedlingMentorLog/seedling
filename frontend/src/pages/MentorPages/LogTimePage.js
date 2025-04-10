@@ -105,15 +105,15 @@ const LogTimePage = () => {
     const data = {
       mentor_id: JSON.parse(person).mentor_id,
       mentor_to_student_id: JSON.parse(person).mentor_to_student_id,
-      date: date,
+      date,
       start_time: startTime,
       end_time: endTime,
       hours_logged: calculateHours(startTime, endTime),
       activity: activity === "Other" ? customActivity : activity,
-      met: true,
+      met: metStatus === "met",
       meeting_circumstance: "in-person",
       comments: note,
-    };
+    };    
 
     try {
       const response = await fetch(
