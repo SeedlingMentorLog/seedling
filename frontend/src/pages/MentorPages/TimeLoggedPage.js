@@ -138,7 +138,7 @@ const TimeLoggedPage = (props) => {
               fontWeight: 600,
               letterSpacing: -0.32,
             }}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/log-time")}
           >
             Log More Time
           </Button>

@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { act, React, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -52,7 +52,6 @@ const LogTimePage = () => {
     }
   };
 
-
   const handlePersonChange = (event) => {
     setPerson(event.target.value);
   };
@@ -97,7 +96,14 @@ const LogTimePage = () => {
 
   // Add a log to the database
   const handleSubmit = async () => {
-    if (!activity || !person || !date || !startTime || !endTime) {
+    const missingPerson = !person;
+    const missingFullDetails = !activity || !date || !startTime || !endTime;
+
+    if (
+      !metStatus ||
+      (metStatus === "met" && (missingPerson || missingFullDetails)) ||
+      (metStatus !== "met" && missingPerson)
+    ) {
       setError({ errorMessage: "Please fill in all required fields." });
       return;
     }
@@ -105,14 +111,15 @@ const LogTimePage = () => {
     const data = {
       mentor_id: JSON.parse(person).mentor_id,
       mentor_to_student_id: JSON.parse(person).mentor_to_student_id,
-      date,
-      start_time: startTime,
-      end_time: endTime,
-      hours_logged: calculateHours(startTime, endTime),
+      date: metStatus === "met" ? date : null,
+      start_time: metStatus === "met" ? startTime : null,
+      end_time: metStatus === "met" ? endTime : null,
+      hours_logged:
+        metStatus === "met" ? calculateHours(startTime, endTime) : null,
       activity: activity === "Other" ? customActivity : activity,
-      meeting_circumstance: "in-person",
+      meeting_circumstance: metStatus,
       comments: note,
-    };    
+    };
 
     try {
       const response = await fetch(
@@ -282,12 +289,12 @@ const LogTimePage = () => {
               label="Met with student"
             />
             <FormControlLabel
-              value="no_show"
+              value="no-show"
               control={<Radio />}
               label="Student did not show up"
             />
             <FormControlLabel
-              value="not_met"
+              value="not-met"
               control={<Radio />}
               label="Did not meet with student"
             />
