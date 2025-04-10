@@ -25,14 +25,13 @@ router.post("/add_log", (req, res) => {
     end_time,
     hours_logged,
     activity,
-    met,
     meeting_circumstance,
     comments,
   } = req.body;
 
   const query = `
-      INSERT INTO MENTOR_LOGS (mentor_id, mentor_to_student_id, date, start_time, end_time, hours_logged, activity, met, meeting_circumstance, comments)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+      INSERT INTO MENTOR_LOGS (mentor_id, mentor_to_student_id, date, start_time, end_time, hours_logged, activity, meeting_circumstance, comments)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
 
   // Second query adds the log to the DB
@@ -46,7 +45,6 @@ router.post("/add_log", (req, res) => {
       end_time,
       hours_logged,
       activity,
-      met,
       meeting_circumstance,
       comments,
     ],
@@ -115,12 +113,14 @@ router.post(
       mentor_id,
       school_contact_id,
       student_name,
+      start_date,
+      end_date,
       student_birthday,
       student_school,
     } = req.body;
     const query = `
-    INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name, student_birthday, student_school)
-    VALUES (?, ?, ?, ?, ?);
+    INSERT INTO MENTOR_TO_STUDENT (mentor_id, school_contact_id, student_name, start_date, end_date, student_birthday, student_school)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
   `;
 
     pool.query(
@@ -129,6 +129,8 @@ router.post(
         mentor_id,
         school_contact_id,
         student_name,
+        start_date,
+        end_date,
         student_birthday,
         student_school,
       ],
@@ -152,6 +154,8 @@ router.post(
       relationship_id, // required to identify which row to update
       school_contact_id,
       student_name,
+      start_date,
+      end_date,
       student_birthday,
       student_school,
     } = req.body;
@@ -160,6 +164,8 @@ router.post(
       UPDATE MENTOR_TO_STUDENT
       SET school_contact_id = ?,
           student_name = ?,
+          start_date = ?,
+          end_date = ?,
           student_birthday = ?,
           student_school = ?
       WHERE mentor_to_student_id = ?;
@@ -170,6 +176,8 @@ router.post(
       [
         school_contact_id,
         student_name,
+        start_date,
+        end_date,
         student_birthday,
         student_school,
         relationship_id,

@@ -91,6 +91,8 @@ router.get("/students/:mentor_id", (req, res) => {
                mts.student_name,
                mts.student_birthday,
                mts.student_school,
+               mts.start_date,
+               mts.end_date,
                u.name AS mentor_name,
                sc.name AS school_contact_name
         FROM MENTOR_TO_STUDENT mts
@@ -120,12 +122,13 @@ router.get("/mentor_logs", (req, res) => {
            ml.end_time,
            ml.hours_logged,
            ml.activity,
-           ml.met,
            ml.meeting_circumstance,
            ml.comments,
            u.name AS mentor_name,
            mts.student_name AS student_name,
            mts.student_school AS student_school,
+           mts.start_date AS start_date,
+           mts.end_date AS end_date,
            sc.name AS school_contact_name
     FROM MENTOR_LOGS ml
     JOIN USERS u ON ml.mentor_id = u.id
@@ -154,11 +157,12 @@ router.get("/mentor_logs/:mentor_id", (req, res) => {
            ml.end_time,
            ml.hours_logged,
            ml.activity,
-           ml.met,
            ml.meeting_circumstance,
            ml.comments,
            u.name AS mentor_name,
-           mts.student_name AS student_name
+           mts.student_name AS student_name,
+           mts.start_date AS start_date,
+           mts.end_date AS end_date,
     FROM MENTOR_LOGS ml
     JOIN USERS u ON ml.mentor_id = u.id
     JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id
@@ -185,11 +189,12 @@ router.get("/school_logs/:school_id", (req, res) => {
            ml.end_time,
            ml.hours_logged,
            ml.activity,
-           ml.met,
            ml.meeting_circumstance,
            ml.comments,
            u.name AS mentor_name,
-           mts.student_name AS student_name
+           mts.student_name AS student_name,
+           mts.start_date AS start_date,
+           mts.end_date AS end_date,
     FROM MENTOR_LOGS ml
     JOIN USERS u ON ml.mentor_id = u.id
     JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id
@@ -216,10 +221,12 @@ router.post("/get_logs_by_date_range", (req, res) => {
            ml.end_time, 
            ml.hours_logged, 
            ml.activity,
-           ml.met, 
            ml.meeting_circumstance, 
            ml.comments,
-           u.name AS mentor_name, mts.student_name
+           u.name AS mentor_name, 
+           mts.student_name AS student_name,
+           mts.start_date AS start_date,
+           mts.end_date AS end_date,
     FROM MENTOR_LOGS ml
     JOIN USERS u ON ml.mentor_id = u.id
     JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id

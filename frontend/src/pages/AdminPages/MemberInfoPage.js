@@ -75,6 +75,8 @@ const MemberInfoPage = () => {
           data.students.map((student) => ({
             contactId: student.school_contact_id,
             studentName: student.student_name,
+            startDate: student.start_date,
+            endDate: student.end_date,
             birthday: student.student_birthday,
             school: student.student_school,
             primaryId: student.mentor_to_student_id,
@@ -104,6 +106,8 @@ const MemberInfoPage = () => {
       {
         contactId: "",
         studentName: "",
+        startDate: "",
+        endDate: "",
         birthday: "",
         school: "",
         notAdded: true,
@@ -142,7 +146,8 @@ const MemberInfoPage = () => {
             !rel.contactId ||
             !rel.studentName ||
             !rel.birthday ||
-            !rel.school
+            !rel.school ||
+            !rel.startDate
           )
             continue;
 
@@ -158,6 +163,8 @@ const MemberInfoPage = () => {
                   mentor_id: selectedUser.id,
                   school_contact_id: rel.contactId,
                   student_name: rel.studentName,
+                  start_date: rel.startDate,
+                  end_date: rel.endDate || null,
                   student_birthday: rel.birthday,
                   student_school: rel.school,
                 }),
@@ -174,6 +181,8 @@ const MemberInfoPage = () => {
                   relationship_id: rel.primaryId,
                   school_contact_id: rel.contactId,
                   student_name: rel.studentName,
+                  start_date: rel.startDate.split("T")[0],
+                  end_date: rel.endDate ? rel.endDate.split("T")[0] : null,
                   student_birthday: rel.birthday.split("T")[0],
                   student_school: rel.school,
                 }),
@@ -462,6 +471,40 @@ const MemberInfoPage = () => {
                           "studentName",
                           e.target.value
                         )
+                      }
+                      sx={{
+                        "& .MuiInputBase-root": {
+                          borderRadius: 4,
+                          fontFamily: "Poppins",
+                        },
+                        "& .MuiInputLabel-root": { fontFamily: "Poppins" },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="Start Date"
+                      type="date"
+                      InputLabelProps={{ shrink: true }}
+                      value={r.startDate ? r.startDate.split("T")[0] : ""}
+                      onChange={(e) =>
+                        handleRelationshipChange(i, "startDate", e.target.value)
+                      }
+                      sx={{
+                        "& .MuiInputBase-root": {
+                          borderRadius: 4,
+                          fontFamily: "Poppins",
+                        },
+                        "& .MuiInputLabel-root": { fontFamily: "Poppins" },
+                      }}
+                    />
+                    <TextField
+                      fullWidth
+                      label="End Date"
+                      type="date"
+                      InputLabelProps={{ shrink: true }}
+                      value={r.endDate ? r.endDate.split("T")[0] : ""}
+                      onChange={(e) =>
+                        handleRelationshipChange(i, "endDate", e.target.value)
                       }
                       sx={{
                         "& .MuiInputBase-root": {

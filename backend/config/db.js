@@ -51,6 +51,8 @@ function createMentorToStudentTable() {
           student_name VARCHAR(50) NOT NULL,
           student_birthday DATE NOT NULL,
           student_school VARCHAR(80) NOT NULL,
+          start_date DATE NOT NULL,
+          end_date DATE,
           FOREIGN KEY (mentor_id) REFERENCES USERS (id),
           FOREIGN KEY (school_contact_id) REFERENCES USERS (id)
       );
@@ -77,8 +79,7 @@ function createMentorLogsTable() {
           activity VARCHAR(50) NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           hours_logged FLOAT NOT NULL,
-          met BOOLEAN NOT NULL,
-          meeting_circumstance ENUM('in-person', 'virtual', 'did not meet') NOT NULL,
+          meeting_circumstance VARCHAR(30) NOT NULL,
           comments TEXT,
           FOREIGN KEY (mentor_id) REFERENCES USERS (id),
           FOREIGN KEY (mentor_to_student_id) REFERENCES MENTOR_TO_STUDENT (mentor_to_student_id)

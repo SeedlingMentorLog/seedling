@@ -104,7 +104,6 @@ const LogTimePage = () => {
       end_time: endTime,
       hours_logged: calculateHours(startTime, endTime),
       activity: activity,
-      met: true,
       meeting_circumstance: "in-person",
       comments: note,
     };

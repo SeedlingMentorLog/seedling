@@ -55,6 +55,8 @@ const MentorLogsPage = () => {
   const allColumns = [
     { key: "mentor_name", label: "Mentor" },
     { key: "student_name", label: "Student" },
+    { key: "start_date", label: "Start Date" },
+    { key: "end_date", label: "End Date" },
     { key: "school_contact_name", label: "School Contact" },
     { key: "student_school", label: "School" },
     { key: "date", label: "Date" },
@@ -63,7 +65,6 @@ const MentorLogsPage = () => {
     { key: "hours_logged", label: "Hours" },
     { key: "activity", label: "Activity" },
     { key: "meeting_circumstance", label: "Meeting Circumstance" },
-    { key: "met", label: "Met?" },
     { key: "comments", label: "Comments" },
   ];
 
@@ -141,7 +142,7 @@ const MentorLogsPage = () => {
     const previewRows = mentorLogs.slice(0, 5).map((log) =>
       selectedColumns.map((key) => {
         let val = log[key];
-        if (key === "date") val = formatDate(val);
+        if (key === "date" || key === "start_date" || key === "end_date") val = formatDate(val);
         else if (key === "start_time" || key === "end_time")
           val = formatTime(val);
         else if (key === "hours_logged") val = roundHours(val);
@@ -165,7 +166,7 @@ const MentorLogsPage = () => {
       selectedColumns
         .map((key) => {
           let val = log[key];
-          if (key === "date") val = formatDate(val);
+          if (key === "date" || key === "start_date" || key === "end_date") val = formatDate(val);
           else if (key === "start_time" || key === "end_time")
             val = formatTime(val);
           else if (key === "hours_logged") val = roundHours(val);
@@ -293,6 +294,8 @@ const MentorLogsPage = () => {
                 <TableRow sx={{ fontFamily: "Poppins" }}>
                   <TableCell sx={{ fontFamily: "Poppins" }}>Mentor</TableCell>
                   <TableCell sx={{ fontFamily: "Poppins" }}>Student</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Start Date</TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>End Date</TableCell>
                   <TableCell sx={{ fontFamily: "Poppins" }}>
                     School Contact
                   </TableCell>
@@ -315,6 +318,12 @@ const MentorLogsPage = () => {
                     </TableCell>
                     <TableCell sx={{ fontFamily: "Poppins" }}>
                       {log.student_name}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {formatDate(log.start_date)}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {formatDate(log.end_date)}
                     </TableCell>
                     <TableCell sx={{ fontFamily: "Poppins" }}>
                       {log.school_contact_name}
