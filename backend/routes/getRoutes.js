@@ -162,7 +162,7 @@ router.get("/mentor_logs/:mentor_id", (req, res) => {
            u.name AS mentor_name,
            mts.student_name AS student_name,
            mts.start_date AS start_date,
-           mts.end_date AS end_date,
+           mts.end_date AS end_date
     FROM MENTOR_LOGS ml
     JOIN USERS u ON ml.mentor_id = u.id
     JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id
