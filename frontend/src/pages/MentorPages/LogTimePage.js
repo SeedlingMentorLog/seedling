@@ -103,7 +103,7 @@ const LogTimePage = () => {
       !metStatus ||
       (metStatus === "met" && (missingPerson || missingFullDetails)) ||
       (metStatus !== "met" && missingPerson)
-    ) {
+    ){
       setError({ errorMessage: "Please fill in all required fields." });
       return;
     }

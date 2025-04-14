@@ -54,8 +54,10 @@ export const AuthProvider = ({ children }) => {
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
-      if (user.role === "admin" || user.role === "staff") {
-        navigate("/dashboard");
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (user.role === "staff") {
+        navigate("/school-contact-dashboard");
       } else {
         navigate("/mentor-homepage");
       }
@@ -100,8 +102,10 @@ export const AuthProvider = ({ children }) => {
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
-      if (user.role === "admin" || user.role === "staff") {
-        navigate("/dashboard");
+      if (user.role === "admin") {
+        navigate("/admin-dashboard");
+      } else if (user.role === "staff") {
+        navigate("/school-contact-dashboard");
       } else {
         navigate("/mentor-homepage");
       }
