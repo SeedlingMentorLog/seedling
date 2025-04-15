@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 
-const PrivateRouteComponent = ({ element }) => {
+const AdminRouteComponent = ({ element }) => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const { setError, setShowError, handleSignOut } = useAuth();
   const errorSet = useRef(false);
@@ -45,4 +45,4 @@ const PrivateRouteComponent = ({ element }) => {
   return element;
 };
 
-export default PrivateRouteComponent;
+export default AdminRouteComponent;

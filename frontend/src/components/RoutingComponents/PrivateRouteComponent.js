@@ -26,6 +26,14 @@ const PrivateRouteComponent = ({ element }) => {
         setShowError(true);
         handleSignOut();
         errorSet.current = true;
+      } else if (currentUser?.role === "school contact") {
+        setError({
+          errorHeader: "Access Denied",
+          errorMessage: "You do not have permission to access this page.",
+        });
+        setShowError(true);
+        handleSignOut();
+        errorSet.current = true;
       }
     }
   }, [currentUser, setError, setShowError]);

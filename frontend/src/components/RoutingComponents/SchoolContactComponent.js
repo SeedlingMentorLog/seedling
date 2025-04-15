@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 
-const PrivateRouteComponent = ({ element }) => {
+const SchoolContactRouteComponent = ({ element }) => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const { setError, setShowError, handleSignOut } = useAuth();
   const errorSet = useRef(false);
@@ -27,7 +27,7 @@ const PrivateRouteComponent = ({ element }) => {
         handleSignOut();
         errorSet.current = true;
       } 
-      else if (currentUser?.role !== "school-contact") {
+      else if (currentUser?.role !== "school contact") {
         setError({
           errorHeader: "Access Denied",
           errorMessage: "You do not have permission to access this page.",
@@ -46,4 +46,4 @@ const PrivateRouteComponent = ({ element }) => {
   return element;
 };
 
-export default PrivateRouteComponent;
+export default SchoolContactRouteComponent;
