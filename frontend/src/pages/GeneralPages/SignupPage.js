@@ -63,21 +63,6 @@ const SignupPage = () => {
             marginBottom: 2,
           }}
         >
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#F6F8FB",
-              borderRadius: "50%",
-            }}
-          >
-            <Typography variant="h6" color="#788BA5">
-              →
-            </Typography>
-          </Box>
         </Box>
         <Typography
           color="#181E25"
