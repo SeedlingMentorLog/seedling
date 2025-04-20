@@ -30,7 +30,17 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs`);
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        const accessToken = user?.accessToken;
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         const data = await response.json();
         const logs = data.logs || [];
         setLogs(logs);

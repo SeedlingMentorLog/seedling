@@ -29,9 +29,18 @@ export const AuthProvider = ({ children }) => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const uid = result.user.uid;
+      const idToken = await result.user.getIdToken();
+      console.log("ID Token:", idToken);
 
       const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${uid}`
+        `${process.env.REACT_APP_BACKEND}/get/user/${uid}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
       );
       if (!userDetailsResponse.ok) {
         const errorData = await userDetailsResponse.json();
@@ -49,8 +58,7 @@ export const AuthProvider = ({ children }) => {
         name: userDetails.user.name,
         role: userDetails.user.role,
         verified: userDetails.user.verified,
-        accessToken:
-          GoogleAuthProvider.credentialFromResult(result)?.accessToken,
+        accessToken: idToken,
       };
 
       localStorage.setItem("currentUser", JSON.stringify(user));
@@ -81,7 +89,14 @@ export const AuthProvider = ({ children }) => {
       );
 
       const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`
+        `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userCredential.user.accessToken}`,
+          },
+        }
       );
       if (!userDetailsResponse.ok) {
         const errorData = await userDetailsResponse.json();
@@ -146,6 +161,7 @@ export const AuthProvider = ({ children }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${userCredential.user.accessToken}`,
           },
           body: JSON.stringify({
             firebase_id: userCredential.user.uid,
@@ -191,6 +207,7 @@ export const AuthProvider = ({ children }) => {
       const userEmail = result.user.email;
       const uid = result.user.uid;
       const userName = result.user.displayName;
+      const idToken = await result.user.getIdToken();
 
       const addUserResponse = await fetch(
         `${process.env.REACT_APP_BACKEND}/post/add_user`,
@@ -198,6 +215,7 @@ export const AuthProvider = ({ children }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
           },
           body: JSON.stringify({
             firebase_id: uid,
@@ -223,8 +241,7 @@ export const AuthProvider = ({ children }) => {
         name: userName,
         role: userDetailsResponse.user.role,
         verified: userDetailsResponse.user.verified,
-        accessToken:
-          GoogleAuthProvider.credentialFromResult(result).accessToken,
+        accessToken: idToken,
       };
       localStorage.setItem("currentUser", JSON.stringify(user));
     } catch (error) {
@@ -263,7 +280,13 @@ export const AuthProvider = ({ children }) => {
           const url = `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`;
           console.log("Fetching from URL:", url);
 
-          const userDetailsResponse = await fetch(url);
+          const userDetailsResponse = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.accessToken}`,
+            },
+          });
           console.log("Response status:", userDetailsResponse.status);
           console.log(
             "Response headers:",

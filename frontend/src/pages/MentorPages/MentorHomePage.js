@@ -98,11 +98,18 @@ const MentorHomepage = () => {
   }, [weekOffset]);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("currentUser"));
-    const ID = user?.id;
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    const accessToken = currentUser?.accessToken;
+    const ID = currentUser?.id;
     const logsKey =
-      user?.role === "school contact" ? "school_logs" : "mentor_logs";
-    fetch(`${process.env.REACT_APP_BACKEND}/get/${logsKey}/${ID}`)
+      currentUser?.role === "school contact" ? "school_logs" : "mentor_logs";
+    fetch(`${process.env.REACT_APP_BACKEND}/get/${logsKey}/${ID}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
       .then((response) => response.json())
       .then((data) => {
         setLogs(data.logs);

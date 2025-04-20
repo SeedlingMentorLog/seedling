@@ -43,12 +43,20 @@ const MemberInfoPage = () => {
   const rowsPerPage = 10;
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const userRole = currentUser?.role.toLowerCase();
+  const accessToken = currentUser?.accessToken;
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND}/get/users`
+          `${process.env.REACT_APP_BACKEND}/get/users`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
         const data = await response.json();
         const schoolContactsData = data.users.filter(
@@ -68,7 +76,13 @@ const MemberInfoPage = () => {
   }, []);
 
   const handleEditClick = async (user) => {
-    fetch(`${process.env.REACT_APP_BACKEND}/get/students/${user.id}`)
+    fetch(`${process.env.REACT_APP_BACKEND}/get/students/${user.id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setRelationships(
@@ -127,7 +141,10 @@ const MemberInfoPage = () => {
         `${process.env.REACT_APP_BACKEND}/post/update_user_profile/${userRole}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
           body: JSON.stringify({
             id: selectedUser.id,
             ...editUserData,
@@ -158,7 +175,10 @@ const MemberInfoPage = () => {
               `${process.env.REACT_APP_BACKEND}/post/add_mentor_to_student/${userRole}`,
               {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${accessToken}`,
+                },
                 body: JSON.stringify({
                   mentor_id: selectedUser.id,
                   school_contact_id: rel.contactId,
@@ -176,7 +196,10 @@ const MemberInfoPage = () => {
               `${process.env.REACT_APP_BACKEND}/post/update_mentor_to_student/${userRole}`,
               {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${accessToken}`,
+                },
                 body: JSON.stringify({
                   relationship_id: rel.primaryId,
                   school_contact_id: rel.contactId,

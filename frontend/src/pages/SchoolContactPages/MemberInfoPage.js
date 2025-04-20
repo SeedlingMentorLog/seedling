@@ -32,8 +32,17 @@ const MemberInfoPage = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const accessToken = currentUser?.accessToken;
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND}/get/users`
+          `${process.env.REACT_APP_BACKEND}/get/users`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
         const data = await response.json();
         setUsers(data.users || []);

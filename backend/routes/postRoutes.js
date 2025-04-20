@@ -145,7 +145,7 @@ router.post(
   }
 );
 
-// Add a mentor-student relationship (admin only)
+// Update a mentor-student relationship (admin only)
 router.post(
   "/update_mentor_to_student/:user_role",
   verifyAdminStatus,

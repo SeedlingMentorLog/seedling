@@ -103,7 +103,7 @@ const LogTimePage = () => {
       !metStatus ||
       (metStatus === "met" && (missingPerson || missingFullDetails)) ||
       (metStatus !== "met" && missingPerson)
-    ){
+    ) {
       setError({ errorMessage: "Please fill in all required fields." });
       return;
     }
@@ -122,12 +122,15 @@ const LogTimePage = () => {
     };
 
     try {
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      const accessToken = currentUser?.accessToken;
       const response = await fetch(
         `${process.env.REACT_APP_BACKEND}/post/add_log`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify(data),
         }
@@ -151,9 +154,17 @@ const LogTimePage = () => {
     const fetchStudents = async () => {
       try {
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const accessToken = currentUser?.accessToken;
         const mentorID = currentUser?.id;
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND}/get/students/${mentorID}`
+          `${process.env.REACT_APP_BACKEND}/get/students/${mentorID}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
         if (!response.ok) {
           throw new Error("Failed to fetch students");

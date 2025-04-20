@@ -71,8 +71,17 @@ const MentorLogsPage = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        const accessToken = user?.accessToken;
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND}/get/mentor_logs`
+          `${process.env.REACT_APP_BACKEND}/get/mentor_logs`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
         const data = await response.json();
         setMentorLogs(data.logs || []);

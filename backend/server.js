@@ -1,9 +1,14 @@
 const express = require("express");
 const cors = require("cors");
-const { pool, createUsersTable, createMentorLogsTable, createMentorToStudentTable } = require("./config/db");
+const {
+  pool,
+  createUsersTable,
+  createMentorLogsTable,
+  createMentorToStudentTable,
+} = require("./config/db");
 const getRoutes = require("./routes/getRoutes");
 const postRoutes = require("./routes/postRoutes");
-const admin = require("firebase-admin");
+const admin = require("./config/firebase");
 
 const app = express();
 const PORT = process.env.PORT; // Set your desired port
@@ -15,22 +20,35 @@ const PORT = process.env.PORT; // Set your desired port
 // Firebase Admin Authentication Middleware
 const auth = (req, res, next) => {
   try {
-    const tokenId = req.get("Authorization").split("Bearer ")[1];
-    admin.auth().verifyIdToken(tokenId)
+    const authHeader = req.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(400)
+        .json({ error: "Missing or malformed Authorization header" });
+    }
+
+    const tokenId = authHeader.split("Bearer ")[1];
+    admin
+      .auth()
+      .verifyIdToken(tokenId)
       .then((decoded) => {
         req.token = decoded;
         next();
       })
-      .catch((error) => res.status(401).send(error));
+      .catch((error) => {
+        console.error("Token verification failed:", error.message);
+        res.status(401).json({ error: "Invalid or expired token" });
+      });
   } catch (error) {
-    res.status(400).send("Invalid token");
+    console.error("Middleware error:", error.message);
+    res.status(400).json({ error: "Invalid token format" });
   }
 };
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-// app.use(auth);
+app.use(auth);
 
 // Routes
 app.use("/get", getRoutes);

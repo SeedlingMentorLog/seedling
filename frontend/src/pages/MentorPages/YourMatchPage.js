@@ -24,9 +24,17 @@ const YourMatchPage = () => {
     const fetchStudents = async () => {
       try {
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const accessToken = currentUser?.accessToken;
         const mentorID = currentUser?.id;
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND}/get/students/${mentorID}`
+          `${process.env.REACT_APP_BACKEND}/get/students/${mentorID}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
         if (!response.ok) {
           throw new Error("Failed to fetch students");
