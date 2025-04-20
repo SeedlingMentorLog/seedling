@@ -12,6 +12,8 @@ import AddIcon from "@mui/icons-material/Add";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CheckIcon from "@mui/icons-material/Check";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import MenuComponent from "../../components/MenuComponent";
 import { useNavigate } from "react-router-dom";
 
@@ -38,61 +40,35 @@ const MentorHomepage = () => {
     setSelectedDay(date);
     const filtered = logs.filter((log) => {
       const logDate = new Date(log.date).toISOString().split("T")[0];
-      return logDate === date; // Match the log's date to the selected day
+      return logDate === date;
     });
     setFilteredLogs(filtered);
   };
 
   const getWeekDates = () => {
     const today = new Date();
-    // Adjust the base date according to the weekOffset (0=current week, -1=previous week, 1=next week, etc.)
     today.setDate(today.getDate() + weekOffset * 7);
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const dayOfWeek = today.getDay();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - dayOfWeek); // set to Sunday of that week
+    startOfWeek.setDate(today.getDate() - dayOfWeek);
     const week = [];
 
     for (let i = 0; i < 7; i++) {
       const day = new Date(startOfWeek);
       day.setDate(startOfWeek.getDate() + i);
 
-      let dayName;
-      switch (i) {
-        case 0:
-          dayName = "SUN";
-          break;
-        case 1:
-          dayName = "MON";
-          break;
-        case 2:
-          dayName = "TUE";
-          break;
-        case 3:
-          dayName = "WED";
-          break;
-        case 4:
-          dayName = "THU";
-          break;
-        case 5:
-          dayName = "FRI";
-          break;
-        default:
-          dayName = "SAT";
-          break;
-      }
+      const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
       week.push({
         number: day.toISOString().split("T")[0].substring(8),
         date: day.toISOString().split("T")[0],
-        day: dayName,
+        day: dayNames[i],
       });
     }
 
-    // Set the initial selected day to the first day of the week
     handleDateChange(week[0].date);
     setWeekDates(week);
   };
 
-  // When weekOffset changes, update the weekDates.
   useEffect(() => {
     getWeekDates();
   }, [weekOffset]);
@@ -176,72 +152,74 @@ const MentorHomepage = () => {
         onNavigate={handleNavigation}
       />
 
-      {/* Main Content */}
-      <Box>
-        {/* Greeting Section */}
+      {/* Greeting Section */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: 2.5,
+          marginBottom: 1,
+          backgroundColor: "#FFFFFF",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 40,
+              height: 40,
+              borderRadius: "50%",
+              backgroundColor: "#e6f7f7",
+            }}
+          >
+            <CalendarTodayIcon sx={{ color: "#57C5CC" }} />
+          </Box>
+          <Box>
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 500, marginBottom: 0.5 }}
+            >
+              Hi,{" "}
+              <span style={{ color: "#57C5CC" }}>
+                {JSON.parse(localStorage.getItem("currentUser"))?.name}
+              </span>
+            </Typography>
+            <Typography variant="body2" sx={{ color: "#666" }}>
+              Let's log those hours!
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* Date Selector + Arrows */}
+      <Box sx={{ position: "relative", paddingTop: 4, paddingBottom: 2 }}>
+        <IconButton
+          onClick={() => setWeekOffset(weekOffset - 1)}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "1%",
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            backgroundColor: "#FFFFFF",
+            boxShadow: 1,
+            "&:hover": { backgroundColor: "#f0f0f0" },
+          }}
+        >
+          <ArrowBackIosNewIcon
+            sx={{ color: "#57C5CC", width: 10, height: 10 }}
+          />
+        </IconButton>
+
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "center",
-            padding: 2.5,
-            marginBottom: 1,
-            backgroundColor: "#FFFFFF",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                backgroundColor: "#e6f7f7",
-              }}
-            >
-              <CalendarTodayIcon sx={{ color: "#57C5CC" }} />
-            </Box>
-            <Box>
-              <Typography
-                variant="h6"
-                sx={{ fontWeight: 500, marginBottom: 0.5 }}
-              >
-                Hi,{" "}
-                <span style={{ color: "#57C5CC" }}>
-                  {JSON.parse(localStorage.getItem("currentUser"))?.name}
-                </span>
-              </Typography>
-              <Typography variant="body2" sx={{ color: "#666" }}>
-                Let's log those hours!
-              </Typography>
-            </Box>
-          </Box>
-          <IconButton
-            sx={{
-              border: "1px solid #ddd",
-              borderRadius: "50%",
-              padding: 1,
-            }}
-          >
-            <AddIcon />
-          </IconButton>
-        </Box>
-
-        {/* Date Selector */}
-        <Box
-          sx={{
-            display: "flex",
             gap: 1,
-            overflowX: "auto",
-            marginBottom: 3,
-            padding: 2.5,
-            pb: 1,
-            "&::-webkit-scrollbar": {
-              display: "none",
-            },
-            scrollbarWidth: "none",
+            marginX: "10%", // prevent arrows from overlapping
           }}
         >
           {weekDates.map((day) => (
@@ -251,7 +229,8 @@ const MentorHomepage = () => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                minWidth: 48,
+                flexBasis: "13%",
+                minWidth: 32,
                 height: 64,
                 borderRadius: 3,
                 border: "1px solid #eee",
@@ -274,153 +253,135 @@ const MentorHomepage = () => {
           ))}
         </Box>
 
-        {/* Navigation Buttons for Previous and Next Week */}
-        <Box
+        <IconButton
+          onClick={() => setWeekOffset(weekOffset + 1)}
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: 2.5,
-            paddingTop: 0,
+            position: "absolute",
+            top: "50%",
+            right: "1%",
+            transform: "translateY(-50%)",
+            zIndex: 2,
+            backgroundColor: "#FFFFFF",
+            boxShadow: 1,
+            "&:hover": { backgroundColor: "#f0f0f0" },
           }}
         >
-          <Button
-            variant="outlined"
-            onClick={() => setWeekOffset(weekOffset - 1)}
-            sx={{
-              flex: 1,
-              marginRight: 1,
-              backgroundColor: "#FFF",
-              textTransform: "none",
-            }}
-          >
-            Previous Week
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => setWeekOffset(weekOffset + 1)}
-            sx={{
-              flex: 1,
-              marginLeft: 1,
-              backgroundColor: "#FFF",
-              textTransform: "none",
-            }}
-          >
-            Next Week
-          </Button>
-        </Box>
+          <ArrowForwardIosIcon
+            sx={{ color: "#57C5CC", width: 10, height: 10 }}
+          />
+        </IconButton>
+      </Box>
 
-        {/* Log Time Button */}
-        <Box sx={{ paddingLeft: 2.5, paddingRight: 2.5 }}>
-          <Button
-            variant="contained"
-            fullWidth
+      {/* Log Time Button */}
+      <Box sx={{ paddingX: 2.5 }}>
+        <Button
+          variant="contained"
+          fullWidth
+          sx={{
+            backgroundColor: "#57C5CC",
+            color: "white",
+            borderRadius: 2,
+            padding: 1.5,
+            textTransform: "none",
+            fontWeight: 500,
+            marginBottom: 3,
+            "&:hover": {
+              backgroundColor: "#7ac9c9",
+            },
+          }}
+          onClick={() => navigate("/log-time")}
+        >
+          Log Time
+        </Button>
+      </Box>
+
+      {/* Meetings List */}
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 2,
+          paddingX: 2.5,
+        }}
+      >
+        {filteredLogs.map((log) => (
+          <Paper
+            key={log.id}
+            elevation={0}
             sx={{
-              backgroundColor: "#57C5CC",
-              color: "white",
+              display: "flex",
+              justifyContent: "space-between",
+              padding: 2,
               borderRadius: 2,
-              padding: 1.5,
-              textTransform: "none",
-              fontWeight: 500,
-              marginBottom: 3,
-              "&:hover": {
-                backgroundColor: "#7ac9c9",
-              },
+              backgroundColor: "#FFFFFF",
             }}
-            onClick={() => navigate("/log-time")}
           >
-            Log Time
-          </Button>
-        </Box>
-
-        {/* Meetings List */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: 2,
-            paddingLeft: 2.5,
-            paddingRight: 2.5,
-          }}
-        >
-          {filteredLogs.map((log) => (
-            <Paper
-              key={log.id}
-              elevation={0}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: 2,
-                borderRadius: 2,
-                backgroundColor: "#FFFFFF",
-              }}
-            >
-              <Box>
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    marginBottom: 0,
-                    color: "#000",
-                    fontFamily: "Inter",
-                    fontSize: 16,
-                    fontStyle: "normal",
-                    fontWeight: 500,
-                  }}
-                >
-                  {log.student_name}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#AFB3B7", marginBottom: 0.5 }}
-                >
-                  {log.start_time.substring(0, 5)} -{" "}
-                  {log.end_time.substring(0, 5)} | {log.date.substring(0, 10)}
-                </Typography>
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  {log.meeting_circumstance && (
-                    <Chip
-                      label={log.meeting_circumstance}
-                      size="small"
-                      sx={{
-                        backgroundColor: "#57C5CC",
-                        color: "#000000",
-                        fontSize: 12,
-                        height: 24,
-                        fontStyle: "italic",
-                      }}
-                    />
-                  )}
-                  {log.activity && (
-                    <Chip
-                      label={log.activity}
-                      size="small"
-                      sx={{
-                        backgroundColor: "#AEF4F9",
-                        color: "#000000",
-                        fontSize: 12,
-                        height: 24,
-                        fontStyle: "italic",
-                      }}
-                    />
-                  )}
-                </Box>
-              </Box>
-              <Box
+            <Box>
+              <Typography
+                variant="subtitle1"
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: 40,
-                  height: 40,
-                  borderRadius: "50%",
-                  backgroundColor: log.met ? "#57C5CC" : "#eee",
-                  color: log.met ? "white" : "transparent",
+                  marginBottom: 0,
+                  color: "#000",
+                  fontFamily: "Inter",
+                  fontSize: 16,
+                  fontStyle: "normal",
+                  fontWeight: 500,
                 }}
               >
-                {log.met && <CheckIcon />}
+                {log.student_name}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "#AFB3B7", marginBottom: 0.5 }}
+              >
+                {log.start_time.substring(0, 5)} -{" "}
+                {log.end_time.substring(0, 5)} | {log.date.substring(0, 10)}
+              </Typography>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                {log.meeting_circumstance && (
+                  <Chip
+                    label={log.meeting_circumstance}
+                    size="small"
+                    sx={{
+                      backgroundColor: "#57C5CC",
+                      color: "#000000",
+                      fontSize: 12,
+                      height: 24,
+                      fontStyle: "italic",
+                    }}
+                  />
+                )}
+                {log.activity && (
+                  <Chip
+                    label={log.activity}
+                    size="small"
+                    sx={{
+                      backgroundColor: "#AEF4F9",
+                      color: "#000000",
+                      fontSize: 12,
+                      height: 24,
+                      fontStyle: "italic",
+                    }}
+                  />
+                )}
               </Box>
-            </Paper>
-          ))}
-        </Box>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                backgroundColor: log.met ? "#57C5CC" : "#eee",
+                color: log.met ? "white" : "transparent",
+              }}
+            >
+              {log.met && <CheckIcon />}
+            </Box>
+          </Paper>
+        ))}
       </Box>
     </Box>
   );
