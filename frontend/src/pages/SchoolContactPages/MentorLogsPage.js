@@ -67,6 +67,9 @@ const MentorLogsPage = () => {
     { key: "comments", label: "Comments" },
   ];
 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const userSchool = currentUser?.school;
+
   useEffect(() => {
     const fetchLogs = async () => {
       try {
@@ -74,7 +77,16 @@ const MentorLogsPage = () => {
           `${process.env.REACT_APP_BACKEND}/get/mentor_logs`
         );
         const data = await response.json();
-        setMentorLogs(data.logs || []);
+        const allLogs = data.logs || [];
+
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const userSchool = currentUser?.school;
+
+        const filteredBySchool = allLogs.filter(
+          (log) => log.student_school === userSchool
+        );
+
+        setMentorLogs(filteredBySchool);
       } catch (error) {
         console.error("Error fetching mentor logs:", error);
       }
