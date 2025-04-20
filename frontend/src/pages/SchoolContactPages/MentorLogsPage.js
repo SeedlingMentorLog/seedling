@@ -74,9 +74,10 @@ const MentorLogsPage = () => {
     const fetchLogs = async () => {
       try {
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const id = currentUser?.id;
         const accessToken = currentUser?.accessToken;
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND}/get/mentor_logs`,
+          `${process.env.REACT_APP_BACKEND}/get/school_logs/${id}`,
           {
             method: "GET",
             headers: {
@@ -86,16 +87,7 @@ const MentorLogsPage = () => {
           }
         );
         const data = await response.json();
-        const allLogs = data.logs || [];
-
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        const userSchool = currentUser?.school;
-
-        const filteredBySchool = allLogs.filter(
-          (log) => log.student_school === userSchool
-        );
-
-        setMentorLogs(filteredBySchool);
+        setMentorLogs(data.logs);
       } catch (error) {
         console.error("Error fetching mentor logs:", error);
       }

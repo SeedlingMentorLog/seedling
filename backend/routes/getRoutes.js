@@ -193,11 +193,14 @@ router.get("/school_logs/:school_id", (req, res) => {
            ml.comments,
            u.name AS mentor_name,
            mts.student_name AS student_name,
+           mts.student_school AS student_school,
            mts.start_date AS start_date,
-           mts.end_date AS end_date
+           mts.end_date AS end_date,
+           sc.name AS school_contact_name
     FROM MENTOR_LOGS ml
     JOIN USERS u ON ml.mentor_id = u.id
     JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id
+    JOIN USERS sc ON mts.school_contact_id = sc.id
     WHERE mts.school_contact_id = ?
     ORDER BY ml.created_at DESC;
   `;

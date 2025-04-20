@@ -32,7 +32,8 @@ const DashboardPage = () => {
       try {
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         const accessToken = currentUser?.accessToken;
-        const response = await fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs`, {
+        const id = currentUser?.id;
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/get/school_logs/${id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
