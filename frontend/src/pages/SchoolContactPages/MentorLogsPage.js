@@ -32,6 +32,8 @@ import { saveAs } from "file-saver";
 
 const MentorLogsPage = () => {
   const rowsPerPage = 10;
+  const [startDateFilter, setStartDateFilter] = useState(null);
+  const [endDateFilter, setEndDateFilter] = useState(null);
   const [mentorLogs, setMentorLogs] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [sortBy, setSortBy] = useState("Newest");
@@ -133,6 +135,15 @@ const MentorLogsPage = () => {
         log.student_school.toLowerCase().includes(lower)
       );
     })
+    .filter((log) => {
+      const logDate = log.date ? new Date(log.date) : null;
+      const start = startDateFilter ? new Date(startDateFilter) : null;
+      const end = endDateFilter ? new Date(endDateFilter) : null;
+
+      if (start && logDate < start) return false;
+      if (end && logDate > end) return false;
+      return true;
+    })
     .sort((a, b) => {
       if (sortBy === "Newest") return new Date(b.date) - new Date(a.date);
       if (sortBy === "Oldest") return new Date(a.date) - new Date(b.date);
@@ -151,7 +162,7 @@ const MentorLogsPage = () => {
   };
 
   const generatePreviewData = () => {
-    const previewRows = mentorLogs.slice(0, 5).map((log) =>
+    const previewRows = filteredLogs.slice(0, 5).map((log) =>
       selectedColumns.map((key) => {
         let val = log[key];
         if (key === "date") val = formatDate(val);
@@ -174,7 +185,7 @@ const MentorLogsPage = () => {
       })
       .join(",");
 
-    const csvRows = mentorLogs.map((log) =>
+    const csvRows = filteredLogs.map((log) =>
       selectedColumns
         .map((key) => {
           let val = log[key];
@@ -192,7 +203,24 @@ const MentorLogsPage = () => {
       type: "text/csv;charset=utf-8;",
     });
 
-    saveAs(blob, "mentor_logs.csv");
+    let filename = "mentor_logs";
+
+    if (startDateFilter || endDateFilter) {
+      const format = (dateStr) => {
+        if (!dateStr) return "any";
+        const date = new Date(dateStr);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      };
+
+      const start = format(startDateFilter);
+      const end = format(endDateFilter);
+      filename += `_${start}_to_${end}`;
+    }
+
+    filename += ".csv";
+
+    saveAs(blob, filename);
+
     setPreviewOpen(false);
   };
 
@@ -292,6 +320,25 @@ const MentorLogsPage = () => {
                 />
               </Box>
             </Box>
+          </Box>
+
+          <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}>
+            <TextField
+              type="date"
+              label="Start Date"
+              InputLabelProps={{ shrink: true }}
+              value={startDateFilter || ""}
+              onChange={(e) => setStartDateFilter(e.target.value)}
+              sx={{ fontFamily: "Poppins" }}
+            />
+            <TextField
+              type="date"
+              label="End Date"
+              InputLabelProps={{ shrink: true }}
+              value={endDateFilter || ""}
+              onChange={(e) => setEndDateFilter(e.target.value)}
+              sx={{ fontFamily: "Poppins" }}
+            />
           </Box>
 
           {/* Table */}
@@ -406,6 +453,27 @@ const MentorLogsPage = () => {
             Select Columns to Export
           </DialogTitle>
           <DialogContent>
+            <Box sx={{ display: "flex", gap: 2, mb: 2, pt: 1 }}>
+              <TextField
+                type="date"
+                label="Start Date"
+                InputLabelProps={{ shrink: true }}
+                value={startDateFilter || ""}
+                onChange={(e) => setStartDateFilter(e.target.value)}
+                fullWidth
+                sx={{ fontFamily: "Poppins" }}
+              />
+              <TextField
+                type="date"
+                label="End Date"
+                InputLabelProps={{ shrink: true }}
+                value={endDateFilter || ""}
+                onChange={(e) => setEndDateFilter(e.target.value)}
+                fullWidth
+                sx={{ fontFamily: "Poppins" }}
+              />
+            </Box>
+            
             <FormGroup>
               {allColumns.map((col) => (
                 <FormControlLabel
