@@ -26,7 +26,7 @@ import {
 } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import SearchIcon from "@mui/icons-material/Search";
-import SidebarComponent from "../../components/SidebarComponent";
+import SidebarComponentAdmin from "../../components/SidebarComponentAdmin";
 import HeaderComponent from "../../components/HeaderComponent";
 import { saveAs } from "file-saver";
 
@@ -197,7 +197,7 @@ const MentorLogsPage = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh", fontFamily: "Poppins" }}>
-      <SidebarComponent currentPage="Mentor Logs" />
+      <SidebarComponentAdmin currentPage="Mentor Logs" />
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <HeaderComponent />
         <Box sx={{ flexGrow: 1, p: 3, bgcolor: "#F5F6FA" }}>

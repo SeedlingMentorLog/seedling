@@ -26,7 +26,7 @@ import {
 } from "@mui/material";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import SearchIcon from "@mui/icons-material/Search";
-import SidebarComponent from "../../components/SidebarComponent";
+import SidebarComponentSchoolContact from "../../components/SidebarComponentSchoolContact";
 import HeaderComponent from "../../components/HeaderComponent";
 import { saveAs } from "file-saver";
 
@@ -67,6 +67,9 @@ const MentorLogsPage = () => {
     { key: "comments", label: "Comments" },
   ];
 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const userSchool = currentUser?.school;
+
   useEffect(() => {
     const fetchLogs = async () => {
       try {
@@ -83,7 +86,16 @@ const MentorLogsPage = () => {
           }
         );
         const data = await response.json();
-        setMentorLogs(data.logs || []);
+        const allLogs = data.logs || [];
+
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const userSchool = currentUser?.school;
+
+        const filteredBySchool = allLogs.filter(
+          (log) => log.student_school === userSchool
+        );
+
+        setMentorLogs(filteredBySchool);
       } catch (error) {
         console.error("Error fetching mentor logs:", error);
       }
@@ -194,7 +206,7 @@ const MentorLogsPage = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh", fontFamily: "Poppins" }}>
-      <SidebarComponent currentPage="Mentor Logs" />
+      <SidebarComponentSchoolContact currentPage="Mentor Logs" />
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <HeaderComponent />
         <Box sx={{ flexGrow: 1, p: 3, bgcolor: "#F5F6FA" }}>

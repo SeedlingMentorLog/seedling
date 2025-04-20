@@ -18,7 +18,7 @@ import {
   Pagination,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import SidebarComponent from "../../components/SidebarComponent";
+import SidebarComponentSchoolContact from "../../components/SidebarComponentSchoolContact";
 import HeaderComponent from "../../components/HeaderComponent";
 
 const MemberInfoPage = () => {
@@ -94,7 +94,7 @@ const MemberInfoPage = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh", fontFamily: "Poppins" }}>
-      <SidebarComponent currentPage="Member Info" />
+      <SidebarComponentSchoolContact currentPage="Member Info" />
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <HeaderComponent />
         <Box sx={{ flexGrow: 1, p: 3, bgcolor: "#F5F6FA" }}>

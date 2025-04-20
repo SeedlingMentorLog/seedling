@@ -14,7 +14,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import SidebarComponent from "../../components/SidebarComponent";
+import SidebarComponentSchoolContact from "../../components/SidebarComponentSchoolContact";
 import HeaderComponent from "../../components/HeaderComponent";
 
 const DashboardPage = () => {
@@ -91,7 +91,7 @@ const DashboardPage = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh", fontFamily: "Poppins" }}>
-      <SidebarComponent currentPage="Dashboard" />
+      <SidebarComponentSchoolContact currentPage="Dashboard" />
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <HeaderComponent />
         <Box sx={{ flexGrow: 1, p: 3, bgcolor: "#F5F6FA" }}>
