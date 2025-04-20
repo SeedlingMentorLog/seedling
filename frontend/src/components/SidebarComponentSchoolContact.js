@@ -9,14 +9,14 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.js";
 
-const SidebarComponent = ({ currentPage }) => {
+const SidebarComponentSchoolContact = ({ currentPage }) => {
   const { handleSignOut } = useAuth();
   const navigate = useNavigate();
 
   const navItems = [
-    { label: "Dashboard", icon: <HomeIcon />, key: "Dashboard", path: "/admin-dashboard" },
-    { label: "Mentor Logs", icon: <AccessTimeIcon />, key: "Mentor Logs", path: "/admin-mentor-logs" },
-    { label: "Member Info", icon: <PeopleIcon />, key: "Member Info", path: "/admin-member-info" },
+    { label: "Dashboard", icon: <HomeIcon />, key: "Dashboard", path: "/school-contact-dashboard" },
+    { label: "Mentor Logs", icon: <AccessTimeIcon />, key: "Mentor Logs", path: "/school-contact-mentor-logs" },
+    { label: "Member Info", icon: <PeopleIcon />, key: "Member Info", path: "/school-contact-member-info" },
     // { label: "Your Matches", icon: <GroupsIcon />, key: "Your Matches", path: "/matches" },
     // { label: "Mentors", icon: <CalendarMonthIcon />, key: "Mentors", path: "/mentors" },
   ];
@@ -106,4 +106,4 @@ const SidebarComponent = ({ currentPage }) => {
   );
 };
 
-export default SidebarComponent;
+export default SidebarComponentSchoolContact;

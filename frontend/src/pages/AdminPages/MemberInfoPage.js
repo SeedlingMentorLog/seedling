@@ -23,7 +23,7 @@ import {
   DialogActions,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import SidebarComponent from "../../components/SidebarComponent";
+import SidebarComponentAdmin from "../../components/SidebarComponentAdmin";
 import HeaderComponent from "../../components/HeaderComponent";
 
 const MemberInfoPage = () => {
@@ -255,7 +255,7 @@ const MemberInfoPage = () => {
 
   return (
     <Box sx={{ display: "flex", height: "100vh", fontFamily: "Poppins" }}>
-      <SidebarComponent currentPage="Member Info" />
+      <SidebarComponentAdmin currentPage="Member Info" />
       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <HeaderComponent />
         <Box sx={{ flexGrow: 1, p: 3, bgcolor: "#F5F6FA" }}>
@@ -335,23 +335,25 @@ const MemberInfoPage = () => {
                       <Chip label={user.role} sx={getRoleStyles(user.role)} />
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => handleEditClick(user)}
-                        sx={{
-                          bgcolor: "#57C5CC",
-                          color: "#fff",
-                          fontSize: 14,
-                          fontFamily: "Poppins",
-                          fontWeight: 400,
-                          borderRadius: 4,
-                          textTransform: "none",
-                          "&:hover": { bgcolor: "#4aa7ad" },
-                        }}
-                      >
-                        {user.verified ? "Modify" : "Verify"}
-                      </Button>
+                      {userRole === "admin" && (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => handleEditClick(user)}
+                          sx={{
+                            bgcolor: "#57C5CC",
+                            color: "#fff",
+                            fontSize: 14,
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                            borderRadius: 4,
+                            textTransform: "none",
+                            "&:hover": { bgcolor: "#4aa7ad" },
+                          }}
+                        >
+                          {user.verified ? "Modify" : "Verify"}
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -373,20 +375,6 @@ const MemberInfoPage = () => {
                 label="Name"
                 value={editUserData.name}
                 onChange={(e) => handleEditChange("name", e.target.value)}
-                sx={{
-                  mt: 2,
-                  "& .MuiInputBase-root": {
-                    borderRadius: 4,
-                    fontFamily: "Poppins",
-                  },
-                  "& .MuiInputLabel-root": { fontFamily: "Poppins" },
-                }}
-              />
-              <TextField
-                fullWidth
-                label="Email"
-                value={editUserData.email}
-                onChange={(e) => handleEditChange("email", e.target.value)}
                 sx={{
                   mt: 2,
                   "& .MuiInputBase-root": {
@@ -552,22 +540,22 @@ const MemberInfoPage = () => {
               {(roleChange === "mentor" ||
                 roleChange === "admin" ||
                 roleChange === "staff") && (
-                <Button
-                  onClick={handleAddRelationship}
-                  sx={{
-                    mt: 2,
-                    bgcolor: "#DDD",
-                    color: "#626262",
-                    fontSize: 14,
-                    fontFamily: "Poppins",
-                    fontWeight: 400,
-                    borderRadius: 4,
-                    "&:hover": { bgcolor: "#ccc" },
-                  }}
-                >
-                  + Add Another Student
-                </Button>
-              )}
+                  <Button
+                    onClick={handleAddRelationship}
+                    sx={{
+                      mt: 2,
+                      bgcolor: "#DDD",
+                      color: "#626262",
+                      fontSize: 14,
+                      fontFamily: "Poppins",
+                      fontWeight: 400,
+                      borderRadius: 4,
+                      "&:hover": { bgcolor: "#ccc" },
+                    }}
+                  >
+                    + Add Another Student
+                  </Button>
+                )}
             </DialogContent>
             <DialogActions>
               <Button
