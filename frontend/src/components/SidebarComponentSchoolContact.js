@@ -16,7 +16,7 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
   const navItems = [
     { label: "Dashboard", icon: <HomeIcon />, key: "Dashboard", path: "/school-contact-dashboard" },
     { label: "Mentor Logs", icon: <AccessTimeIcon />, key: "Mentor Logs", path: "/school-contact-mentor-logs" },
-    { label: "Member Info", icon: <PeopleIcon />, key: "Member Info", path: "/school-contact-member-info" },
+    // { label: "Member Info", icon: <PeopleIcon />, key: "Member Info", path: "/school-contact-member-info" },
     // { label: "Your Matches", icon: <GroupsIcon />, key: "Your Matches", path: "/matches" },
     // { label: "Mentors", icon: <CalendarMonthIcon />, key: "Mentors", path: "/mentors" },
   ];

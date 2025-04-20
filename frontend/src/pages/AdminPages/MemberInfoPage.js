@@ -448,7 +448,7 @@ const MemberInfoPage = () => {
                     </Typography>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontFamily: "Poppins" }}>
-                        School Contact
+                        School Contact*
                       </InputLabel>
                       <Select
                         value={r.contactId}
@@ -474,7 +474,7 @@ const MemberInfoPage = () => {
                     </FormControl>
                     <TextField
                       fullWidth
-                      label="Student Name"
+                      label="Student Name*"
                       value={r.studentName}
                       onChange={(e) =>
                         handleRelationshipChange(
@@ -493,7 +493,7 @@ const MemberInfoPage = () => {
                     />
                     <TextField
                       fullWidth
-                      label="Start Date"
+                      label="Start Date*"
                       type="date"
                       InputLabelProps={{ shrink: true }}
                       value={r.startDate ? r.startDate.split("T")[0] : ""}
@@ -527,7 +527,7 @@ const MemberInfoPage = () => {
                     />
                     <TextField
                       fullWidth
-                      label="Birthday"
+                      label="Birthday*"
                       type="date"
                       InputLabelProps={{ shrink: true }}
                       value={r.birthday ? r.birthday.split("T")[0] : ""}
@@ -544,7 +544,7 @@ const MemberInfoPage = () => {
                     />
                     <TextField
                       fullWidth
-                      label="School"
+                      label="School*"
                       value={r.school}
                       onChange={(e) =>
                         handleRelationshipChange(i, "school", e.target.value)

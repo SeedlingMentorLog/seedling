@@ -16,7 +16,6 @@ import AdminMemberInfoPage from "./pages/AdminPages/MemberInfoPage";
 import AdminMentorLogsPage from "./pages/AdminPages/MentorLogsPage";
 
 import SCDashboardPage from "./pages/SchoolContactPages/DashboardPage";
-import SCMemberInfoPage from "./pages/SchoolContactPages/MemberInfoPage";
 import SCMentorLogsPage from "./pages/SchoolContactPages/MentorLogsPage";
 
 import PrivateRouteComponent from "./components/RoutingComponents/PrivateRouteComponent";
@@ -68,10 +67,6 @@ function App() {
           <Route
             path="/school-contact-dashboard"
             element={<SchoolContactRouteComponent element={<SCDashboardPage />} />}
-          />
-          <Route
-            path="/school-contact-member-info"
-            element={<SchoolContactRouteComponent element={<SCMemberInfoPage />} />}
           />
           <Route
             path="/school-contact-mentor-logs"
