@@ -22,12 +22,15 @@ import PrivateRouteComponent from "./components/RoutingComponents/PrivateRouteCo
 import AdminRouteComponent from "./components/RoutingComponents/AdminRouteComponent";
 import SchoolContactRouteComponent from "./components/RoutingComponents/SchoolContactComponent";
 
+import LandingPage from "./pages/GeneralPages/LandingPage"
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Routes>
           {/* Public Routes */}
+          <Route path ="" element={<LandingPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
