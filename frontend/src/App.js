@@ -9,11 +9,11 @@ import TimeLoggedPage from "./pages/MentorPages/TimeLoggedPage";
 import YourMatchPage from "./pages/MentorPages/YourMatchPage";
 import LogTimePage from "./pages/MentorPages/LogTimePage";
 import MentorHomePage from "./pages/MentorPages/MentorHomePage";
-// import CalendarPage from './pages/CalendarPage';
 
 import AdminDashboardPage from "./pages/AdminPages/DashboardPage";
 import AdminMemberInfoPage from "./pages/AdminPages/MemberInfoPage";
 import AdminMentorLogsPage from "./pages/AdminPages/MentorLogsPage";
+import AdminLogTimePage from "./pages/AdminPages/LogTimePage";
 
 import SCDashboardPage from "./pages/SchoolContactPages/DashboardPage";
 import SCMentorLogsPage from "./pages/SchoolContactPages/MentorLogsPage";
@@ -22,7 +22,7 @@ import PrivateRouteComponent from "./components/RoutingComponents/PrivateRouteCo
 import AdminRouteComponent from "./components/RoutingComponents/AdminRouteComponent";
 import SchoolContactRouteComponent from "./components/RoutingComponents/SchoolContactComponent";
 
-import LandingPage from "./pages/GeneralPages/LandingPage"
+import LandingPage from "./pages/GeneralPages/LandingPage";
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Public Routes */}
-          <Route path ="" element={<LandingPage />} />
+          <Route path="" element={<LandingPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -54,7 +54,6 @@ function App() {
           />
 
           {/* Admin */}
-          {/* <Route path="/calendar" element={<CalendarPage />} /> */}
           <Route
             path="/admin-dashboard"
             element={<AdminRouteComponent element={<AdminDashboardPage />} />}
@@ -68,12 +67,22 @@ function App() {
             element={<AdminRouteComponent element={<AdminMentorLogsPage />} />}
           />
           <Route
+            path="/admin-log-time"
+            element={<AdminRouteComponent element={<AdminLogTimePage />} />}
+          />
+
+          {/* School Contact */}
+          <Route
             path="/school-contact-dashboard"
-            element={<SchoolContactRouteComponent element={<SCDashboardPage />} />}
+            element={
+              <SchoolContactRouteComponent element={<SCDashboardPage />} />
+            }
           />
           <Route
             path="/school-contact-mentor-logs"
-            element={<SchoolContactRouteComponent element={<SCMentorLogsPage />} />}
+            element={
+              <SchoolContactRouteComponent element={<SCMentorLogsPage />} />
+            }
           />
         </Routes>
       </AuthProvider>

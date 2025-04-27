@@ -8,10 +8,13 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.js";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 const SidebarComponentSchoolContact = ({ currentPage }) => {
   const { handleSignOut } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // true if <= 600px
 
   const navItems = [
     { label: "Dashboard", icon: <HomeIcon />, key: "Dashboard", path: "/school-contact-dashboard" },
@@ -23,6 +26,7 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
 
   const getListItemTextStyles = (isSelected) => ({
     ml: 1,
+    display: isMobile ? "none" : "block", // Hide text on mobile
     span: {
       color: isSelected ? "#FFF" : "#202224",
       fontFamily: "Nunito Sans",
@@ -35,7 +39,7 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
   return (
     <Box
       sx={{
-        width: "13%",
+        width: isMobile ? "20%" : "13%",
         bgcolor: "#fff",
         borderRight: "1px solid #E0E0E0",
         p: 2,
@@ -43,9 +47,10 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
         flexDirection: "column",
         justifyContent: "space-between",
         fontFamily: "Nunito Sans",
+        alignItems: "center",
       }}
     >
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <List>
           {navItems.map(({ label, icon, key, path }) => {
             const isSelected = currentPage === label;
@@ -60,6 +65,7 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
                   color: isSelected ? "#FFF" : "inherit",
                   borderRadius: 1,
                   mb: 1,
+                  justifyContent: isMobile ? "center" : "flex-start",
                   "&:hover": {
                     backgroundColor: isSelected ? "#57C5CC" : "#F0F0F0",
                   },
@@ -73,7 +79,7 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
         </List>
       </Box>
 
-      <Box>
+      <Box sx={{ width: "100%" }}>
         <Divider sx={{ my: 1 }} />
         <List>
           <ListItem
@@ -83,9 +89,10 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
               "&:hover": { backgroundColor: "#F0F0F0" },
               borderRadius: 1,
               mb: 1,
+              justifyContent: isMobile ? "center" : "flex-start",
             }}
           >
-            <SettingsIcon sx={{ mr: 1 }} />
+            <SettingsIcon sx={{ mr: isMobile ? 0 : 1 }} />
             <ListItemText sx={getListItemTextStyles(false)} primary="Settings" />
           </ListItem>
           <ListItem
@@ -95,9 +102,10 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
               cursor: "pointer",
               "&:hover": { backgroundColor: "#F0F0F0" },
               borderRadius: 1,
+              justifyContent: isMobile ? "center" : "flex-start",
             }}
           >
-            <LogoutIcon sx={{ mr: 1 }} />
+            <LogoutIcon sx={{ mr: isMobile ? 0 : 1 }} />
             <ListItemText sx={getListItemTextStyles(false)} primary="Logout" />
           </ListItem>
         </List>
