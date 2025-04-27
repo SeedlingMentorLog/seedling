@@ -108,7 +108,7 @@ const LogTimePage = () => {
 
       if (response.ok) {
         console.log("Log added successfully");
-        navigate("/time-logged");
+        navigate("/admin-dashboard");
       } else {
         const errorData = await response.json();
         setError({ errorMessage: errorData.error || "Something went wrong!" });

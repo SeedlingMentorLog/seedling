@@ -4,6 +4,10 @@ import {
   Typography,
   Grid,
   Paper,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
 } from "@mui/material";
 import {
   LineChart,
@@ -19,6 +23,7 @@ import HeaderComponent from "../../components/HeaderComponent";
 
 const DashboardPage = () => {
   const [logs, setLogs] = useState([]);
+  const [filteredLogs, setFilteredLogs] = useState([]);
   const [stats, setStats] = useState([
     { label: "Total Visits", value: 0, icon: "👤" },
     { label: "Visits this Week", value: 0, icon: "📦" },
@@ -26,63 +31,32 @@ const DashboardPage = () => {
     { label: "Organization Hours", value: 0, icon: "📈" },
   ]);
   const [chartData, setChartData] = useState([]);
+  const [schools, setSchools] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState("All Schools");
 
   useEffect(() => {
     const fetchLogs = async () => {
       try {
         const user = JSON.parse(localStorage.getItem("currentUser"));
         const accessToken = user?.accessToken;
-        const response = await fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const response = await fetch(`${process.env.REACT_APP_BACKEND}/get/mentor_logs`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
         const data = await response.json();
         const logs = data.logs || [];
         setLogs(logs);
 
-        const now = new Date();
-        const currentWeek = new Date(now);
-        currentWeek.setDate(now.getDate() - now.getDay());
-        const currentMonth = now.getMonth();
+        // Extract unique schools
+        const uniqueSchools = Array.from(new Set(logs.map(log => log.student_school).filter(Boolean)));
+        setSchools(uniqueSchools);
 
-        let totalVisits = logs.length;
-        let visitsThisWeek = 0;
-        let visitsThisMonth = 0;
-        let totalHours = 0;
-        const monthlyHours = Array(12).fill(0);
+        // Set initial filtered logs
+        setFilteredLogs(logs);
 
-        logs.forEach((log) => {
-          const logDate = new Date(log.date);
-          totalHours += parseFloat(log.hours_logged || 0);
-
-          if (logDate >= currentWeek) visitsThisWeek++;
-          if (logDate.getMonth() === currentMonth) visitsThisMonth++;
-          monthlyHours[logDate.getMonth()] += parseFloat(log.hours_logged || 0);
-        });
-
-        setStats([
-          { label: "Total Visits", value: totalVisits, icon: "👤" },
-          { label: "Visits this Week", value: visitsThisWeek, icon: "📦" },
-          { label: "Visits this Month", value: visitsThisMonth, icon: "📈" },
-          { label: "Organization Hours", value: totalHours.toFixed(0), icon: "📈" },
-        ]);
-
-        const monthLabels = [
-          "JAN", "FEB", "MARCH", "APRIL", "MAY", "JUNE",
-          "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"
-        ];
-
-        const dataFormatted = monthlyHours.map((hours, i) => ({
-          month: monthLabels[i],
-          hours: hours,
-        }));
-
-        setChartData(dataFormatted);
       } catch (error) {
         console.error("Failed to fetch mentor logs:", error);
       }
@@ -90,6 +64,54 @@ const DashboardPage = () => {
 
     fetchLogs();
   }, []);
+
+  useEffect(() => {
+    let displayedLogs = logs;
+    if (selectedSchool !== "All Schools") {
+      displayedLogs = logs.filter(log => log.student_school === selectedSchool);
+    }
+    setFilteredLogs(displayedLogs);
+
+    const now = new Date();
+    const currentWeek = new Date(now);
+    currentWeek.setDate(now.getDate() - now.getDay());
+    const currentMonth = now.getMonth();
+
+    let totalVisits = displayedLogs.length;
+    let visitsThisWeek = 0;
+    let visitsThisMonth = 0;
+    let totalHours = 0;
+    const monthlyHours = Array(12).fill(0);
+
+    displayedLogs.forEach((log) => {
+      const logDate = new Date(log.date);
+      totalHours += parseFloat(log.hours_logged || 0);
+
+      if (logDate >= currentWeek) visitsThisWeek++;
+      if (logDate.getMonth() === currentMonth) visitsThisMonth++;
+      monthlyHours[logDate.getMonth()] += parseFloat(log.hours_logged || 0);
+    });
+
+    setStats([
+      { label: "Total Visits", value: totalVisits, icon: "👤" },
+      { label: "Visits this Week", value: visitsThisWeek, icon: "📦" },
+      { label: "Visits this Month", value: visitsThisMonth, icon: "📈" },
+      { label: "Organization Hours", value: totalHours.toFixed(0), icon: "📈" },
+    ]);
+
+    const monthLabels = [
+      "JAN", "FEB", "MARCH", "APRIL", "MAY", "JUNE",
+      "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"
+    ];
+
+    const dataFormatted = monthlyHours.map((hours, i) => ({
+      month: monthLabels[i],
+      hours: hours,
+    }));
+
+    setChartData(dataFormatted);
+
+  }, [logs, selectedSchool]);
 
   return (
     <Box sx={{ display: "flex", height: "100vh", fontFamily: "Poppins" }}>
@@ -100,6 +122,24 @@ const DashboardPage = () => {
           <Typography variant="h5" sx={{ mb: 3, fontWeight: 600, fontFamily: "Nunito Sans" }}>
             Dashboard
           </Typography>
+
+          {/* Filter Dropdown */}
+          <FormControl sx={{ mb: 3, minWidth: 200 }}>
+            <InputLabel>Filter by School</InputLabel>
+            <Select
+              value={selectedSchool}
+              label="Filter by School"
+              onChange={(e) => setSelectedSchool(e.target.value)}
+              sx={{ backgroundColor: "#fff", borderRadius: 2 }}
+            >
+              <MenuItem value="All Schools">All Schools</MenuItem>
+              {schools.map((school, index) => (
+                <MenuItem key={index} value={school}>
+                  {school}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           {/* Stats Cards */}
           <Grid container spacing={2} mb={3}>

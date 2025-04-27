@@ -1,6 +1,5 @@
-import { React, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Typography, Button, Link } from "@mui/material";
+import { React } from "react";
+import { Box, Typography } from "@mui/material";
 
 const CardComponent = (props) => {
   return (
@@ -8,7 +7,7 @@ const CardComponent = (props) => {
       sx={{
         display: "flex",
         width: "95%",
-        height: "20%",
+        height: "auto",
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: "center",
@@ -16,7 +15,8 @@ const CardComponent = (props) => {
         background: "#FFF",
         boxShadow: "0px 8px 7.6px 1px rgba(0, 0, 0, 0.25)",
         marginBottom: 2,
-        paddingBottom: 1,
+        paddingBottom: 2,
+        paddingTop: 2,
       }}
     >
       <Typography
@@ -27,35 +27,35 @@ const CardComponent = (props) => {
           fontStyle: "normal",
           fontWeight: 600,
           lineHeight: "normal",
-          paddingTop: 4,
+          paddingTop: 2,
           paddingBottom: 2,
         }}
       >
         {props.name}
       </Typography>
+
+      {/* This container handles School and Birthday */}
       <Box
         sx={{
-          width: 325,
+          width: "80%",
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "flex-start",
+          flexDirection: { xs: "column", md: "row" }, // ⬅️ KEY: stacked on mobile, side-by-side on desktop
+          justifyContent: "center",
           alignItems: "center",
           gap: 2,
-          paddingBottom: 2,
         }}
       >
+        {/* School */}
         <Box
           sx={{
             display: "flex",
             width: 110,
             height: 36,
-            padding: "10 24",
             justifyContent: "center",
             alignItems: "center",
-            gap: 8,
-            flexShrink: 0,
-            borderRadius: 10,
+            borderRadius: 2,
             background: "#AEF4F9",
+            marginBottom: { xs: 1, md: 0 }, // ⬅️ margin below only on mobile
           }}
         >
           <Typography
@@ -63,9 +63,7 @@ const CardComponent = (props) => {
               color: "#000",
               fontFamily: "Inter",
               fontSize: 16,
-              fontStyle: "normal",
               fontWeight: 500,
-              lineHeight: "normal",
             }}
           >
             School
@@ -73,39 +71,26 @@ const CardComponent = (props) => {
         </Box>
         <Typography
           sx={{
-            color: "var(--Dark-Grey, #423C47);",
+            color: "#423C47",
             fontFamily: "Inter",
             fontSize: 16,
-            fontStyle: "normal",
             fontWeight: 500,
-            lineHeight: "normal",
           }}
         >
           {props.school}
         </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: 325,
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
+
+        {/* Birthday */}
         <Box
           sx={{
             display: "flex",
             width: 110,
             height: 36,
-            padding: "10 24",
             justifyContent: "center",
             alignItems: "center",
-            gap: 8,
-            flexShrink: 0,
-            borderRadius: 10,
+            borderRadius: 2,
             background: "#AEF4F9",
+            marginTop: { xs: 1, md: 0 }, // ⬅️ margin top only on mobile
           }}
         >
           <Typography
@@ -113,9 +98,7 @@ const CardComponent = (props) => {
               color: "#000",
               fontFamily: "Inter",
               fontSize: 16,
-              fontStyle: "normal",
               fontWeight: 500,
-              lineHeight: "normal",
             }}
           >
             Birthday
@@ -123,12 +106,10 @@ const CardComponent = (props) => {
         </Box>
         <Typography
           sx={{
-            color: "var(--Dark-Grey, #423C47);",
+            color: "#423C47",
             fontFamily: "Inter",
             fontSize: 16,
-            fontStyle: "normal",
             fontWeight: 500,
-            lineHeight: "normal",
           }}
         >
           {props.birthday}
