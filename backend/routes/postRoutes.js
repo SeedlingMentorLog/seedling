@@ -193,24 +193,6 @@ router.post(
   }
 );
 
-// Verify a user (admin only)
-router.post("/verify_user/:user_role", verifyAdminStatus, (req, res) => {
-  const { id, role } = req.body;
-  const query = `
-    UPDATE USERS
-    SET role = ?, verified = TRUE
-    WHERE id = ?;
-  `;
-
-  pool.query(query, [role, id], (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error executing query" });
-    }
-    res.status(201).json({ message: "Success" });
-  });
-});
-
 // Update user profile
 router.post("/update_user_profile/:user_role", verifyAdminStatus,(req, res) => {
   const { email, name, role, id } = req.body;

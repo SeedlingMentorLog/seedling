@@ -3,7 +3,7 @@ require("dotenv").config({ path: __dirname + "/../.env" });
 
 // Create a connection pool
 const pool = mysql.createPool({
-  connectionLimit: 10, // Number of connections in the pool
+  connectionLimit: 30, // Number of connections in the pool
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
@@ -95,4 +95,22 @@ function createMentorLogsTable() {
   });
 }
 
-module.exports = { pool, createUsersTable, createMentorToStudentTable, createMentorLogsTable };
+function intializeDatabase() {
+  createUsersTable();
+  createMentorToStudentTable();
+  createMentorLogsTable();
+
+  const query = `
+    INSERT INTO USERS (firebase_id, email, name, role, verified)
+    VALUES ('UBkKk5AHkLWNq2ZlAmDEXv97bmF3', 'ykukrecha101@gmail.com', 'Yash Kukrecha', 'admin', true);
+  `;
+  pool.query(query, (err, result) => {
+    if (err) {
+      console.error("Error inserting initial data:", err.message);
+      return;
+    }
+    console.log("Initial data inserted into USERS table.");
+  });
+}
+
+module.exports = { pool, intializeDatabase };

@@ -2,9 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const {
   pool,
-  createUsersTable,
-  createMentorLogsTable,
-  createMentorToStudentTable,
+  intializeDatabase,
 } = require("./config/db");
 const getRoutes = require("./routes/getRoutes");
 const postRoutes = require("./routes/postRoutes");
@@ -13,9 +11,7 @@ const admin = require("./config/firebase");
 const app = express();
 const PORT = process.env.PORT; // Set your desired port
 
-// createUsersTable();
-// createMentorToStudentTable();
-// createMentorLogsTable();
+// intializeDatabase();
 
 // Firebase Admin Authentication Middleware
 const auth = (req, res, next) => {
@@ -68,5 +64,5 @@ process.on("SIGINT", () => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on ${PORT}`);
 });

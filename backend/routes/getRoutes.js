@@ -213,42 +213,4 @@ router.get("/school_logs/:school_id", (req, res) => {
   });
 });
 
-// Get logs by date range (for a mentor or school contact)
-router.post("/get_logs_by_date_range", (req, res) => {
-  const { start_date, end_date, mentor_id, school_contact_id } = req.body;
-  const query = `
-    SELECT ml.id, 
-           ml.created_at, 
-           ml.date, 
-           ml.start_time, 
-           ml.end_time, 
-           ml.hours_logged, 
-           ml.activity,
-           ml.meeting_circumstance, 
-           ml.comments,
-           u.name AS mentor_name, 
-           mts.student_name AS student_name,
-           mts.start_date AS start_date,
-           mts.end_date AS end_date
-    FROM MENTOR_LOGS ml
-    JOIN USERS u ON ml.mentor_id = u.id
-    JOIN MENTOR_TO_STUDENT mts ON ml.mentor_to_student_id = mts.mentor_to_student_id
-    WHERE ml.date BETWEEN ? AND ?
-    AND (ml.mentor_id = ? OR mts.school_contact_id = ?)
-    ORDER BY ml.date DESC;
-  `;
-
-  pool.query(
-    query,
-    [start_date, end_date, mentor_id, school_contact_id],
-    (err, result) => {
-      if (err) {
-        console.error("Error executing query:", err);
-        return res.status(500).json({ error: "Error executing query" });
-      }
-      res.status(200).json({ logs: result });
-    }
-  );
-});
-
 module.exports = router;
