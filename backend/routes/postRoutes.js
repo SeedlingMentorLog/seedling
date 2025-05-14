@@ -194,21 +194,25 @@ router.post(
 );
 
 // Update user profile
-router.post("/update_user_profile/:user_role", verifyAdminStatus,(req, res) => {
-  const { email, name, role, id } = req.body;
-  const query = `
+router.post(
+  "/update_user_profile/:user_role",
+  verifyAdminStatus,
+  (req, res) => {
+    const { email, name, role, id } = req.body;
+    const query = `
     UPDATE USERS
     SET email = ?, name = ?, role = ?, verified = TRUE
     WHERE id = ?;
   `;
 
-  pool.query(query, [email, name, role, id], (err, result) => {
-    if (err) {
-      console.error("Error executing query:", err);
-      return res.status(500).json({ error: "Error executing query" });
-    }
-    res.status(200).json({ message: "User profile updated successfully" });
-  });
-});
+    pool.query(query, [email, name, role, id], (err, result) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        return res.status(500).json({ error: "Error executing query" });
+      }
+      res.status(200).json({ message: "User profile updated successfully" });
+    });
+  }
+);
 
 module.exports = router;

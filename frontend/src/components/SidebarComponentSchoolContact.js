@@ -84,19 +84,6 @@ const SidebarComponentSchoolContact = ({ currentPage }) => {
         <List>
           <ListItem
             button
-            sx={{
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "#F0F0F0" },
-              borderRadius: 1,
-              mb: 1,
-              justifyContent: isMobile ? "center" : "flex-start",
-            }}
-          >
-            <SettingsIcon sx={{ mr: isMobile ? 0 : 1 }} />
-            <ListItemText sx={getListItemTextStyles(false)} primary="Settings" />
-          </ListItem>
-          <ListItem
-            button
             onClick={handleSignOut}
             sx={{
               cursor: "pointer",
