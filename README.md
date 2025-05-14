@@ -4,8 +4,8 @@
 We built a mobile-first volunteer management portal designed to streamline the process of logging and verifying mentor hours for weekly meetings, enhancing efficiency for mentors, school contacts, and staff at Seedling.
 
 ## Features
-- **Web Portal**: Built with React and JavaScript to simplify mentor hour submissions and view past logs
-- **Backend**: Node.js backend paired with a PostreSQL database hosted on AWS RDS, capable of storing volunteer hour records
+- **Web Portal**: Built with React, JavaScript, and MUI components to simplify mentor hour submissions and view past logs
+- **Backend**: Express.js backend paired with a AWS RDS MySQL database hosted on an EC2 instance, capable of storing volunteer hour records
 - **Data Transfer**: Includes functioanlity for generating CSV downloads to reduce manual data entry into Innovative Mentoring Software
 - **Bug Reduction**: Addresses submission errors, enables faster and simpler hour reporting
 - **Sleek UI**: Mobile-first approach combined with an improved logging process to enhance user experience
@@ -14,14 +14,13 @@ We built a mobile-first volunteer management portal designed to streamline the p
 - **Frontend**
     - React
     - JavaScript
-    - DataTables
+    - MUI
 - **Backend**
     - Node.js
     - Express.js
-    - PostgreSQL
-    - AWS RDS
+    - AWS MySQL
+    - AWS EC2
     - Firebase Authentication
-    - JSON-2-CSV
 
 ## Team
 - Yee Hong Pua (Product Manager)
