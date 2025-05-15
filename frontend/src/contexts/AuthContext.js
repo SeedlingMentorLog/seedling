@@ -30,7 +30,6 @@ export const AuthProvider = ({ children }) => {
       const result = await signInWithPopup(auth, provider);
       const uid = result.user.uid;
       const idToken = await result.user.getIdToken();
-      console.log("ID Token:", idToken);
 
       const userDetailsResponse = await fetch(
         `${process.env.REACT_APP_BACKEND}/get/user/${uid}`,
@@ -276,9 +275,7 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          console.log("Attempting to fetch user details for uid:", user.uid);
           const url = `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`;
-          console.log("Fetching from URL:", url);
 
           const userDetailsResponse = await fetch(url, {
             method: "GET",
@@ -287,14 +284,8 @@ export const AuthProvider = ({ children }) => {
               Authorization: `Bearer ${user.accessToken}`,
             },
           });
-          console.log("Response status:", userDetailsResponse.status);
-          console.log(
-            "Response headers:",
-            Object.fromEntries(userDetailsResponse.headers.entries())
-          );
 
           const responseText = await userDetailsResponse.text();
-          console.log("Raw response:", responseText);
 
           if (!userDetailsResponse.ok) {
             throw new Error(

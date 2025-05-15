@@ -64,9 +64,6 @@ const MemberInfoPage = () => {
         );
         setUsers(data.users || []);
         setSchoolContacts(schoolContactsData || []);
-
-        console.log("Fetched users:", data.users);
-        console.log("Fetched school contacts:", schoolContactsData);
       } catch (error) {
         console.error("Failed to fetch users", error);
       }
@@ -168,7 +165,6 @@ const MemberInfoPage = () => {
           )
             continue;
 
-          console.log("rel: ", rel);
           // Add the new relationship
           if (rel.notAdded) {
             await fetch(

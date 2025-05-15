@@ -137,7 +137,6 @@ const LogTimePage = () => {
       );
 
       if (response.ok) {
-        console.log("Log added successfully");
         navigate("/time-logged");
       } else {
         const errorData = await response.json();

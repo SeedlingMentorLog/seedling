@@ -40,7 +40,6 @@ const YourMatchPage = () => {
           throw new Error("Failed to fetch students");
         }
         const data = await response.json();
-        console.log(data);
         setStudents(data.students);
       } catch (error) {
         console.error("Error fetching students:", error);

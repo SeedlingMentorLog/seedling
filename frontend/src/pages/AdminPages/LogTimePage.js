@@ -107,7 +107,6 @@ const LogTimePage = () => {
       );
 
       if (response.ok) {
-        console.log("Log added successfully");
         navigate("/admin-dashboard");
       } else {
         const errorData = await response.json();

@@ -8,7 +8,6 @@ const AdminRouteComponent = ({ element }) => {
   const errorSet = useRef(false);
 
   useEffect(() => {
-    console.log("USER: ", currentUser);
     // Only set the error once to avoid infinite loops
     if (!errorSet.current) {
       if (!currentUser) {
