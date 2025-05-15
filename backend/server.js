@@ -41,8 +41,23 @@ const auth = (req, res, next) => {
   }
 };
 
+const allowedOrigins = [
+  "http://localhost:3000",                        // Local dev (React default)
+  "https://seedling-volunteer-portal.vercel.app"  // Live frontend
+];
+
+// CORS Middleware
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error("CORS policy: Not allowed by CORS"));
+  },
+  credentials: true
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(auth);
 
