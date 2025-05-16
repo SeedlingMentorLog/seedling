@@ -5,11 +5,14 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
   sendPasswordResetEmail,
+  getRedirectResult,
 } from "firebase/auth";
 import { auth } from "./firebaseConfig";
 import { Snackbar, Alert } from "@mui/material";
+import { isMobile } from "react-device-detect";
 
 const AuthContext = createContext();
 
@@ -27,7 +30,13 @@ export const AuthProvider = ({ children }) => {
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+
+      if (isMobile) {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+
+      let result = await signInWithPopup(auth, provider);
       const uid = result.user.uid;
       const idToken = await result.user.getIdToken();
 
@@ -202,6 +211,12 @@ export const AuthProvider = ({ children }) => {
   const handleGoogleSignup = async () => {
     try {
       const provider = new GoogleAuthProvider();
+
+      if (isMobile) {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+
       const result = await signInWithPopup(auth, provider);
       const userEmail = result.user.email;
       const uid = result.user.uid;
@@ -269,6 +284,94 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     setShowError(false);
   };
+
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (!result?.user) return;
+
+        const idToken = await result.user.getIdToken();
+        const uid = result.user.uid;
+        const email = result.user.email;
+        const name = result.user.displayName;
+
+        let userData;
+
+        try {
+          // Try to GET user (sign-in path)
+          const getUserResponse = await fetch(
+            `${process.env.REACT_APP_BACKEND}/get/user/${uid}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`,
+              },
+            }
+          );
+
+          if (getUserResponse.ok) {
+            userData = await getUserResponse.json();
+          } else if (getUserResponse.status === 404) {
+            // Not found → create user (sign-up path)
+            const addUserResponse = await fetch(
+              `${process.env.REACT_APP_BACKEND}/post/add_user`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${idToken}`,
+                },
+                body: JSON.stringify({ firebase_id: uid, email, name }),
+              }
+            );
+
+            if (!addUserResponse.ok) {
+              const errorText = await addUserResponse.text();
+              throw new Error(`Signup failed: ${errorText}`);
+            }
+
+            userData = await addUserResponse.json();
+          } else {
+            throw new Error("Unexpected error fetching user.");
+          }
+
+          const user = {
+            ...result.user,
+            id: userData.user.id,
+            name: userData.user.name,
+            role: userData.user.role,
+            verified: userData.user.verified,
+            accessToken: idToken,
+          };
+
+          localStorage.setItem("currentUser", JSON.stringify(user));
+
+          if (user.role === "admin" || user.role === "staff") {
+            navigate("/admin-dashboard");
+          } else if (user.role === "school contact") {
+            navigate("/school-contact-dashboard");
+          } else {
+            navigate("/mentor-homepage");
+          }
+        } catch (error) {
+          console.error("Error in Google redirect flow:", error);
+          setError({
+            errorHeader: "Redirect Auth Error",
+            errorMessage: error.message,
+          });
+          setShowError(true);
+        }
+      })
+      .catch((error) => {
+        console.error("getRedirectResult error:", error);
+        setError({
+          errorHeader: "Redirect Error",
+          errorMessage: error.message,
+        });
+        setShowError(true);
+      });
+  }, []);
 
   // Effect hook to handle authentication state changes
   useEffect(() => {
