@@ -9,6 +9,9 @@ import {
   signOut,
   sendPasswordResetEmail,
   getRedirectResult,
+  setPersistence,
+  browserSessionPersistence,
+  inMemoryPersistence,
 } from "firebase/auth";
 import { auth } from "./firebaseConfig";
 import { Snackbar, Alert } from "@mui/material";
@@ -25,189 +28,87 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [showError, setShowError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [handlingRedirect, setHandlingRedirect] = useState(true);
 
-  // Function to handle Google sign-in
+  /* ------------------------------------------------------------------
+     1.  Give iOS Safari a persistence that survives the Google redirect.
+         If IndexedDB / localStorage are blocked (private-mode), fall back
+         to in-memory so at least getRedirectResult works.
+  -------------------------------------------------------------------*/
+  useEffect(() => {
+    (async () => {
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+      } catch (err) {
+        console.warn(
+          "browserSessionPersistence failed, falling back to in-memory.",
+          err
+        );
+        await setPersistence(auth, inMemoryPersistence);
+      }
+    })();
+  }, []);
+
+  /* ------------------------------------------------------------------
+     2.  GOOGLE SIGN-IN (LOGIN)
+  -------------------------------------------------------------------*/
   const handleGoogleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
 
       if (isMobile) {
         await signInWithRedirect(auth, provider);
-        return;
+        return; // iOS/Android path: rest handled
       }
 
-      let result = await signInWithPopup(auth, provider);
-      const uid = result.user.uid;
-      const idToken = await result.user.getIdToken();
-
-      const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${uid}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
-      if (!userDetailsResponse.ok) {
-        const errorData = await userDetailsResponse.json();
-        throw new Error(
-          `Failed to fetch user details: ${
-            errorData.error || userDetailsResponse.statusText
-          }`
-        );
-      }
-
-      const userDetails = await userDetailsResponse.json();
-      const user = {
-        ...result.user,
-        id: userDetails.user.id,
-        name: userDetails.user.name,
-        role: userDetails.user.role,
-        verified: userDetails.user.verified,
-        accessToken: idToken,
-      };
-
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      if (user.role === "admin" || user.role === "staff") {
-        navigate("/admin-dashboard");
-      } else if (user.role === "school contact") {
-        navigate("/school-contact-dashboard");
-      } else {
-        navigate("/mentor-homepage");
-      }
-    } catch (error) {
-      setError({
-        errorHeader: "Google Error",
-        errorMessage: error.message || "Error signing in with Google",
-      });
-      setShowError(true);
-      console.error("Error during Google sign-in:", error);
+      // Desktop popup path
+      const result = await signInWithPopup(auth, provider);
+      await finishSignIn(result.user);
+    } catch (err) {
+      handleAuthError("Google Sign-In Error", err);
     }
   };
 
-  // Function to handle Email/Password sign-in
+  /* ------------------------------------------------------------------
+     3.  EMAIL / PASSWORD LOGIN
+  -------------------------------------------------------------------*/
   const handleEmailPasswordSignIn = async (email, password) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const userDetailsResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/get/user/${userCredential.user.uid}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userCredential.user.accessToken}`,
-          },
-        }
-      );
-      if (!userDetailsResponse.ok) {
-        const errorData = await userDetailsResponse.json();
-        throw new Error(
-          `Failed to fetch user details: ${
-            errorData.error || userDetailsResponse.statusText
-          }`
-        );
-      }
-
-      const userDetails = await userDetailsResponse.json();
-      const user = {
-        ...userCredential.user,
-        id: userDetails.user.id,
-        name: userDetails.user.name,
-        role: userDetails.user.role,
-        verified: userDetails.user.verified,
-      };
-
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      if (user.role === "admin" || user.role === "staff") {
-        navigate("/admin-dashboard");
-      } else if (user.role === "school contact") {
-        navigate("/school-contact-dashboard");
-      } else {
-        navigate("/mentor-homepage");
-      }
-    } catch (error) {
-      setError({
-        errorHeader: "Email/Password Sign-In Error",
-        errorMessage: error.message,
-      });
-      setShowError(true);
-      console.log("Error signing in with email and password: ", error);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      await finishSignIn(cred.user);
+    } catch (err) {
+      handleAuthError("Email/Password Sign-In Error", err);
     }
   };
 
-  // Function to handle sign-out
+  /* ------------------------------------------------------------------
+     4.  SIGN-OUT
+  -------------------------------------------------------------------*/
   const handleSignOut = async () => {
     try {
       await signOut(auth);
       localStorage.removeItem("currentUser");
       navigate("/login");
-    } catch (error) {
-      console.log("Error signing out:", error);
-      throw error;
+    } catch (err) {
+      console.error("Error signing out:", err);
     }
   };
 
-  // Function to handle email/password signup
+  /* ------------------------------------------------------------------
+     5.  EMAIL / PASSWORD SIGN-UP
+  -------------------------------------------------------------------*/
   const handleEmailPasswordSignup = async (email, password, name) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND}/post/add_user`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userCredential.user.accessToken}`,
-          },
-          body: JSON.stringify({
-            firebase_id: userCredential.user.uid,
-            email: email,
-            name: name,
-          }),
-        }
-      );
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          `Failed to add user to database: ${
-            errorData.error || response.statusText
-          }`
-        );
-      }
-
-      const userDetailsResponse = await response.json();
-      const user = {
-        ...userCredential.user,
-        id: userDetailsResponse.user.id,
-        name: userDetailsResponse.user.name,
-        role: userDetailsResponse.user.role,
-        verified: userDetailsResponse.user.verified,
-      };
-
-      localStorage.setItem("currentUser", JSON.stringify(user));
-    } catch (error) {
-      setError({
-        errorHeader: "Email/Password Sign-Up Error",
-        errorMessage: error.message,
-      });
-      setShowError(true);
-      console.log("Error signing up with email and password: ", error);
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await finishSignup(cred.user, name);
+    } catch (err) {
+      handleAuthError("Email/Password Sign-Up Error", err);
     }
   };
 
-  // Function to handle Google signup
+  /* ------------------------------------------------------------------
+     6.  GOOGLE SIGN-UP (POPUP on desktop, REDIRECT on mobile)
+  -------------------------------------------------------------------*/
   const handleGoogleSignup = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -218,65 +119,20 @@ export const AuthProvider = ({ children }) => {
       }
 
       const result = await signInWithPopup(auth, provider);
-      const userEmail = result.user.email;
-      const uid = result.user.uid;
-      const userName = result.user.displayName;
-      const idToken = await result.user.getIdToken();
-
-      const addUserResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND}/post/add_user`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${idToken}`,
-          },
-          body: JSON.stringify({
-            firebase_id: uid,
-            email: userEmail,
-            name: userName,
-          }),
-        }
-      );
-
-      if (!addUserResponse.ok) {
-        const errorData = await addUserResponse.json();
-        throw new Error(
-          `Failed to add user to database: ${
-            errorData.error || addUserResponse.statusText
-          }`
-        );
-      }
-
-      const userDetailsResponse = await addUserResponse.json();
-      const user = {
-        ...result.user,
-        id: userDetailsResponse.user.id,
-        name: userName,
-        role: userDetailsResponse.user.role,
-        verified: userDetailsResponse.user.verified,
-        accessToken: idToken,
-      };
-      localStorage.setItem("currentUser", JSON.stringify(user));
-    } catch (error) {
-      setError({
-        errorHeader: "Google Error",
-        errorMessage: error.message || "Error signing up with Google",
-      });
-      setShowError(true);
-      console.error("Error during Google sign-up process: ", error);
+      await finishSignup(result.user, result.user.displayName);
+    } catch (err) {
+      handleAuthError("Google Sign-Up Error", err);
     }
   };
 
+  /* ------------------------------------------------------------------
+     7.  PASSWORD RESET
+  -------------------------------------------------------------------*/
   const resetPassword = async (email) => {
     try {
       await sendPasswordResetEmail(auth, email);
-    } catch (error) {
-      setError({
-        errorHeader: "Password Reset Error",
-        errorMessage: error.message,
-      });
-      setShowError(true);
+    } catch (err) {
+      handleAuthError("Password Reset Error", err);
     }
   };
 
@@ -285,21 +141,23 @@ export const AuthProvider = ({ children }) => {
     setShowError(false);
   };
 
+  /* ------------------------------------------------------------------
+     8.  HANDLE GOOGLE REDIRECT RESULT   (mobile Safari / Chrome iOS)
+  -------------------------------------------------------------------*/
   useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (!result?.user) return;
+    (async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          const idToken = await result.user.getIdToken();
+          const uid = result.user.uid;
+          const email = result.user.email;
+          const name = result.user.displayName;
 
-        const idToken = await result.user.getIdToken();
-        const uid = result.user.uid;
-        const email = result.user.email;
-        const name = result.user.displayName;
+          let userData;
 
-        let userData;
-
-        try {
-          // Try to GET user (sign-in path)
-          const getUserResponse = await fetch(
+          // --- get user row from DB ------------------------------------------------
+          const res = await fetch(
             `${process.env.REACT_APP_BACKEND}/get/user/${uid}`,
             {
               method: "GET",
@@ -310,11 +168,11 @@ export const AuthProvider = ({ children }) => {
             }
           );
 
-          if (getUserResponse.ok) {
-            userData = await getUserResponse.json();
-          } else if (getUserResponse.status === 404) {
-            // Not found → create user (sign-up path)
-            const addUserResponse = await fetch(
+          if (res.ok) {
+            userData = await res.json();
+          } else if (res.status === 404) {
+            // --- add user row to DB ------------------------------------------------
+            const addRes = await fetch(
               `${process.env.REACT_APP_BACKEND}/post/add_user`,
               {
                 method: "POST",
@@ -326,14 +184,16 @@ export const AuthProvider = ({ children }) => {
               }
             );
 
-            if (!addUserResponse.ok) {
-              const errorText = await addUserResponse.text();
-              throw new Error(`Signup failed: ${errorText}`);
+            if (!addRes.ok) {
+              const errText = await addRes.text();
+              throw new Error(
+                `Failed to add user to database: ${addRes.status} ${addRes.statusText}\n${errText}`
+              );
             }
 
-            userData = await addUserResponse.json();
+            userData = await addRes.json();
           } else {
-            throw new Error("Unexpected error fetching user.");
+            throw new Error("Unexpected error fetching user data");
           }
 
           const user = {
@@ -354,99 +214,144 @@ export const AuthProvider = ({ children }) => {
           } else {
             navigate("/mentor-homepage");
           }
-        } catch (error) {
-          console.error("Error in Google redirect flow:", error);
-          setError({
-            errorHeader: "Redirect Auth Error",
-            errorMessage: error.message,
-          });
-          setShowError(true);
+
+          setLoading(false);
         }
-      })
-      .catch((error) => {
-        console.error("getRedirectResult error:", error);
-        setError({
-          errorHeader: "Redirect Error",
-          errorMessage: error.message,
-        });
-        setShowError(true);
-      });
+      } catch (err) {
+        handleAuthError("Redirect Auth Error", err);
+      } finally {
+        setHandlingRedirect(false); //  FIX: allow onAuthStateChanged
+      }
+    })();
   }, []);
 
-  // Effect hook to handle authentication state changes
+  /* ------------------------------------------------------------------
+     9.  GLOBAL AUTH STATE LISTENER
+         Skip the initial “null” while we’re still checking redirect.
+  -------------------------------------------------------------------*/
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (handlingRedirect) return; //  FIX: wait for step 8 first
+
       if (user) {
         try {
-          const url = `${process.env.REACT_APP_BACKEND}/get/user/${user.uid}`;
-
-          const userDetailsResponse = await fetch(url, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.accessToken}`,
-            },
-          });
-
-          const responseText = await userDetailsResponse.text();
-
-          if (!userDetailsResponse.ok) {
-            throw new Error(
-              `Failed to fetch user details: ${userDetailsResponse.status} ${userDetailsResponse.statusText}\nResponse: ${responseText}`
-            );
-          }
-
-          let userDetails;
-          try {
-            userDetails = JSON.parse(responseText);
-          } catch (parseError) {
-            console.error("Failed to parse response as JSON:", parseError);
-            throw new Error(
-              `Invalid JSON response from server: ${responseText.substring(
-                0,
-                100
-              )}...`
-            );
-          }
-
-          const mergedUser = {
-            ...user,
-            id: userDetails.user.id,
-            name: userDetails.user.name,
-            role: userDetails.user.role,
-            verified: userDetails.user.verified,
-          };
-
-          localStorage.setItem("currentUser", JSON.stringify(mergedUser));
-        } catch (error) {
-          console.error(
-            "Failed to fetch user details on auth state change:",
-            error.message
-          );
-          if (error.message.includes("Failed to fetch")) {
-            console.error(
-              "Network or server error - not proceeding with navigation"
-            );
-            setError({
-              errorHeader: "Server Error",
-              errorMessage:
-                "Unable to connect to the server. Please try again later.",
-            });
-            setShowError(true);
-          } else {
-            localStorage.setItem("currentUser", JSON.stringify(user));
-            navigate("/log-time");
-          }
+          await finishSignIn(user); // will no-op if already in localStorage
+        } catch (err) {
+          handleAuthError("Auth State Error", err);
         }
       } else {
         localStorage.removeItem("currentUser");
-        navigate("/login");
+        if (window.location.pathname !== "/login") navigate("/login");
       }
       setLoading(false);
     });
     return unsubscribe;
-  }, []);
+  }, [handlingRedirect, navigate]);
 
+  /* ------------------------------------------------------------------
+     10.  HELPERS
+  -------------------------------------------------------------------*/
+  const finishSignIn = async (firebaseUser) => {
+    const idToken = await firebaseUser.getIdToken();
+
+    // --- get user row from DB ------------------------------------------------
+    const res = await fetch(
+      `${process.env.REACT_APP_BACKEND}/get/user/${firebaseUser.uid}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(
+        `Failed to fetch user details: ${res.status} ${res.statusText}\n${errText}`
+      );
+    }
+
+    const dbUser = await res.json();
+
+    const merged = {
+      ...firebaseUser,
+      id: dbUser.user.id,
+      name: dbUser.user.name,
+      role: dbUser.user.role,
+      verified: dbUser.user.verified,
+      accessToken: idToken,
+    };
+
+    localStorage.setItem("currentUser", JSON.stringify(merged));
+
+    // --- role-based routing ---------------------------------------------------
+    if (merged.role === "admin" || merged.role === "staff") {
+      navigate("/admin-dashboard");
+    } else if (merged.role === "school contact") {
+      navigate("/school-contact-dashboard");
+    } else {
+      navigate("/mentor-homepage");
+    }
+  };
+
+  const finishSignup = async (firebaseUser, name) => {
+    const idToken = await firebaseUser.getIdToken();
+
+    // --- create user row in DB ----------------------------------------------
+    const res = await fetch(`${process.env.REACT_APP_BACKEND}/post/add_user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({
+        firebase_id: firebaseUser.uid,
+        email: firebaseUser.email,
+        name,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(
+        `Failed to add user to database: ${res.status} ${res.statusText}\n${errText}`
+      );
+    }
+
+    const dbUser = await res.json();
+
+    const merged = {
+      ...firebaseUser,
+      id: dbUser.user.id,
+      name: dbUser.user.name,
+      role: dbUser.user.role,
+      verified: dbUser.user.verified,
+      accessToken: idToken,
+    };
+
+    localStorage.setItem("currentUser", JSON.stringify(merged));
+
+    // --- role-based routing ---------------------------------------------------
+    if (merged.role === "admin" || merged.role === "staff") {
+      navigate("/admin-dashboard");
+    } else if (merged.role === "school contact") {
+      navigate("/school-contact-dashboard");
+    } else {
+      navigate("/mentor-homepage");
+    }
+  };
+
+  const handleAuthError = (header, err) => {
+    console.error(header, err);
+    setError({ errorHeader: header, errorMessage: err.message });
+    setShowError(true);
+  };
+
+  /* ------------------------------------------------------------------
+     11.  CONTEXT VALUE + UI
+  -------------------------------------------------------------------*/
   const value = {
     loading,
     error,
@@ -466,7 +371,7 @@ export const AuthProvider = ({ children }) => {
       {children}
       <Snackbar
         open={showError}
-        autoHideDuration={6000}
+        autoHideDuration={8000}
         onClose={closeError}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
