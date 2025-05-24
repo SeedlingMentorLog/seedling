@@ -41,20 +41,8 @@ const auth = (req, res, next) => {
   }
 };
 
-// CORS Middleware
-app.options("*", cors());
-app.use(cors({
-  origin: [
-    "http://localhost:3000", 
-    "https://seedling-volunteer-portal.vercel.app", // your Vercel frontend
-    "https://ymltfgjkfc.execute-api.us-east-2.amazonaws.com", // API Gateway (optional)
-  ],
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(auth);
 
