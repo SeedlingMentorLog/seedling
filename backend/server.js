@@ -43,7 +43,8 @@ const auth = (req, res, next) => {
 
 const allowedOrigins = [
   "http://localhost:3000",                        // Local dev (React default)
-  "https://seedling-volunteer-portal.vercel.app"  // Live frontend
+  "https://seedling-volunteer-portal.vercel.app", // Live frontend
+  "https://ymltfgjkfc.execute-api.us-east-2.amazonaws.com" // AWS API Gateway
 ];
 
 // CORS Middleware
