@@ -39,7 +39,7 @@ const SchoolContactRouteComponent = ({ element }) => {
   }, [currentUser, setError, setShowError]);
 
   if (!currentUser || !currentUser?.verified) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/" />;
   }
 
   return element;

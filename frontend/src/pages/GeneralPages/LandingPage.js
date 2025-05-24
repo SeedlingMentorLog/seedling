@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -19,49 +19,52 @@ import {
   ListItem,
   ListItemText,
   Divider,
-} from "@mui/material"
-import MenuIcon from "@mui/icons-material/Menu"
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday"
-import PeopleIcon from "@mui/icons-material/People"
-import AccessTimeIcon from "@mui/icons-material/AccessTime"
-import StarIcon from "@mui/icons-material/Star"
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward"
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PeopleIcon from "@mui/icons-material/People";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import StarIcon from "@mui/icons-material/Star";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const LandingPage = () => {
-  const navigate = useNavigate()
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogin = () => {
-    navigate("/login")
-  }
+    navigate("/login");
+  };
 
   const handleSignup = () => {
-    navigate("/signup")
-  }
+    navigate("/signup");
+  };
 
   const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen)
-  }
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
 
   const features = [
     {
       icon: <CalendarTodayIcon fontSize="large" sx={{ color: "#57C5CC" }} />,
       title: "Schedule Meetings",
-      description: "Easily schedule and manage mentoring sessions with our intuitive calendar system.",
+      description:
+        "Easily schedule and manage mentoring sessions with our intuitive calendar system.",
     },
     {
       icon: <PeopleIcon fontSize="large" sx={{ color: "#57C5CC" }} />,
       title: "Find Mentors",
-      description: "Connect with experienced mentors who can guide you on your professional journey.",
+      description:
+        "Connect with experienced mentors who can guide you on your professional journey.",
     },
     {
       icon: <AccessTimeIcon fontSize="large" sx={{ color: "#57C5CC" }} />,
       title: "Track Hours",
-      description: "Log and track your mentoring hours to measure progress and growth.",
+      description:
+        "Log and track your mentoring hours to measure progress and growth.",
     },
-  ]
+  ];
 
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -73,7 +76,12 @@ const LandingPage = () => {
           </Typography>
 
           {isMobile ? (
-            <IconButton edge="end" color="inherit" onClick={toggleMobileMenu} sx={{ color: "#333" }}>
+            <IconButton
+              edge="end"
+              color="inherit"
+              onClick={toggleMobileMenu}
+              sx={{ color: "#333" }}
+            >
               <MenuIcon />
             </IconButton>
           ) : (
@@ -205,9 +213,16 @@ const LandingPage = () => {
                   lineHeight: 1.5,
                 }}
               >
-                Connect with mentors, schedule meetings, and track your progress all in one place.
+                Connect with mentors, schedule meetings, and track your progress
+                all in one place.
               </Typography>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: { xs: "wrap", sm: "nowrap" } }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  flexWrap: { xs: "wrap", sm: "nowrap" },
+                }}
+              >
                 <Button
                   variant="contained"
                   size="large"
@@ -259,11 +274,20 @@ const LandingPage = () => {
 
       {/* Features Section */}
       <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
-        <Typography variant="h3" align="center" sx={{ fontWeight: 600, mb: 2, color: "#333" }}>
+        <Typography
+          variant="h3"
+          align="center"
+          sx={{ fontWeight: 600, mb: 2, color: "#333" }}
+        >
           Features
         </Typography>
-        <Typography variant="h6" align="center" sx={{ color: "#666", mb: 8, maxWidth: 700, mx: "auto" }}>
-          Seedling provides all the tools you need for successful mentorship relationships
+        <Typography
+          variant="h6"
+          align="center"
+          sx={{ color: "#666", mb: 8, maxWidth: 700, mx: "auto" }}
+        >
+          Seedling provides all the tools you need for successful mentorship
+          relationships
         </Typography>
 
         <Grid container spacing={4}>
@@ -286,7 +310,11 @@ const LandingPage = () => {
               >
                 <CardContent sx={{ flexGrow: 1, textAlign: "center" }}>
                   <Box sx={{ mb: 2 }}>{feature.icon}</Box>
-                  <Typography variant="h5" component="h2" sx={{ fontWeight: 600, mb: 2 }}>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{ fontWeight: 600, mb: 2 }}
+                  >
                     {feature.title}
                   </Typography>
                   <Typography variant="body1" color="text.secondary">
@@ -302,10 +330,18 @@ const LandingPage = () => {
       {/* How It Works Section */}
       <Box sx={{ backgroundColor: "#f9fcfc", py: { xs: 8, md: 12 } }}>
         <Container maxWidth="lg">
-          <Typography variant="h3" align="center" sx={{ fontWeight: 600, mb: 2, color: "#333" }}>
+          <Typography
+            variant="h3"
+            align="center"
+            sx={{ fontWeight: 600, mb: 2, color: "#333" }}
+          >
             How It Works
           </Typography>
-          <Typography variant="h6" align="center" sx={{ color: "#666", mb: 8, maxWidth: 700, mx: "auto" }}>
+          <Typography
+            variant="h6"
+            align="center"
+            sx={{ color: "#666", mb: 8, maxWidth: 700, mx: "auto" }}
+          >
             Getting started with Seedling is easy
           </Typography>
 
@@ -342,7 +378,8 @@ const LandingPage = () => {
                       Create an Account
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      Sign up as a mentor or mentee and complete your profile with your interests and goals.
+                      Sign up as a mentor or mentee and complete your profile
+                      with your interests and goals.
                     </Typography>
                   </Box>
                 </Box>
@@ -364,7 +401,8 @@ const LandingPage = () => {
                       Find Your Match
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      Browse through potential mentors or mentees and connect with those who align with your goals.
+                      Browse through potential mentors or mentees and connect
+                      with those who align with your goals.
                     </Typography>
                   </Box>
                 </Box>
@@ -386,7 +424,8 @@ const LandingPage = () => {
                       Schedule Sessions
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                      Use our calendar to schedule meetings, set goals, and track your progress over time.
+                      Use our calendar to schedule meetings, set goals, and
+                      track your progress over time.
                     </Typography>
                   </Box>
                 </Box>
@@ -431,11 +470,24 @@ const LandingPage = () => {
 
         <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
           <Box sx={{ textAlign: "center" }}>
-            <Typography variant="h3" sx={{ fontWeight: 700, mb: 3, color: "white" }}>
+            <Typography
+              variant="h3"
+              sx={{ fontWeight: 700, mb: 3, color: "white" }}
+            >
               Ready to Start Your Mentorship Journey?
             </Typography>
-            <Typography variant="h6" sx={{ color: "white", mb: 4, opacity: 0.9, maxWidth: 700, mx: "auto" }}>
-              Join thousands of mentors and mentees who are growing together on our platform.
+            <Typography
+              variant="h6"
+              sx={{
+                color: "white",
+                mb: 4,
+                opacity: 0.9,
+                maxWidth: 700,
+                mx: "auto",
+              }}
+            >
+              Join thousands of mentors and mentees who are growing together on
+              our platform.
             </Typography>
             <Button
               variant="contained"
@@ -461,9 +513,8 @@ const LandingPage = () => {
           </Box>
         </Container>
       </Box>
-
     </Box>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;

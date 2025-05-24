@@ -138,7 +138,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       localStorage.removeItem("currentUser");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.log("Error signing out:", error);
       throw error;
@@ -337,7 +337,7 @@ export const AuthProvider = ({ children }) => {
         }
       } else {
         localStorage.removeItem("currentUser");
-        navigate("/login");
+        navigate("/");
       }
       setLoading(false);
     });
