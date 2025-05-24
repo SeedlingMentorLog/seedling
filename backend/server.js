@@ -41,21 +41,16 @@ const auth = (req, res, next) => {
   }
 };
 
-const allowedOrigins = [
-  "http://localhost:3000",                        // Local dev (React default)
-  "https://seedling-volunteer-portal.vercel.app", // Live frontend
-  "https://ymltfgjkfc.execute-api.us-east-2.amazonaws.com" // AWS API Gateway
-];
-
 // CORS Middleware
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error("CORS policy: Not allowed by CORS"));
-  },
-  credentials: true
+  origin: [
+    "http://localhost:3000", 
+    "https://seedling-volunteer-portal.vercel.app", // your Vercel frontend
+    "https://ymltfgjkfc.execute-api.us-east-2.amazonaws.com", // API Gateway (optional)
+  ],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // Middleware
