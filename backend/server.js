@@ -42,6 +42,7 @@ const auth = (req, res, next) => {
 };
 
 // CORS Middleware
+app.options("*", cors());
 app.use(cors({
   origin: [
     "http://localhost:3000", 
