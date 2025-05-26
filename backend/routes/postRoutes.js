@@ -275,4 +275,33 @@ router.post(
   }
 );
 
+// Delete relationship
+router.post(
+  "/delete_relationship/:user_role",
+  verifyAdminStatus,
+  async (req, res) => {
+    
+    const { mentor_to_student_id } = req.body;
+    if (!mentor_to_student_id) {
+      return res.status(400).json({ error: "Relationship ID is required" });
+    }
+
+    try {
+      const query = `DELETE FROM MENTOR_TO_STUDENT WHERE mentor_to_student_id = ?;`;
+      pool.query(query, [mentor_to_student_id], (err, result) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          return res.status(500).json({ error: "Error executing query" });
+        }
+        res.status(200).json({ message: "Relationship deleted successfully" });
+      });
+    } catch (error) {
+      console.error("Error deleting relationship:", error.message);
+      return res
+        .status(500)
+        .json({ error: "Error deleting relationship" });
+    }
+  }
+);
+
 module.exports = router;

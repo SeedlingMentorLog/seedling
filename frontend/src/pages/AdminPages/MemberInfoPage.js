@@ -132,6 +132,40 @@ const MemberInfoPage = () => {
     ]);
   };
 
+  const handleDeleteRelationship = async (id) => {
+    if (!id) return;
+
+    const confirm = window.confirm(
+      "Are you sure you want to delete this relationship?"
+    );
+    if (!confirm) return;
+
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND}/post/delete_relationship/${userRole}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ mentor_to_student_id: id }),
+        }
+      );
+
+      if (response.ok) {
+        // Update relationships state
+        setRelationships((prev) => prev.filter((r) => r.primaryId !== id));
+        setOpenEditPopup(false);
+      } else {
+        const data = await response.json();
+        console.error(data.error || "Failed to delete relationship");
+      }
+    } catch (err) {
+      console.error("Error deleting relationship:", err);
+    }
+  };
+
   const handleRelationshipChange = (index, field, value) => {
     const newRel = [...relationships];
     newRel[index][field] = value;
@@ -473,6 +507,24 @@ const MemberInfoPage = () => {
                     >
                       Mentor-Student Relationship {i + 1}
                     </Typography>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        marginTop: 1.5,
+                        bgcolor: "#57C5CC",
+                        color: "#fff",
+                        fontSize: 14,
+                        fontFamily: "Poppins",
+                        fontWeight: 400,
+                        borderRadius: 4,
+                        textTransform: "none",
+                        "&:hover": { bgcolor: "#4aa7ad" },
+                      }}
+                      onClick={() => handleDeleteRelationship(r.primaryId)}
+                    >
+                      Delete
+                    </Button>
                     <FormControl fullWidth>
                       <InputLabel sx={{ fontFamily: "Poppins" }}>
                         School Contact*
