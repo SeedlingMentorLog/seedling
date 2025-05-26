@@ -246,4 +246,33 @@ router.post(
   }
 );
 
+// Delete log
+router.post(
+  "/delete_log/:user_role",
+  verifyAdminStatus,
+  async (req, res) => {
+    
+    const { id } = req.body;
+    if (!id) {
+      return res.status(400).json({ error: "Log ID is required" });
+    }
+
+    try {
+      const query = `DELETE FROM MENTOR_LOGS WHERE id = ?;`;
+      pool.query(query, [id], (err, result) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          return res.status(500).json({ error: "Error executing query" });
+        }
+        res.status(200).json({ message: "Log deleted successfully" });
+      });
+    } catch (error) {
+      console.error("Error deleting log:", error.message);
+      return res
+        .status(500)
+        .json({ error: "Error deleting log" });
+    }
+  }
+);
+
 module.exports = router;

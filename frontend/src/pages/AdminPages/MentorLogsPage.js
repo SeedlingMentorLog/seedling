@@ -54,6 +54,10 @@ const MentorLogsPage = () => {
     "meeting_circumstance",
   ]);
 
+  // Deleting a log
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedLogId, setSelectedLogId] = useState(null);
+
   const allColumns = [
     { key: "mentor_name", label: "Mentor" },
     { key: "student_name", label: "Student" },
@@ -70,11 +74,13 @@ const MentorLogsPage = () => {
     { key: "comments", label: "Comments" },
   ];
 
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const userRole = currentUser?.role.toLowerCase();
+  const accessToken = currentUser?.accessToken;
+
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const user = JSON.parse(localStorage.getItem("currentUser"));
-        const accessToken = user?.accessToken;
         const response = await fetch(
           `${process.env.REACT_APP_BACKEND}/get/mentor_logs`,
           {
@@ -208,7 +214,10 @@ const MentorLogsPage = () => {
       const format = (dateStr) => {
         if (!dateStr) return "any";
         const date = new Date(dateStr);
-        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+          2,
+          "0"
+        )}-${String(date.getDate()).padStart(2, "0")}`;
       };
 
       const start = format(startDateFilter);
@@ -368,6 +377,7 @@ const MentorLogsPage = () => {
                   <TableCell sx={{ fontFamily: "Poppins" }}>
                     Meeting Circumstance
                   </TableCell>
+                  <TableCell sx={{ fontFamily: "Poppins" }}>Delete</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -408,6 +418,30 @@ const MentorLogsPage = () => {
                     </TableCell>
                     <TableCell sx={{ fontFamily: "Poppins" }}>
                       {log.meeting_circumstance}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: "Poppins" }}>
+                      {userRole === "admin" && (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => {
+                            setSelectedLogId(log.id);
+                            setOpenDeleteDialog(true);
+                          }}
+                          sx={{
+                            bgcolor: "#57C5CC",
+                            color: "#fff",
+                            fontSize: 14,
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                            borderRadius: 4,
+                            textTransform: "none",
+                            "&:hover": { bgcolor: "#4aa7ad" },
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -606,6 +640,74 @@ const MentorLogsPage = () => {
               }}
             >
               Download CSV
+            </Button>
+          </DialogActions>
+        </Dialog>
+        
+        {/* Delete log dialog */}
+        <Dialog
+          open={openDeleteDialog}
+          onClose={() => setOpenDeleteDialog(false)}
+        >
+          <DialogTitle>Confirm Deletion</DialogTitle>
+          <DialogContent>
+            Are you sure you want to delete this log?
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenDeleteDialog(false)}
+              sx={{
+                bgcolor: "#DDD",
+                color: "#626262",
+                fontSize: 14,
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                borderRadius: 4,
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const response = await fetch(
+                    `${process.env.REACT_APP_BACKEND}/post/delete_log/${userRole}`,
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${accessToken}`,
+                      },
+                      body: JSON.stringify({ id: selectedLogId }),
+                    }
+                  );
+
+                  if (response.ok) {
+                    // Optional: refresh log list or give feedback
+                    window.location.reload(); // or trigger re-fetch
+                  } else {
+                    const data = await response.json();
+                    console.error(data.error || "Failed to delete log");
+                  }
+                } catch (err) {
+                  console.error("Error deleting log:", err);
+                } finally {
+                  setOpenDeleteDialog(false);
+                }
+              }}
+              color="error"
+              variant="contained"
+              sx={{
+                bgcolor: "#57C5CC",
+                color: "#fff",
+                fontSize: 14,
+                fontFamily: "Poppins",
+                fontWeight: 400,
+                borderRadius: 4,
+                "&:hover": { bgcolor: "#4aa7ad" },
+              }}
+            >
+              Delete
             </Button>
           </DialogActions>
         </Dialog>
