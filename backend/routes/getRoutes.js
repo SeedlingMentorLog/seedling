@@ -44,7 +44,7 @@ router.get("/user/:firebase_id", (req, res) => {
 
 // Get all users
 router.get("/users", (req, res) => {
-  const query = `SELECT id, email, name, role, verified FROM USERS;`;
+  const query = `SELECT firebase_id, id, email, name, role, verified FROM USERS;`;
   pool.query(query, (err, result) => {
     if (err) {
       console.error("Error executing query:", err);

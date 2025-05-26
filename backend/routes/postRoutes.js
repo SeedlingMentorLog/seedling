@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const admin = require("../config/firebase");
 const { pool } = require("../config/db");
 
 function verifyAdminStatus(req, res, next) {
@@ -212,6 +213,36 @@ router.post(
       }
       res.status(200).json({ message: "User profile updated successfully" });
     });
+  }
+);
+
+// Delete user
+router.post(
+  "/delete_user/:user_role",
+  verifyAdminStatus,
+  async (req, res) => {
+    
+    const { firebase_id } = req.body;
+    if (!firebase_id) {
+      return res.status(400).json({ error: "Firebase ID is required" });
+    }
+
+    try {
+      await admin.auth().deleteUser(firebase_id);
+      const query = `DELETE FROM USERS WHERE firebase_id = ?;`;
+      pool.query(query, [firebase_id], (err, result) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          return res.status(500).json({ error: "Error executing query" });
+        }
+        res.status(200).json({ message: "User deleted successfully" });
+      });
+    } catch (error) {
+      console.error("Error deleting user from Firebase:", error.message);
+      return res
+        .status(500)
+        .json({ error: "Error deleting user from Firebase" });
+    }
   }
 );
 

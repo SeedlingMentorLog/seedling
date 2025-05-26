@@ -31,6 +31,8 @@ const MemberInfoPage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [sortBy, setSortBy] = useState("A-Z");
   const [page, setPage] = useState(1);
+
+  // Verifying a user
   const [openVerifyPopup, setOpenVerifyPopup] = useState(false);
   const [openEditPopup, setOpenEditPopup] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -39,6 +41,10 @@ const MemberInfoPage = () => {
   const [roleChange, setRoleChange] = useState("");
   const [relationships, setRelationships] = useState([]);
   const [schoolContacts, setSchoolContacts] = useState([]);
+
+  // Deleting a user
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const rowsPerPage = 10;
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -343,6 +349,7 @@ const MemberInfoPage = () => {
                   <TableCell>Email</TableCell>
                   <TableCell>Role</TableCell>
                   <TableCell>Update User</TableCell>
+                  <TableCell>Delete User</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -371,6 +378,30 @@ const MemberInfoPage = () => {
                           }}
                         >
                           {user.verified ? "Modify" : "Verify"}
+                        </Button>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {userRole === "admin" && currentUser.id !== user.id && (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => {
+                            setSelectedUserId(user.firebase_id);
+                            setOpenDeleteDialog(true);
+                          }}
+                          sx={{
+                            bgcolor: "#57C5CC",
+                            color: "#fff",
+                            fontSize: 14,
+                            fontFamily: "Poppins",
+                            fontWeight: 400,
+                            borderRadius: 4,
+                            textTransform: "none",
+                            "&:hover": { bgcolor: "#4aa7ad" },
+                          }}
+                        >
+                          Delete
                         </Button>
                       )}
                     </TableCell>
@@ -559,22 +590,22 @@ const MemberInfoPage = () => {
               {(roleChange === "mentor" ||
                 roleChange === "admin" ||
                 roleChange === "staff") && (
-                  <Button
-                    onClick={handleAddRelationship}
-                    sx={{
-                      mt: 2,
-                      bgcolor: "#DDD",
-                      color: "#626262",
-                      fontSize: 14,
-                      fontFamily: "Poppins",
-                      fontWeight: 400,
-                      borderRadius: 4,
-                      "&:hover": { bgcolor: "#ccc" },
-                    }}
-                  >
-                    + Add Another Student
-                  </Button>
-                )}
+                <Button
+                  onClick={handleAddRelationship}
+                  sx={{
+                    mt: 2,
+                    bgcolor: "#DDD",
+                    color: "#626262",
+                    fontSize: 14,
+                    fontFamily: "Poppins",
+                    fontWeight: 400,
+                    borderRadius: 4,
+                    "&:hover": { bgcolor: "#ccc" },
+                  }}
+                >
+                  + Add Another Student
+                </Button>
+              )}
             </DialogContent>
             <DialogActions>
               <Button
@@ -604,6 +635,73 @@ const MemberInfoPage = () => {
                 }}
               >
                 Save Changes
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={openDeleteDialog}
+            onClose={() => setOpenDeleteDialog(false)}
+          >
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogContent>
+              Are you sure you want to delete this user?
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => setOpenDeleteDialog(false)}
+                sx={{
+                  bgcolor: "#DDD",
+                  color: "#626262",
+                  fontSize: 14,
+                  fontFamily: "Poppins",
+                  fontWeight: 400,
+                  borderRadius: 4,
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  try {
+                    const response = await fetch(
+                      `${process.env.REACT_APP_BACKEND}/post/delete_user/${userRole}`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${accessToken}`,
+                        },
+                        body: JSON.stringify({ firebase_id: selectedUserId }),
+                      }
+                    );
+
+                    if (response.ok) {
+                      // Optional: refresh user list or give feedback
+                      window.location.reload(); // or trigger re-fetch
+                    } else {
+                      const data = await response.json();
+                      console.error(data.error || "Failed to delete user");
+                    }
+                  } catch (err) {
+                    console.error("Error deleting user:", err);
+                  } finally {
+                    setOpenDeleteDialog(false);
+                  }
+                }}
+                color="error"
+                variant="contained"
+                sx={{
+                  bgcolor: "#57C5CC",
+                  color: "#fff",
+                  fontSize: 14,
+                  fontFamily: "Poppins",
+                  fontWeight: 400,
+                  borderRadius: 4,
+                  "&:hover": { bgcolor: "#4aa7ad" },
+                }}
+              >
+                Delete
               </Button>
             </DialogActions>
           </Dialog>
